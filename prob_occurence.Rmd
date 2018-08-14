@@ -2,7 +2,9 @@
 title: "Probability of occurrence"
 author: "Charles Perretti"
 date: "8/14/2018"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -104,8 +106,10 @@ ggplot(df_prob_occ,
                 size = 0.3, width = 0.3) +
   geom_line() +
   xlab("Year") +
-  ylab("Probability of encountering summer flounder") +
+  ylab("Probability of occurence") +
   theme_bw()  +
   theme(axis.title = element_text(size = 13),
         strip.text = element_text(size = 10))
+
+ggsave("./prob_occ.jpg", width = 8, height = 7)
 ```
