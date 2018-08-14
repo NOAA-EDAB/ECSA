@@ -3,8 +3,8 @@ title: "Probability of occurrence"
 author: "Charles Perretti"
 date: "8/14/2018"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -99,17 +99,31 @@ df_prob_occ <-
   dplyr::do(calc_p(df = .))
 
 # Make plot
-ggplot(df_prob_occ, 
-       aes(x = YEAR, y = p, color = SEASON)) +
+ggplot(df_prob_occ %>% dplyr::filter(SEASON == "FALL"), 
+       aes(x = YEAR, y = p)) +
   geom_point() +
   geom_errorbar(aes(ymin = p_low, ymax = p_high), 
                 size = 0.3, width = 0.3) +
   geom_line() +
   xlab("Year") +
-  ylab("Probability of occurence") +
+  ylab("Fall probability of occurence") +
   theme_bw()  +
   theme(axis.title = element_text(size = 13),
-        strip.text = element_text(size = 10))
+        axis.text = element_text(size = 12))
 
-ggsave("./prob_occ.jpg", width = 5, height = 5)
+ggsave("./fall_prob_occ.jpg", width = 5, height = 4)
+
+ggplot(df_prob_occ %>% dplyr::filter(SEASON == "SPRING"), 
+       aes(x = YEAR, y = p)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = p_low, ymax = p_high), 
+                size = 0.3, width = 0.3) +
+  geom_line() +
+  xlab("Year") +
+  ylab("Spring probability of occurence") +
+  theme_bw()  +
+  theme(axis.title = element_text(size = 13),
+        axis.text = element_text(size = 12))
+
+ggsave("./spring_prob_occ.jpg", width = 5, height = 4)
 ```
