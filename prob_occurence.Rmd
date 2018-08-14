@@ -111,5 +111,5 @@ ggplot(df_prob_occ,
   theme(axis.title = element_text(size = 13),
         strip.text = element_text(size = 10))
 
-ggsave("./prob_occ.jpg", width = 8, height = 7)
+ggsave("./prob_occ.jpg", width = 5, height = 5)
 ```
