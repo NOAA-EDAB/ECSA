@@ -1,0 +1,116 @@
+---
+title:
+    | 
+    | Ecosystem Context for Stock Assessments:
+    | {COMMON_NAME}
+output: 
+        html_document:
+                fig_caption: yes
+---
+
+```{r setup, include = FALSE}
+## Load packages
+library(dplyr)
+library(ggplot2)
+
+# Load in survey data, right now it is only for summer flounder
+load("data/df_survdat.rda")
+
+## Read in stock area vectors
+all_stock_area <- read.csv("data/season_stock_strata.csv")
+stock_code <- "{SPECIES_CODE}"
+common_name <- "{COMMON_NAME}"
+
+strata_spring <- all_stock_area %>% 
+  dplyr::filter(sp == stock_code,
+         season == "spring") %>% 
+  dplyr::pull(strata)
+
+strata_fall <- all_stock_area %>% 
+  dplyr::filter(sp == stock_code,
+         season == "fall") %>% 
+  dplyr::pull(strata)
+
+```
+
+# Overview
+This report provides contextual ecosystem information for {COMMON_NAME} (*{SCI_NAME}*) on the NE Shelf. Data extractions for spring and fall are confined to the {COMMON_NAME} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {COMMON_NAME}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {COMMON_NAME}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+
+
+# Including Plots
+You can also embed plots, for example:
+```{r trawl-habitat, echo = FALSE}
+
+source("R/prob_occurence.R")
+
+df_survdat_spring <-
+  df_survdat %>%
+  dplyr::filter(YEAR > 1976,
+                ## place holder for filtering survdat by species
+                SEASON == "SPRING",
+                STRATUM %in% strata_spring)
+
+df_survdat_fall <-
+  df_survdat %>%
+  dplyr::filter(YEAR > 1976,
+                ## place holder for filtering survdat by species
+                SEASON == "FALL",
+                STRATUM %in% strata_fall)
+
+df_survdat2use <-
+  rbind(df_survdat_spring,
+        df_survdat_fall) %>%
+  dplyr::mutate(pres = BIOMASS > 0)
+
+
+df_prob_occ <-
+  df_survdat2use %>%
+  dplyr::group_by(SEASON, YEAR) %>%
+  dplyr::do(calc_p(df = .)) %>% 
+  ungroup() %>% 
+  mutate(SEASON = tolower(SEASON),
+         SEASON = factor(SEASON, levels = c("spring", "fall")))
+
+# Make plot
+ggplot(df_prob_occ, 
+       aes(x = YEAR, y = p)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = p_low, ymax = p_high), 
+                size = 0.3, width = 0.3) +
+  geom_line() +
+  xlab("Year") +
+  ylab("Probability of occurence") +
+  theme_bw() +
+  theme(axis.title = element_text(size = 13),
+        strip.text = element_text(size = 10),
+        strip.background = NULL) +
+  facet_wrap(~ SEASON)
+
+```
+
+
+
+A standard map of strata:
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE}
+source("R/map_strata.R")
+
+map_strata(common_name = common_name, spring_strata = spring_strata,
+           fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
+
+
+```
+
+
+
+
+Or even something pulled from the web, for example:
+```{r kd, eval = TRUE, echo = FALSE, fig.cap= "Kernel density is ..."}
+plot_type <- "kd"
+url <- sprintf("https://www.nefsc.noaa.gov/ecosys/current-conditions/figures/%s/%s-%s.png",
+               plot_type,
+               "{CC_NAME}",
+               plot_type)
+
+knitr::include_graphics(url)
+```
+
