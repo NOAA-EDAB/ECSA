@@ -2,6 +2,7 @@
 # content given species stock strata.
 
 # variable - Can be "chlorophyll", "temperature", "salinity", "zooplankton".
+# svspp - Input svspp code for species of interest.
 # type - Specific to temperature and salinity variables. Either "bottom" or "surface".
 # season - Either "spring" or "fall".
 # genus - Specific to zooplankton. One of "centropages", "temora", or "pseudocalanus".
