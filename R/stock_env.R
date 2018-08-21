@@ -1,12 +1,35 @@
-#function for pulling ocean temperature, salinity, and chlorophyll content given species stock strata.
+# function for pulling ocean temperature, salinity, chlorophyll, and zooplankton
+# content given species stock strata.
 
-stock_env <- function(variable, type, season,
+# variable - Can be "chlorophyll", "temperature", "salinity", "zooplankton".
+# type - Specific to temperature and salinity variables. Either "bottom" or "surface".
+# season - Either "spring" or "fall".
+# genus - Specific to zooplankton. One of "centropages", "temora", or "pseudocalanus".
+# mask_type - Specifies raster masking behavior. Can be either "nes" to use the full
+# shelf, or "unit" to filter by species-specific stock area.
+# plt - Plots output rather than returning a data frame of results. 
+# ylab, xlab - Plot labels if plt = T
+# ylim - Vector in the form of c(min,max) to specifiy y limits if plt = T
+
+
+
+
+stock_env <- function(variable, type = NULL, season, genus = NULL,
                          svspp, mask_type, xlab,
                       ylab, ylim = NULL, plt = F){
   
+  if(!is.null(type) & !variable %in% c("salinity","temperature")){
+    stop('type only applicable for variables "salinity" and "temperature"
+         as type = "bottom" or type = "surface"')
+  } 
+  
+  if(!is.null(genus) & variable != "zooplankton"){
+    stop('genus only applicable for variable "zooplankton"')
+  } 
+  
   #filter steps--------------------------------------------------------------------------
   
-  # just the spring species/stocks
+  # choose season
   sps = sps[sps$season==season,]
   
   # choose for single species
@@ -28,7 +51,7 @@ stock_env <- function(variable, type, season,
   #---------------------------------------------------------------------------------------
   
   if(sps[sp,7]!="nes"){
-    #          print(sps[sp,7])
+
     stockmask.raster[]=NA
     
     #filter season
@@ -53,22 +76,21 @@ stock_env <- function(variable, type, season,
       load(paste0("data/rast_masks/bts_",df.stata_nums$stata_nums[si],"_bmask.rdata"))
       stockmask.raster = merge(stockmask.raster,masked.raster)
     } 
-    print('here2')
   }# end test for case not nes and build stock blanking
 
   
-  #get bottom temp data and find mean for stock area---------------------------------------
+  #get bottom temp data and find mean for stock area--------------------------------------
   
   if (variable == "salinity"){
-    variable <- "sal"
-    indir = paste0("data/oi_",type,"_",variable,"_2018/",season,"_spdf/raster/")
+    indir = paste0("data/oi_",type,"_sal_2018/",season,"_spdf/raster/")
   } else if (variable == "temperature"){
-    variable <- "temp"
-    indir = paste0("data/oi_",type,"_",variable,"_2018/",season,"_spdf/raster/")
+    indir = paste0("data/oi_",type,"_temp_2018/",season,"_spdf/raster/")
   } else if (variable == "chlorophyll"){
     indir = "data/est_grid_version/"
+  } else if (variable == "zooplankton"){
+    indir <- paste0("data/zoo/",season,"/",genus,"/")
   }
-
+  
   #id raster files
   files = list.files(path=indir, pattern="RAST")
   if (variable == "chlorophyll"){
@@ -102,7 +124,15 @@ stock_env <- function(variable, type, season,
   
     x <- data$X1
     y.out <- data$X4
-
+    
+    # remove 
+    if (variable == "zooplankton"){
+      if (season == "spring"){
+        y.out[x %in% c(1989, 1990, 1991, 1994)] <- NA
+      } else if (season == "fall")
+        y.out[x %in% c(1989, 1990, 1992)] <- NA
+    }
+      
   #plot------------------------------------------------------------------------------------
   if (plt){
     par(mar=c(5, 5, 4, 1))
@@ -145,9 +175,15 @@ stock_env <- function(variable, type, season,
   #fill with new data
   y.int = filldata
   
-  if(variable == "chlorophyll"){type <- ""}
+  if(variable == "chlorophyll"){
+    type <- ""
+  } else if (variable == "zooplankton"){
+      type <- genus
+      variable <- "zoo"
+  }
   
-  out <- data.frame(Var = paste(type,variable,season),
+  
+  out <- data.frame(Var = paste(paste(type,variable),season),
                     Time = x,
                     Value = y.out,
                     Species = svspp,
@@ -163,7 +199,7 @@ stock_env <- function(variable, type, season,
   }
 }
 
-#USAGE ----------------------------------------------------------------------
+#USAGE --------------------------------------------------------------------------
 
 # sf1 <- stock_env(variable = "salinity",type = "surface",
 #                  season = "spring", svspp = svspp, mask_type = "unit")
@@ -175,6 +211,7 @@ stock_env <- function(variable, type, season,
 # bs1 <- stock_env(variable = "salinity",type = "bottom",
 #                  season = "fall", svspp = svspp, mask_type = "unit")
 # 
+# Plotting example ---------------------------------------------------------------
 # surface <- rbind(sf1, ss1)
 # bottom <- rbind(bf1, bs1)
 # 
@@ -182,7 +219,7 @@ stock_env <- function(variable, type, season,
 # xmin <- min(xmin)
 # 
 # #Y scales can be adjusted by adding 'scales' argument to facet_wrap.
-# library(ggplt);library(gridExtra)
+# library(ggplot2);library(gridExtra)
 # s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
 #   ylab("Surface Salinity (PSU)") +
 #   xlab("") +
@@ -212,9 +249,46 @@ stock_env <- function(variable, type, season,
 # grid.arrange(s_plt, b_plt, nrow = 2)
 # 
 
-#Do not include "type" when calling CHL data:
+#Do not include "type" when calling CHL or Zoolplankton:
 
+# CHL-----------------------------------------------------------------------------
 # cs1 <- stock_env(variable = "chlorophyll",
 #                  season = "spring", svspp = svspp, mask_type = "unit")
+
+# Zooplankton --------------------------------------------------------------------
+# ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
+#                  season = "spring", svspp = 103, mask_type = "unit")
+# 
+# ct2 <- stock_env(variable = "zooplankton", genus = "centropages",
+#                  season = "fall", svspp = 103, mask_type = "unit")
+# 
+# t1 <- stock_env(variable = "zooplankton", genus = "temora",
+#                  season = "spring", svspp = 103, mask_type = "unit")
+# 
+# t2 <- stock_env(variable = "zooplankton", genus = "temora",
+#                  season = "fall", svspp = 103, mask_type = "unit")
+# 
+# ps1 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
+#                 season = "spring", svspp = 103, mask_type = "unit")
+# 
+# ps2 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
+#                 season = "fall", svspp = 103, mask_type = "unit")
+# Another plot -------------------------------------------------------------------
+# xmin <- min(ct1$Time,ct2$Time,t1$Time,t2$Time,ps1$Time,ps2$Time)
+# zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
+# library(ggplot2);library(gridExtra)
+# ggplot(data = zoo, aes(x = Time, y = Value)) +
+#   ylab("Abundance log num m^-3") +
+#   xlab("") +
+#   xlim(xmin, NA) +
+#   geom_line() +
+#   geom_point() +
+#   facet_wrap(Var ~ Season, nrow = 3, ncol = 2, scale = "free_y") +
+#   theme_bw() +
+#   theme(plot.title = element_blank(),
+#         strip.background = element_blank(),
+#         strip.text.x = element_blank()) +
+#   annotate("text", label = c("A","B","C","D","E","F"),
+#             x = xmin, y = Inf, vjust = 1.5, size = 5)
 
 
