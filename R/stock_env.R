@@ -46,12 +46,14 @@ stock_env <- function(variable, type, season,
       load(paste0("data/rast_masks/bts_",temp_strata[si,4],"_bmask.rdata"))
       stockmask.raster = merge(stockmask.raster,masked.raster)
     } # end for stock specific stock blanking
+
   } else {
     stockmask.raster[] <- NA
     for (si in 1:nrow(df.stata_nums)){
       load(paste0("data/rast_masks/bts_",df.stata_nums$stata_nums[si],"_bmask.rdata"))
       stockmask.raster = merge(stockmask.raster,masked.raster)
     } 
+    print('here2')
   }# end test for case not nes and build stock blanking
 
   
@@ -66,14 +68,14 @@ stock_env <- function(variable, type, season,
   } else if (variable == "chlorophyll"){
     indir = "data/est_grid_version/"
   }
-  
+
   #id raster files
   files = list.files(path=indir, pattern="RAST")
   if (variable == "chlorophyll"){
     if (season == "fall"){
-      files <- files[grepl('\\d{4}\\.10\\.',files)]
+      files <- files[grepl('\\d{4}\\.10',files)]
     } else if (season == "spring"){
-      files <- files[grepl('\\d{4}\\.4\\.',files)]
+      files <- files[grepl('\\d{4}\\.04',files)]
     }
     
   }
@@ -99,12 +101,9 @@ stock_env <- function(variable, type, season,
   }
   
   
-  if (variable == "chlorophyll" & season == "fall"){
-    x <- data[data$X2==10,]$X1
-    y.out <- data[data$X2 == 10,]$X4
-  } else if (variable == "chlorophyll" & season == "spring"){
-    x <- data[data$X2==4,]$X1
-    y.out <- data[data$X2 == 4,]$X4
+  if (variable == "chlorophyll"){
+    x <- data$X1
+    y.out <- data$X4
   } else if (variable == "temp" | variable == "sal"){
     x <- data$X1
     y.out <- data$X4
@@ -181,5 +180,4 @@ stock_env <- function(variable, type, season,
 # 
 # bf1 <- ocean_temp(type = "bottom",season = "fall", svspp = 103, mask_type = "unit")
 # bs1 <- ocean_temp
-
 
