@@ -43,13 +43,13 @@ stock_env <- function(variable, type, season,
     
     # stock specific blanking
     for (si in 1:nrow(temp_strata)){
-      load(paste0("~/ecsa/data/rast_masks/bts_",temp_strata[si,4],"_bmask.rdata"))
+      load(paste0("data/rast_masks/bts_",temp_strata[si,4],"_bmask.rdata"))
       stockmask.raster = merge(stockmask.raster,masked.raster)
     } # end for stock specific stock blanking
   } else {
     stockmask.raster[] <- NA
     for (si in 1:nrow(df.stata_nums)){
-      load(paste0("~/ecsa/data/rast_masks/bts_",df.stata_nums$stata_nums[si],"_bmask.rdata"))
+      load(paste0("data/rast_masks/bts_",df.stata_nums$stata_nums[si],"_bmask.rdata"))
       stockmask.raster = merge(stockmask.raster,masked.raster)
     } 
   }# end test for case not nes and build stock blanking
@@ -59,12 +59,12 @@ stock_env <- function(variable, type, season,
   
   if (variable == "salinity"){
     variable <- "sal"
-    indir = paste0("~/ecsa/data/oi_",type,"_",variable,"_2018/",season,"_spdf/raster/")
+    indir = paste0("data/oi_",type,"_",variable,"_2018/",season,"_spdf/raster/")
   } else if (variable == "temperature"){
     variable <- "temp"
-    indir = paste0("~/ecsa/data/oi_",type,"_",variable,"_2018/",season,"_spdf/raster/")
+    indir = paste0("data/oi_",type,"_",variable,"_2018/",season,"_spdf/raster/")
   } else if (variable == "chlorophyll"){
-    indir = "~/ecsa/data/est_grid_version/"
+    indir = "data/est_grid_version/"
   }
   
   #id raster files
