@@ -32,10 +32,10 @@ create_template <- function(survdat_name = "SUMMER FLOUNDER",
   
   dat <- readLines("test_template.Rmd")
   
-  dat <- gsub("\\{COMMON_NAME\\}", clean_names$common_name, dat)
-  dat <- gsub("\\{SCI_NAME\\}", clean_names$sci_name, dat)
-  dat <- gsub("\\{CC_NAME\\}", clean_names$cc_name, dat)
-  dat <- gsub("\\{SPECIES_CODE\\}", clean_names$species_code, dat)  
+  dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
+  dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
+  dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
+  dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$species_code, dat)  
   
   file_name <- sprintf("ECSA_%s.rmd", clean_names$cc_name)
 

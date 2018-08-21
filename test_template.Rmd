@@ -18,8 +18,8 @@ load("data/df_survdat.rda")
 
 ## Read in stock area vectors
 all_stock_area <- read.csv("data/season_stock_strata.csv")
-stock_code <- "{SPECIES_CODE}"
-common_name <- "{COMMON_NAME}"
+stock_code <- "{{SPECIES_CODE}}"
+common_name <- "{{COMMON_NAME}}"
 
 strata_spring <- all_stock_area %>% 
   dplyr::filter(sp == stock_code,
@@ -34,7 +34,7 @@ strata_fall <- all_stock_area %>%
 ```
 
 # Overview
-This report provides contextual ecosystem information for {COMMON_NAME} (*{SCI_NAME}*) on the NE Shelf. Data extractions for spring and fall are confined to the {COMMON_NAME} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {COMMON_NAME}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {COMMON_NAME}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 
 # Including Plots
