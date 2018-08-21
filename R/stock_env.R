@@ -169,15 +169,58 @@ stock_env <- function(variable, type, season,
   }
 }
 
-#this function plots 
-# ocean_temp(type = "surface",season = "fall", svspp = 103, mask_type = "unit",
-#    xlab = "Time",ylab = expression(paste("Bottom temperature ",degree,"C")),
-#    ylim = NULL, plt = T)
+#USAGE ----------------------------------------------------------------------
 
-#can return data.frame as well
-# sf1 <- ocean_temp(type = "surface",season = "fall", svspp = 103, mask_type = "unit")
-# ss1 <- ocean_temp(type = "surface",season = "spring", svspp = 103, mask_type = "unit")
+# sf1 <- stock_env(variable = "salinity",type = "surface",
+#                  season = "spring", svspp = svspp, mask_type = "unit")
+# ss1 <- stock_env(variable = "salinity",type = "surface",
+#                  season = "fall", svspp = svspp, mask_type = "unit")
 # 
-# bf1 <- ocean_temp(type = "bottom",season = "fall", svspp = 103, mask_type = "unit")
-# bs1 <- ocean_temp
+# bf1 <- stock_env(variable = "salinity",type = "bottom",
+#                  season = "spring", svspp = svspp, mask_type = "unit")
+# bs1 <- stock_env(variable = "salinity",type = "bottom",
+#                  season = "fall", svspp = svspp, mask_type = "unit")
+# 
+# surface <- rbind(sf1, ss1)
+# bottom <- rbind(bf1, bs1)
+# 
+# xmin <- rbind(min(surface$Time),min(bottom$Time))
+# xmin <- min(xmin)
+# 
+# #Y scales can be adjusted by adding 'scales' argument to facet_wrap.
+# library(ggplt);library(gridExtra)
+# s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
+#   ylab("Surface Salinity (PSU)") +
+#   xlab("") +
+#   xlim(xmin, NA) +
+#   geom_line() +
+#   geom_point() +
+#   facet_wrap(Season ~., nrow = 1) +
+#   theme_bw() +
+#   theme(plot.title = element_blank(),
+#         strip.background = element_blank(),
+#         strip.text.x = element_blank()) +
+#   annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+# 
+# b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
+#   ylab("Bottom Salinity (PSU)") +
+#   xlab("Year") +
+#   xlim(xmin, NA) +
+#   geom_line() +
+#   geom_point() +
+#   facet_wrap(Season ~., nrow = 1) +
+#   theme_bw() +
+#   theme(plot.title = element_blank(),
+#         strip.background = element_blank(),
+#         strip.text.x = element_blank()) +
+#   annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+# 
+# grid.arrange(s_plt, b_plt, nrow = 2)
+# 
+
+#Do not include "type" when calling CHL data:
+
+# cs1 <- stock_env(variable = "chlorophyll",
+#                  season = "spring", svspp = svspp, mask_type = "unit")
+
 
