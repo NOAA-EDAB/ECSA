@@ -30,7 +30,7 @@ create_template <- function(survdat_name = "SUMMER FLOUNDER",
                   -SCINAME,
                   -COMNAME)
   
-  dat <- readLines("test_template.Rmd")
+  dat <- readLines("generic_template.rmd")
   
   dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
   dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)

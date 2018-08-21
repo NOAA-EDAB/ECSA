@@ -2,7 +2,7 @@
 title:
     | 
     | Ecosystem Context for Stock Assessments:
-    | {COMMON_NAME}
+    | {{COMMON_NAME}}
 output: 
         html_document:
                 fig_caption: yes
@@ -18,8 +18,11 @@ load("data/df_survdat.rda")
 
 ## Read in stock area vectors
 all_stock_area <- read.csv("data/season_stock_strata.csv")
+
+## Put all mustaches here
 stock_code <- "{{SPECIES_CODE}}"
 common_name <- "{{COMMON_NAME}}"
+cc_name <- "{{CC_NAME}}"
 
 strata_spring <- all_stock_area %>% 
   dplyr::filter(sp == stock_code,
@@ -108,7 +111,7 @@ Or even something pulled from the web, for example:
 plot_type <- "kd"
 url <- sprintf("https://www.nefsc.noaa.gov/ecosys/current-conditions/figures/%s/%s-%s.png",
                plot_type,
-               "{CC_NAME}",
+               cc_name,
                plot_type)
 
 knitr::include_graphics(url)
