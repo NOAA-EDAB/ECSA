@@ -69,6 +69,14 @@ stock_env <- function(variable, type, season,
   
   #id raster files
   files = list.files(path=indir, pattern="RAST")
+  if (variable == "chlorophyll"){
+    if (season == "fall"){
+      files <- files[grepl('\\d{4}\\.10\\.',files)]
+    } else if (season == "spring"){
+      files <- files[grepl('\\d{4}\\.4\\.',files)]
+    }
+    
+  }
   
   #create null df to fill with results
   data = data.frame(array(NA,dim= c(length(files),4)))
