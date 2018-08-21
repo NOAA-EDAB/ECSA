@@ -100,15 +100,9 @@ stock_env <- function(variable, type, season,
     data[i,4] = cellStats(masked.raster, stat='mean', na.rm=TRUE)
   }
   
-  
-  if (variable == "chlorophyll"){
     x <- data$X1
     y.out <- data$X4
-  } else if (variable == "temp" | variable == "sal"){
-    x <- data$X1
-    y.out <- data$X4
-  }
-  
+
   #plot------------------------------------------------------------------------------------
   if (plt){
     par(mar=c(5, 5, 4, 1))
