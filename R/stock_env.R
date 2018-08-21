@@ -1,7 +1,7 @@
-# function for pulling ocean temperature, salinity, chlorophyll, and zooplankton
-# content given species stock strata.
+# function for pulling ocean temperature, salinity, chlorophyll, zooplankton,
+# and occupancy probability data given species stock strata.
 
-# variable - Can be "chlorophyll", "temperature", "salinity", "zooplankton".
+# variable - Can be "chlorophyll", "temperature", "salinity", "zooplankton", or "occupancy".
 # svspp - Input svspp code for species of interest.
 # type - Specific to temperature and salinity variables. Either "bottom" or "surface".
 # season - Either "spring" or "fall".
@@ -9,10 +9,8 @@
 # mask_type - Specifies raster masking behavior. Can be either "nes" to use the full
 # shelf, or "unit" to filter by species-specific stock area.
 # plt - Plots output rather than returning a data frame of results. 
-# ylab, xlab - Plot labels if plt = T
-# ylim - Vector in the form of c(min,max) to specifiy y limits if plt = T
-
-
+# ylab, xlab - Plot labels if plt = T.
+# ylim - Vector in the form of c(min,max) to specifiy y limits if plt = T.
 
 
 stock_env <- function(variable, type = NULL, season, genus = NULL,
@@ -27,6 +25,10 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
   if(!is.null(genus) & variable != "zooplankton"){
     stop('genus only applicable for variable "zooplankton"')
   } 
+  
+  if(variable == "occupancy"){
+    warning("As of 8/21, occupancy probability data are only available for summer flounder.")
+  }
   
   #filter steps--------------------------------------------------------------------------
   
@@ -90,6 +92,8 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
     indir = "data/est_grid_version/"
   } else if (variable == "zooplankton"){
     indir <- paste0("data/zoo/",season,"/",genus,"/")
+  } else if (variable == "occupancy"){
+    indir <- paste0("data/occupancy/",season,"/")
   }
   
   #id raster files
@@ -107,7 +111,6 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
   data = data.frame(array(NA,dim= c(length(files),4)))
   
   for(i in 1:length(files)){
-    
     #load raster by year
     load(paste0(indir,files[i]))
     
@@ -199,7 +202,6 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
     return(out)
   }
 }
-
 #USAGE --------------------------------------------------------------------------
 
 # sf1 <- stock_env(variable = "salinity",type = "surface",
@@ -250,7 +252,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
 # grid.arrange(s_plt, b_plt, nrow = 2)
 # 
 
-#Do not include "type" when calling CHL or Zoolplankton:
+#Do not include "type" when calling CHL, zooplankton, or occupancy:
 
 # CHL-----------------------------------------------------------------------------
 # cs1 <- stock_env(variable = "chlorophyll",
@@ -274,6 +276,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
 # 
 # ps2 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
 #                 season = "fall", svspp = 103, mask_type = "unit")
+
 # Another plot -------------------------------------------------------------------
 # xmin <- min(ct1$Time,ct2$Time,t1$Time,t2$Time,ps1$Time,ps2$Time)
 # zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
@@ -291,5 +294,25 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
 #         strip.text.x = element_blank()) +
 #   annotate("text", label = c("A","B","C","D","E","F"),
 #             x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+# Occupancy --------------------------------------------------------------------
+# o1 <- stock_env(variable = "occupancy", 
+#                  season = "spring", svspp = 103, mask_type = "unit")
+# 
+# o2 <- stock_env(variable = "occupancy",
+#                  season = "fall", svspp = 103, mask_type = "unit")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
