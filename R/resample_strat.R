@@ -3,7 +3,7 @@
 
 #returns a raster of the down-sampled tock strata
 
-strat_resample <- function(svspp, season, mask_type){
+resample_strat <- function(svspp, season, mask_type){
   
   sea_stock_strata <- read.csv('data/seasonal_stock_strata.csv', stringsAsFactors = F)
   sps1 <- read.csv("data/species_list.csv", stringsAsFactors = F)
