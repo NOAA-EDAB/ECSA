@@ -13,7 +13,6 @@
 # ylim - Vector in the form of c(min,max) to specifiy y limits if plt = T.
 # interpo - Logical. If missing values should be interpolated linearly. Current not functional. 
 
-source('R/match_strat.R')
 stock_env <- function(variable, type = NULL, season, genus = NULL,
                          svspp, mask_type, xlab,interpo = F,
                       ylab, ylim = NULL, plt = F){
@@ -28,7 +27,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
   } 
 
   #get compiled down-sampled raster of chosen strata from shapefile. 
-  stockmask.raster <- match_strat(svspp = svspp, mask_type = mask_type, season = season)
+  stockmask.raster <- resample_strat(svspp = svspp, mask_type = mask_type, season = season)
 
   #get bottom temp data and find mean for stock area--------------------------------------
   
