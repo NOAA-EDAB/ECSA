@@ -1,17 +1,119 @@
-# function for pulling ocean temperature, salinity, chlorophyll, zooplankton,
-# and occupancy probability data given species stock strata.
+#'Compile ECSA Data.
+#'
+#'This function aggregates data for stock-specific ecosystem context reporting. Data that can be 
+#'accessed include surface and bottom temperature and salinity, chlorophyll concentration, 
+#'zooplankton abundance, and occupancy probability for the US Northeast Shelf. 
+#'
+#'Data for this function are currently limited to american lobster (svspp = 301), summer flounder
+#'(svspp = 103), and jonah crab (svspp = 312). Occupancy habitat is limited to summer flounder only.
+#' 
+#' 
+#' @param Variable Can be "chlorophyll", "temperature", "salinity", "zooplankton", or "occupancy".
+#' @param svspp Input svspp code for species of interest.
+#' @param type Specific to temperature and salinity variables. Either "bottom" or "surface".
+#' @param season Either "spring" or "fall".
+#' @param genus Specific to zooplankton. Can be one of "centropages", "temora", or "pseudocalanus".
+#' @param mask_type Specifies raster masking behavior. Can be one of "nes", "gom", "gbk", "sne", or "unit".
+#' If mask is "unit", then returned time series reflect stock boundaries drawn from depth strata.
+#' @param plt Plots output rather than returning a data frame of results. 
+#' @param ylab Plot y label if plt = T.
+#' @param xlab Plot labels if plt = T.
+#' @param ylim Vector in the form of c(min,max) to specifiy y limits if plt = T.
+#' @param interpo Logical. If missing values should be interpolated linearly. Current not functional. 
+#' 
+#' @return If plt = F, a data frame containing time series of compiled data is returned.
+#' 
+#' @examples
+#' USAGE --------------------------------------------------------------------------
+#'
+#' sf1 <- stock_env(variable = "salinity",type = "surface",
+#'                   season = "spring", svspp = 103, mask_type = "unit")
+#' ss1 <- stock_env(variable = "salinity",type = "surface",
+#'                  season = "fall", svspp = 103, mask_type = "unit")
+#' 
+#' bf1 <- stock_env(variable = "salinity",type = "bottom",
+#'                  season = "spring", svspp = 103, mask_type = "unit")
+#' bs1 <- stock_env(variable = "salinity",type = "bottom",
+#'                  season = "fall", svspp = 103, mask_type = "unit")
+#'                  
+#' Plotting example ---------------------------------------------------------------
+#' surface <- rbind(sf1, ss1)
+#' bottom <- rbind(bf1, bs1)
+#' 
+#' xmin <- rbind(min(surface$Time),min(bottom$Time))
+#' xmin <- min(xmin)
+#' 
+#' Y scales can be adjusted by adding 'scales' argument to facet_wrap.
+#' library(ggplot2);library(gridExtra)
+#' s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
+#'   ylab("Surface Salinity (PSU)") +
+#'   xlab("") +
+#'   xlim(xmin, NA) +
+#'   geom_line() +
+#'   geom_point() +
+#'   facet_wrap(Season ~., nrow = 1, scale = 'free_y') +
+#'   theme_bw() +
+#'   theme(plot.title = element_blank(),
+#'         strip.background = element_blank(),
+#'         strip.text.x = element_blank()) +
+#'   annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+#' 
+#' b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
+#'   ylab("Bottom Salinity (PSU)") +
+#'   xlab("Year") +
+#'   xlim(xmin, NA) +
+#'   geom_line() +
+#'   geom_point() +
+#'   facet_wrap(Season ~., nrow = 1, scale = 'free_y') +
+#'   theme_bw() +
+#'   theme(plot.title = element_blank(),
+#'         strip.background = element_blank(),
+#'         strip.text.x = element_blank()) +
+#'   annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+#' 
+#' grid.arrange(s_plt, b_plt, nrow = 2)
+#' 
+#' Do not include "type" when calling CHL, zooplankton, or occupancy:
+#' CHL-----------------------------------------------------------------------------
+#' cs1 <- stock_env(variable = "chlorophyll",
+#'                  season = "spring", svspp = svspp, mask_type = "unit")
+#' cf1 <- stock_env(variable = "chlorophyll",
+#'                  season = "fall", svspp = svspp, mask_type = "unit")
+#' chl <- rbind(cs1, cf1)
+#' xmin <- rbind(min(chl$Time),min(chl$Time))
+#' xmin <- min(xmin)
+#' ggplot(data = chl, aes(x = Time, y = Value)) +
+#'     ylab("Chlorophyll mg m^-3") +
+#'     xlab("") +
+#'     xlim(xmin, NA) +
+#'     geom_line() +
+#'     geom_point() +
+#'     facet_wrap(Season ~., nrow = 1, scale = 'free_y') +
+#'     theme_bw() +
+#'     theme(plot.title = element_blank(),
+#'         strip.background = element_blank(),
+#'         strip.text.x = element_blank()) +
+#'     annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+#'     
+#' Zooplankton --------------------------------------------------------------------
+#' ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
+#'                  season = "spring", svspp = 103, mask_type = "unit")
+#' 
+#' ct2 <- stock_env(variable = "zooplankton", genus = "centropages",
+#'                  season = "fall", svspp = 103, mask_type = "unit")
+#' 
+#' t1 <- stock_env(variable = "zooplankton", genus = "temora",
+#'                  season = "spring", svspp = 103, mask_type = "unit")
+#' 
+#' t2 <- stock_env(variable = "zooplankton", genus = "temora",
+#'                  season = "fall", svspp = 103, mask_type = "unit")
+#' 
+#' ps1 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
+#'                 season = "spring", svspp = 103, mask_type = "unit")
+#' 
+#' ps2 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
+#'                 season = "fall", svspp = 103, mask_type = "unit")
 
-# variable - Can be "chlorophyll", "temperature", "salinity", "zooplankton", or "occupancy".
-# svspp - Input svspp code for species of interest.
-# type - Specific to temperature and salinity variables. Either "bottom" or "surface".
-# season - Either "spring" or "fall".
-# genus - Specific to zooplankton. One of "centropages", "temora", or "pseudocalanus".
-# mask_type - Specifies raster masking behavior. Can be either "nes" to use the full
-# shelf, or "unit" to filter by species-specific stock area.
-# plt - Plots output rather than returning a data frame of results. 
-# ylab, xlab - Plot labels if plt = T.
-# ylim - Vector in the form of c(min,max) to specifiy y limits if plt = T.
-# interpo - Logical. If missing values should be interpolated linearly. Current not functional. 
 
 stock_env <- function(variable, type = NULL, season, genus = NULL,
                          svspp, mask_type, xlab,interpo = F,
@@ -146,134 +248,3 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
     return(out)
   }
 }
-#USAGE --------------------------------------------------------------------------
-
-# sf1 <- stock_env(variable = "salinity",type = "surface",
-#                   season = "spring", svspp = 103, mask_type = "unit")
-# ss1 <- stock_env(variable = "salinity",type = "surface",
-#                  season = "fall", svspp = 103, mask_type = "unit")
-# 
-# bf1 <- stock_env(variable = "salinity",type = "bottom",
-#                  season = "spring", svspp = 103, mask_type = "unit")
-# bs1 <- stock_env(variable = "salinity",type = "bottom",
-#                  season = "fall", svspp = 103, mask_type = "unit")
-
-#Plotting example ---------------------------------------------------------------
-# surface <- rbind(sf1, ss1)
-# bottom <- rbind(bf1, bs1)
-# 
-# xmin <- rbind(min(surface$Time),min(bottom$Time))
-# xmin <- min(xmin)
-
-#Y scales can be adjusted by adding 'scales' argument to facet_wrap.
-# library(ggplot2);library(gridExtra)
-# s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
-#   ylab("Surface Salinity (PSU)") +
-#   xlab("") +
-#   xlim(xmin, NA) +
-#   geom_line() +
-#   geom_point() +
-#   facet_wrap(Season ~., nrow = 1, scale = 'free_y') +
-#   theme_bw() +
-#   theme(plot.title = element_blank(),
-#         strip.background = element_blank(),
-#         strip.text.x = element_blank()) +
-#   annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-# 
-# b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
-#   ylab("Bottom Salinity (PSU)") +
-#   xlab("Year") +
-#   xlim(xmin, NA) +
-#   geom_line() +
-#   geom_point() +
-#   facet_wrap(Season ~., nrow = 1, scale = 'free_y') +
-#   theme_bw() +
-#   theme(plot.title = element_blank(),
-#         strip.background = element_blank(),
-#         strip.text.x = element_blank()) +
-#   annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-# 
-# grid.arrange(s_plt, b_plt, nrow = 2)
-
-
-#Do not include "type" when calling CHL, zooplankton, or occupancy:
-
-# CHL-----------------------------------------------------------------------------
-# cs1 <- stock_env(variable = "chlorophyll",
-#                  season = "spring", svspp = svspp, mask_type = "unit")
-# cf1 <- stock_env(variable = "chlorophyll",
-#                  season = "fall", svspp = svspp, mask_type = "unit")
-# chl <- rbind(cs1, cf1)
-# xmin <- rbind(min(chl$Time),min(chl$Time))
-# xmin <- min(xmin)
-# ggplot(data = chl, aes(x = Time, y = Value)) +
-#     ylab("Chlorophyll mg m^-3") +
-#     xlab("") +
-#     xlim(xmin, NA) +
-#     geom_line() +
-#     geom_point() +
-#     facet_wrap(Season ~., nrow = 1, scale = 'free_y') +
-#     theme_bw() +
-#     theme(plot.title = element_blank(),
-#         strip.background = element_blank(),
-#         strip.text.x = element_blank()) +
-#     annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-# Zooplankton --------------------------------------------------------------------
-# ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
-#                  season = "spring", svspp = 103, mask_type = "unit")
-# 
-# ct2 <- stock_env(variable = "zooplankton", genus = "centropages",
-#                  season = "fall", svspp = 103, mask_type = "unit")
-# 
-# t1 <- stock_env(variable = "zooplankton", genus = "temora",
-#                  season = "spring", svspp = 103, mask_type = "unit")
-# 
-# t2 <- stock_env(variable = "zooplankton", genus = "temora",
-#                  season = "fall", svspp = 103, mask_type = "unit")
-# 
-# ps1 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
-#                 season = "spring", svspp = 103, mask_type = "unit")
-# 
-# ps2 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
-#                 season = "fall", svspp = 103, mask_type = "unit")
-
-# Another plot -------------------------------------------------------------------
-# xmin <- min(ct1$Time,ct2$Time,t1$Time,t2$Time,ps1$Time,ps2$Time)
-# zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
-# library(ggplot2);library(gridExtra)
-# ggplot(data = zoo, aes(x = Time, y = Value)) +
-#   ylab("Abundance log num m^-3") +
-#   xlab("") +
-#   xlim(xmin, NA) +
-#   geom_line() +
-#   geom_point() +
-#   facet_wrap(Var ~ Season, nrow = 3, ncol = 2, scale = "free_y") +
-#   theme_bw() +
-#   theme(plot.title = element_blank(),
-#         strip.background = element_blank(),
-#         strip.text.x = element_blank()) +
-#   annotate("text", label = c("A","B","C","D","E","F"),
-#             x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-# Occupancy --------------------------------------------------------------------
-# o1 <- stock_env(variable = "occupancy",
-#                  season = "spring", svspp = 103, mask_type = "unit")
-# 
-# o2 <- stock_env(variable = "occupancy",
-#                  season = "fall", svspp = 103, mask_type = "unit")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
