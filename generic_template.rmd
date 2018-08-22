@@ -17,7 +17,7 @@ library(ggplot2)
 load("data/df_survdat.rda")
 
 ## Read in stock area vectors
-all_stock_area <- read.csv("data/season_stock_strata.csv")
+all_stock_area <- read.csv("data/seasonal_stock_strata.csv")
 
 ## Put all mustaches here
 stock_code <- "{{SPECIES_CODE}}"
