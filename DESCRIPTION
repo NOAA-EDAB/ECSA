@@ -1,6 +1,6 @@
 Package: ecsa
 Type: Package
-Title: Ecosystem Context & Status Reporting 
+Title: Ecosystem Context for Stock Assessments 
 Version: 0.0.0.9000
 Author@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov",
 				role = c("aut","cre")),
@@ -10,21 +10,23 @@ Author@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov",
 				role = "aut"),
 		  person("Kevin","Friedland", email = "kevin.friedland@noaa.gov",
 				role = "aut"))
-Description: A package developed to facilitate ecosystem status reporting. The package also provides a means for automating the creation of stock-specific ecosystem context reports to supplement the stock assessment process.  
-Depends: R (>= 3.5.0),
-	devtools,
-	plyr,
-    ggplot2,
-	gridExtra,
-    dplyr,
-	RCurl,
-	rnaturalearth,
-	rnaturalearthhires,
-	sf
+Description: This package automates the creation of stock-specific ecosystem 
+            context reports for the US Northeast shelf as a part of the stock
+            assessment process.  
+Depends: R (>= 3.5.0)
+Imports:plyr,
+	      gridExtra,
+        dplyr,
+	      RCurl,
+	      rnaturalearth,
+	      rnaturalearthhires,
+	      sf
 Remotes: url::http://packages.ropensci.org, git::https://github.com/hadley/ggplot2.git
 License: CC0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
 Suggests: 
-    testthat
+    testthat,
+    devtools,
+    ggplot2
