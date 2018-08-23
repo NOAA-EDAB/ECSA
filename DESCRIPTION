@@ -12,15 +12,16 @@ Author@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov",
 				role = "aut"))
 Description: A package developed to facilitate ecosystem status reporting. The package also provides a means for automating the creation of stock-specific ecosystem context reports to supplement the stock assessment process.  
 Depends: R (>= 3.5.0),
-	dplyr,
+	devtools,
+	plyr,
     ggplot2,
 	gridExtra,
-    plyr,
+    dplyr,
 	RCurl,
 	rnaturalearth,
 	rnaturalearthhires,
-	sf,
-	devtools
+	sf
+Remotes: url::http://packages.ropensci.org, git::https://github.com/hadley/ggplot2.git
 License: CC0
 Encoding: UTF-8
 LazyData: true
