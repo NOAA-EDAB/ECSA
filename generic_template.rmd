@@ -42,7 +42,7 @@ This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SC
 
 # Including Plots
 You can also embed plots, for example:
-```{r trawl-habitat, echo = FALSE}
+```{r trawl-habitat, echo = FALSE, fig.align='center'}
 
 source("R/prob_occurence.R")
 
@@ -92,7 +92,7 @@ ggplot(df_prob_occ,
 ```
 
 Or even something pulled from the web, for example:
-```{r kd, eval = TRUE, echo = FALSE, fig.cap= "Kernel density is ..."}
+```{r kd, eval = TRUE, echo = FALSE, fig.cap= "Kernel density is ...", fig.align='center'}
 plot_type <- "kd"
 url <- sprintf("https://www.nefsc.noaa.gov/ecosys/current-conditions/figures/%s/%s-%s.png",
                plot_type,
@@ -103,7 +103,7 @@ knitr::include_graphics(url)
 ```
 
 A standard map of strata:
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE}
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
 source("R/map_strata.R")
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
@@ -205,7 +205,7 @@ b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
 grid.arrange(s_plt, b_plt, nrow = 2)
 ```
 
-```{r chlorophyll, echo = F, fig.align="center"}
+```{r chlorophyll, echo = F, fig.align="center", fig.height=2}
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
 cf1 <- stock_env(variable = "chlorophyll",
@@ -228,7 +228,7 @@ ggplot(data = chl, aes(x = Time, y = Value)) +
 ```
 
 
-```{r zooplankton, echo = F, fig.align="center"}
+```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
 ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
                  season = "spring", svspp = svspp, mask_type = "unit")
 
