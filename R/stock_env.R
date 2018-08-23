@@ -119,6 +119,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
                          svspp, mask_type, xlab,interpo = F,
                       ylab, ylim = NULL, plt = F){
   
+  svspp <- as.numeric(svspp)
   if(!is.null(type) & !variable %in% c("salinity","temperature")){
     stop('type only applicable for variables "salinity" and "temperature"
          as type = "bottom" or type = "surface"')
