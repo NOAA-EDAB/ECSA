@@ -40,6 +40,7 @@ strata_fall <- all_stock_area %>%
 
 ```
 
+
 ## Overview {.tabset .tabset-fade .tabset-pills}
 
 ### Introduction
@@ -58,6 +59,7 @@ map_strata(common_name = common_name, spring_strata = spring_strata,
 ## Surface and bottom temperature {.tabset .tabset-fade .tabset-pills}
 
 ### Figure
+
 ```{r ocean temp, echo = F, fig.align='center'}
 sf1 <- stock_env(variable = "temperature",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
@@ -162,7 +164,6 @@ b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
 grid.arrange(s_plt, b_plt, nrow = 2)
 ```
 
-
 ### Data
 ```{r sal data, echo = F}
 
@@ -176,6 +177,7 @@ datatable(all_dat, rownames = FALSE)
 
 ## Figures
 ```{r chl fig, echo = F, fig.align="center", fig.height=2}
+
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
 cf1 <- stock_env(variable = "chlorophyll",
@@ -198,7 +200,6 @@ ggplot(data = chl, aes(x = Time, y = Value)) +
 ```
 
 
-
 ### Data
 ```{r chl data, echo = F}
 
@@ -210,6 +211,7 @@ datatable(chl, rownames = FALSE)
 ## Zooplankton abundance {.tabset .tabset-fade .tabset-pills}
 
 ### Figure
+
 ```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
 ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
                  season = "spring", svspp = svspp, mask_type = "unit")
