@@ -1,32 +1,32 @@
 Package: ecsa
 Type: Package
-Title: Ecosystem Context & Status Reporting 
+Title: Ecosystem Context for Stock Assessments
 Version: 0.0.0.9000
-Author@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov",
-				role = c("aut","cre")),
-		  person("Scott", "Large", email = "scott.large@noaa.gov",
-				role = "aut"),
-		  person("Charles","Perretti", email = "charles.perretti@noaa.gov",
-				role = "aut"),
-		  person("Kevin","Friedland", email = "kevin.friedland@noaa.gov",
-				role = "aut"))
-Description: A package developed to facilitate ecosystem status reporting. The package also provides a means for automating the creation of stock-specific ecosystem context reports to supplement the stock assessment process.  
-Depends: R (>= 3.5.0),
-	devtools,
-	plyr,
-	ggplot2,
-	gridExtra,
-    dplyr,
-	raster,
-	RCurl,
-	rgdal,
-	rnaturalearth,
-	rnaturalearthhires,
-	sf,
-	stringr
-License: CC0
+Author@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov", role = c("cre","aut")),
+            person("Scott", "Large", email = "scott.large@noaa.gov", role = "aut"),
+		        person("Charles","Perretti", email = "charles.perretti@noaa.gov", role = "aut"),
+		        person("Kevin","Friedland", email = "kevin.friedland@noaa.gov", role = "aut"),
+		        person("Sarah", "Gaichas", email = "sarah.gaichas@noaa.gov", role = "aut"))
+Description: This package automates the creation of stock-specific ecosystem 
+            context reports for the US Northeast shelf as a part of the stock
+            assessment process.
+Depends: R (>= 3.5.0)
+Imports: plyr,
+	      gridExtra,
+        dplyr,
+        raster,
+        rgdal,
+	      RCurl,
+	      rnaturalearth,
+	      rnaturalearthhires,
+	      sf,
+	      stringr
 Remotes: github::hadley/ggplot2, github::ropensci/rnaturalearth, github::ropensci/rnaturalearthhires
+License: CC0
 Encoding: UTF-8
 LazyData: true
+Suggests: 
+    testthat,
+    devtools,
+    ggplot2
 RoxygenNote: 6.1.0
-Suggests: testthat
