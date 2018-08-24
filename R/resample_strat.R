@@ -1,7 +1,19 @@
-# internal function to resample high res stock strata
-# to match strata masks used in analyses
+#' Downsample strata for masking 
+#' 
+#' This function converts NEFSC Bottom Trawl depth stata in "BTS_strata" shapefiles to a downsampled raster format,
+#' which is necessary for masking target rasters containing ecosystem data. Primarily an interal function used by \code{stock_env()}
+#' 
+#'   
+#' @param svspp Species code as specified in data/species_list.csv
+#' @param season Season in which trawl survey occurred.
+#' @param mask_type Specifies raster masking behavior. Can be one of "nes", "gom", "gbk", "sne", or "unit".
+#' If mask is "unit", then returned time series reflect stock boundaries drawn from depth strata.
+#' 
+#' @return Returns a downsampled raster depicting area of interest. 
+#' 
+#' @examples
+#' resample_strat(svspp = 103, mask_type = "unit", season = "spring")
 
-#returns a raster of the down-sampled tock strata
 
 resample_strat <- function(svspp, season, mask_type){
   
@@ -67,10 +79,3 @@ resample_strat <- function(svspp, season, mask_type){
   return(r.new)
   
 }
-
-
-#sumflo_spring <- match_strat(svspp = 103, mask_type = "unit", season = "spring")
-#sumflo_fall <- match_strat(svspp = 103, mask_type = "unit", season = "fall")
-
-
-
