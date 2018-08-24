@@ -22,7 +22,7 @@ Depends: R (>= 3.5.0),
 	sf,
 	stringr
 License: CC0
-Remotes: github::hadley/ggplot2, github::ropensci/rnaturalearth, github::ropensci/rnaturalearth
+Remotes: github::hadley/ggplot2, github::ropensci/rnaturalearth, github::ropensci/rnaturalearthhires
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
