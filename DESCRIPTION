@@ -14,11 +14,14 @@ Description: A package developed to facilitate ecosystem status reporting. The p
 Depends: R (>= 3.5.0),
 	devtools,
 	plyr,
+	ggplot2,
 	gridExtra,
     dplyr,
 	raster,
 	RCurl,
 	rgdal,
+	rnaturalearth,
+	rnaturalearthhires,
 	sf,
 	stringr
 License: CC0
