@@ -24,8 +24,9 @@ Depends: R (>= 3.5.0),
 	rnaturalearthhires,
 	sf,
 	stringr
-Remotes: url::http://packages.ropensci.org, git::https://github.com/hadley/ggplot2.git
+Remotes: url::http://packages.ropensci.org
 License: CC0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
+Suggests: testthat
