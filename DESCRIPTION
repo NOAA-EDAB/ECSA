@@ -20,7 +20,8 @@ Imports: plyr,
 	      rnaturalearth,
 	      rnaturalearthhires,
 	      sf,
-	      stringr
+	      stringr,
+	      tidyr
 Remotes: github::hadley/ggplot2, github::ropensci/rnaturalearth, github::ropensci/rnaturalearthhires
 License: CC0
 Encoding: UTF-8
