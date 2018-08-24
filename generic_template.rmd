@@ -44,7 +44,6 @@ This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SC
 You can also embed plots, for example:
 ```{r trawl-habitat, echo = FALSE, fig.align='center'}
 
-source("R/prob_occurence.R")
 
 df_survdat_spring <-
   df_survdat %>%
@@ -104,7 +103,6 @@ knitr::include_graphics(url)
 
 A standard map of strata:
 ```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
-source("R/map_strata.R")
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
            fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
