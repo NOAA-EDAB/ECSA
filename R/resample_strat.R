@@ -10,6 +10,7 @@
 #' If mask is "unit", then returned time series reflect stock boundaries drawn from depth strata.
 #' 
 #' @return Returns a downsampled raster depicting area of interest. 
+#' @export
 #' 
 #' @examples
 #' resample_strat(svspp = 103, mask_type = "unit", season = "spring")
@@ -51,7 +52,7 @@ resample_strat <- function(svspp, season, mask_type){
 
   
   #read in shape files
-  strata <- readOGR(dsn = 'data/strata_shapefiles', verbose = F)
+  strata <- rgdal::readOGR(dsn = 'data/strata_shapefiles', verbose = F)
   if (mask_type == 'nes'){
     stock_strata <- strata[strata@data$STRATA %in% nes,]
   } else {
@@ -59,18 +60,18 @@ resample_strat <- function(svspp, season, mask_type){
   }
   
   #create empty raster
-  r1 <- raster()
-  e <- extent(-75.950, -65.450, 35.650, 44.650)
-  extent(r1) <- e
+  r1 <- raster::raster()
+  e <- raster::extent(-75.950, -65.450, 35.650, 44.650)
+  raster::extent(r1) <- e
   
   #fill with strate
-  r1 <- rasterize(stock_strata, r1, field = 1, fun = mean)
-  crs(r1) <- NA
+  r1 <- raster::rasterize(stock_strata, r1, field = 1, fun = mean)
+  raster::crs(r1) <- NA
   
   #create raster to resample with
-  r2 <- raster(nrow = 90, ncol = 105)
-  extent(r2) <- e
-  crs(r2) <- NA
+  r2 <- raster::raster(nrow = 90, ncol = 105)
+  raster::extent(r2) <- e
+  raster::crs(r2) <- NA
   
   #resample high res raster to match data
   r.new <- raster::resample(r1, r2, method="bilinear")

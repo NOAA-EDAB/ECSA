@@ -22,9 +22,10 @@
 #' @param interpo Logical. If missing values should be interpolated linearly. Current not functional. 
 #' 
 #' @return If plt = F, a data frame containing time series of compiled data is returned.
+#' @export
 #' 
 #' @examples
-#' USAGE --------------------------------------------------------------------------
+#' #USAGE --------------------------------------------------------------------------
 #'
 #' sf1 <- stock_env(variable = "salinity",type = "surface",
 #'                   season = "spring", svspp = 103, mask_type = "unit")
@@ -36,14 +37,14 @@
 #' bs1 <- stock_env(variable = "salinity",type = "bottom",
 #'                  season = "fall", svspp = 103, mask_type = "unit")
 #'                  
-#' Plotting example ---------------------------------------------------------------
+#' #Plotting example ---------------------------------------------------------------
 #' surface <- rbind(sf1, ss1)
 #' bottom <- rbind(bf1, bs1)
 #' 
 #' xmin <- rbind(min(surface$Time),min(bottom$Time))
 #' xmin <- min(xmin)
 #' 
-#' Y scales can be adjusted by adding 'scales' argument to facet_wrap.
+#' #Y scales can be adjusted by adding 'scales' argument to facet_wrap.
 #' library(ggplot2);library(gridExtra)
 #' s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
 #'   ylab("Surface Salinity (PSU)") +
@@ -73,8 +74,8 @@
 #' 
 #' grid.arrange(s_plt, b_plt, nrow = 2)
 #' 
-#' Do not include "type" when calling CHL, zooplankton, or occupancy:
-#' CHL-----------------------------------------------------------------------------
+#' #Do not include "type" when calling CHL, zooplankton, or occupancy:
+#' #CHL-----------------------------------------------------------------------------
 #' cs1 <- stock_env(variable = "chlorophyll",
 #'                  season = "spring", svspp = svspp, mask_type = "unit")
 #' cf1 <- stock_env(variable = "chlorophyll",
@@ -95,7 +96,7 @@
 #'         strip.text.x = element_blank()) +
 #'     annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
 #'     
-#' Zooplankton --------------------------------------------------------------------
+#' #Zooplankton --------------------------------------------------------------------
 #' ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
 #'                  season = "spring", svspp = 103, mask_type = "unit")
 #' 
@@ -130,7 +131,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
   } 
 
   #get compiled down-sampled raster of chosen strata from shapefile. 
-  stockmask.raster <- resample_strat(svspp = svspp, mask_type = mask_type, season = season)
+  stockmask.raster <- ecsa::resample_strat(svspp = svspp, mask_type = mask_type, season = season)
 
   #get bottom temp data and find mean for stock area--------------------------------------
   
@@ -151,15 +152,15 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
   
 
   #create null df to fill with results
-  data = data.frame(array(NA,dim= c(nlayers(ecsa_dat),4)))
+  data = data.frame(array(NA,dim= c(raster::nlayers(ecsa_dat),4)))
   
   #loops through layers in raster brick
-  for(i in 1:nlayers(ecsa_dat)){
+  for(i in 1:raster::nlayers(ecsa_dat)){
     #load raster by year
     
     #get file information from title
-    layer_id <- str_extract(names(ecsa_dat)[[i]], "\\d.*")
-    layer_id <- str_split(layer_id, "_")
+    layer_id <- stringr::str_extract(names(ecsa_dat)[[i]], "\\d.*")
+    layer_id <- stringr::str_split(layer_id, "_")
     data[i,1] <- layer_id[[1]][[1]]
     data[i,2] <- layer_id[[1]][[2]]
     data[i,3] <- layer_id[[1]][[3]]
@@ -168,7 +169,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
     masked.raster = ecsa_dat[[i]]*stockmask.raster
     
     #find mean BT of stock area
-    data[i,4] = cellStats(masked.raster, stat='mean', na.rm=TRUE)
+    data[i,4] = raster::cellStats(masked.raster, stat='mean', na.rm=TRUE)
   }
   
     x <- data$X1
@@ -218,7 +219,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
     xf=x[ok==FALSE]
     
     #interpolate
-    lin  = interp1(nx, ny, xf, 'linear', extrap = TRUE)
+    lin  = signal::interp1(nx, ny, xf, 'linear', extrap = TRUE)
     if (length(xf)>0){filldata[which(ok==FALSE)]=lin}
     
     #fill with new data

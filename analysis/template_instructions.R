@@ -9,8 +9,9 @@
 
 ## Step 2. The template_control() function takes the test_template.Rmd and automatically
 ## converts all tags to appropriate R objects. e.g., {COMMON_NAME} == "summer flounder"
+devtools::install_github("NOAA-edab/ECSA")
 library(ecsa)
-create_template(survdat_name = "SUMMER FLOUNDER", overwrite = TRUE)
+create_template(survdat_name = "SUMMER FLOUNDER", overwrite = FALSE)
 
 ## or, if you want to generate a series of templates, 
 ## lapply(c("SUMMER FLOUNDER", "ATLANTIC COD", "ATLANTIC HERRING"), create_template, overwrite = TRUE)

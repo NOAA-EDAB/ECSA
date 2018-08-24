@@ -9,6 +9,8 @@
 #'
 #' @return A .Rmd file populated with figures that can be knit into an ECSA report skeleton. 
 #'
+#' @export
+#' @importFrom magrittr "%>%"
 #' @examples  
 #'
 #' create_template(survdat_name = "SUMMER FLOUNDER", overwrite = TRUE)
@@ -30,12 +32,12 @@ create_template <- function(survdat_name,
   clean_names <- df_survdat %>%
     dplyr::filter(COMNAME == survdat_name) %>% 
     dplyr::select(SCINAME, COMNAME) %>% 
-    distinct() %>% 
-    mutate(common_name = tolower(COMNAME),
+    dplyr::distinct() %>% 
+    dplyr::mutate(common_name = tolower(COMNAME),
            sci_name = firstup(tolower(SCINAME)),
            cc_name = gsub(" ", "-", common_name)) %>% 
     tidyr::extract(common_name, into = c('partA', 'partB'), '(.*)\\s+([^ ]+)$', remove = FALSE) %>% 
-    mutate(partA = substr(partA, start = 1, stop = 3),
+    dplyr::mutate(partA = substr(partA, start = 1, stop = 3),
            partB = substr(partB, start = 1, stop = 3),
            partC = ifelse(is.na(partA) | is.na(partB),
                           substr(common_name, start = 1, stop = 6),
@@ -52,7 +54,7 @@ create_template <- function(survdat_name,
   dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
   dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$species_code, dat)  
-  dat <- gsub("\\{\\{svspp\\}\\}", svspp, dat)  
+  dat <- gsub("\\{\\{SVSPP\\}\\}", svspp, dat)  
   file_name <- sprintf("ECSA_%s.rmd", clean_names$cc_name)
 
   if(file.exists(file_name) &

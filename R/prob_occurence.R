@@ -1,4 +1,15 @@
-# Function to calculate probability of occurence
+#' Calculate Probability of Occurance
+#'
+#' @param df 
+#'
+#' @return dataframe of probabilities with upper and lower CI
+#' @export
+#'
+#' @examples
+#' 
+#' df <- data.frame(A = 1:20, pres = sample(c(TRUE,FALSE), 20, TRUE))
+#' calc_p(df = df)
+#' 
 calc_p <- function(df) {
   m <- 
     glm(formula = pres ~ 1,
