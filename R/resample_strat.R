@@ -10,6 +10,7 @@
 #' If mask is "unit", then returned time series reflect stock boundaries drawn from depth strata.
 #' 
 #' @return Returns a downsampled raster depicting area of interest. 
+#' @export
 #' 
 #' @examples
 #' resample_strat(svspp = 103, mask_type = "unit", season = "spring")

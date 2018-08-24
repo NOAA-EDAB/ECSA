@@ -21,13 +21,15 @@ Imports: plyr,
 	      rnaturalearthhires,
 	      sf,
 	      stringr,
-	      tidyr
+	      tidyr,
+	      viridis,
+	      ggthemes,
+	      ggplot2
 Remotes: github::hadley/ggplot2, github::ropensci/rnaturalearth, github::ropensci/rnaturalearthhires
 License: CC0
 Encoding: UTF-8
 LazyData: true
 Suggests: 
     testthat,
-    devtools,
-    ggplot2
+    devtools
 RoxygenNote: 6.1.0

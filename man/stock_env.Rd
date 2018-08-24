@@ -44,7 +44,7 @@ Data for this function are currently limited to american lobster (svspp = 301), 
 (svspp = 103), and jonah crab (svspp = 312). Occupancy habitat is limited to summer flounder only.
 }
 \examples{
-USAGE --------------------------------------------------------------------------
+#USAGE --------------------------------------------------------------------------
 
 sf1 <- stock_env(variable = "salinity",type = "surface",
                   season = "spring", svspp = 103, mask_type = "unit")
@@ -56,14 +56,14 @@ bf1 <- stock_env(variable = "salinity",type = "bottom",
 bs1 <- stock_env(variable = "salinity",type = "bottom",
                  season = "fall", svspp = 103, mask_type = "unit")
                  
-Plotting example ---------------------------------------------------------------
+#Plotting example ---------------------------------------------------------------
 surface <- rbind(sf1, ss1)
 bottom <- rbind(bf1, bs1)
 
 xmin <- rbind(min(surface$Time),min(bottom$Time))
 xmin <- min(xmin)
 
-Y scales can be adjusted by adding 'scales' argument to facet_wrap.
+#Y scales can be adjusted by adding 'scales' argument to facet_wrap.
 library(ggplot2);library(gridExtra)
 s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
   ylab("Surface Salinity (PSU)") +
@@ -93,8 +93,8 @@ b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
 
 grid.arrange(s_plt, b_plt, nrow = 2)
 
-Do not include "type" when calling CHL, zooplankton, or occupancy:
-CHL-----------------------------------------------------------------------------
+#Do not include "type" when calling CHL, zooplankton, or occupancy:
+#CHL-----------------------------------------------------------------------------
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
 cf1 <- stock_env(variable = "chlorophyll",
@@ -115,7 +115,7 @@ ggplot(data = chl, aes(x = Time, y = Value)) +
         strip.text.x = element_blank()) +
     annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
     
-Zooplankton --------------------------------------------------------------------
+#Zooplankton --------------------------------------------------------------------
 ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
                  season = "spring", svspp = 103, mask_type = "unit")
 
