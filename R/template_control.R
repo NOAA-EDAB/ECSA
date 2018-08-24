@@ -1,7 +1,22 @@
-create_template <- function(survdat_name = "SUMMER FLOUNDER",
+#' Create a ECSA template
+#'
+#' A function to create an ECSA Rmarkdown template given the common name of a species of interest. 
+#'
+#'
+#' @param survdat_name A common species name as defined by survdat. Options as of 8/24 include 
+#' JONAH CRAB, AMERICAN LOBSTER, and SUMMER FLOUNDER.
+#' @param overwrite Logical. If TRUE, output will overwrite any existing template for chosen species.
+#'
+#' @return A .Rmd file populated with figures that can be knit into an ECSA report skeleton. 
+#'
+#' @examples  
+#'
+#' create_template(survdat_name = "SUMMER FLOUNDER", overwrite = TRUE)
+#'
+
+
+create_template <- function(survdat_name,
                             overwrite = FALSE){
-    
-  library(dplyr)
   
   load("data/df_survdat.rda")
   spp <- read.csv("data/species_list.csv")
@@ -13,7 +28,7 @@ create_template <- function(survdat_name = "SUMMER FLOUNDER",
   }
   
   clean_names <- df_survdat %>%
-    filter(COMNAME == survdat_name) %>% 
+    dplyr::filter(COMNAME == survdat_name) %>% 
     dplyr::select(SCINAME, COMNAME) %>% 
     distinct() %>% 
     mutate(common_name = tolower(COMNAME),
