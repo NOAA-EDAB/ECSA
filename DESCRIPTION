@@ -20,7 +20,7 @@ Depends: R (>= 3.5.0),
 	raster,
 	RCurl,
 	rgdal,
-	rnaturalearth
+	rnaturalearth,
 	sf,
 	stringr
 License: CC0
