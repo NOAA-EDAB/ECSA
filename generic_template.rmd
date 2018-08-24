@@ -13,6 +13,7 @@ output:
 library(ecsa)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 
 # Load in survey data, right now it is only for summer flounder
 load("data/df_survdat.rda")
@@ -38,12 +39,211 @@ strata_fall <- all_stock_area %>%
 
 ```
 
-# Overview
+## Overview {.tabset .tabset-fade}
+
+### Introduction
 This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
+### Strata definition
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
 
-# Including Plots
-You can also embed plots, for example:
+map_strata(common_name = common_name, spring_strata = spring_strata,
+           fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
+
+
+```
+
+
+## Surface and bottom temperature {.tabset .tabset-fade}
+
+### Figures
+```{r ocean temp, echo = F, fig.align='center'}
+sf1 <- stock_env(variable = "temperature",type = "surface",
+                  season = "spring", svspp = svspp, mask_type = "unit")
+ss1 <- stock_env(variable = "temperature",type = "surface",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+
+bf1 <- stock_env(variable = "temperature",type = "bottom",
+                 season = "spring", svspp = svspp, mask_type = "unit")
+bs1 <- stock_env(variable = "temperature",type = "bottom",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+        
+surface <- rbind(sf1, ss1)
+bottom <- rbind(bf1, bs1)
+
+xmin <- rbind(min(surface$Time),min(bottom$Time))
+xmin <- min(xmin)
+
+s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
+  ylab(expression(paste("Surface Temperature ",degree,"C"))) +
+  xlab("") +
+  xlim(xmin, NA) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(Season ~., nrow = 1) +
+  theme_bw() +
+  theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
+   ylab(expression(paste("Bottom Temperature ",degree,"C"))) +
+  xlab("Year") +
+  xlim(xmin, NA) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(Season ~., nrow = 1) +
+  theme_bw() +
+  theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+grid.arrange(s_plt, b_plt, nrow = 2)
+```
+
+### Data
+```{r ocean data, echo = F}
+
+all_dat <- rbind(surface, bottom)
+
+  DT::datatable( data = all_dat
+                , extensions = 'Buttons'
+                , options = list( 
+                  dom = "Blfrtip"
+                  
+                   # customize the length menu
+                  , lengthMenu = list( c(10, 20, -1) # declare values
+                                       , c(10, 20, "All") # declare titles
+                  ) # end of lengthMenu customization
+                  , pageLength = 10
+                   
+                   
+                ) # end of options
+               
+     ) # end of datatables
+```
+
+## Surface and bottom salinity
+
+```{r ocean sal, echo = F, fig.align='center'}
+sf1 <- stock_env(variable = "salinity",type = "surface",
+                  season = "spring", svspp = svspp, mask_type = "unit")
+ss1 <- stock_env(variable = "salinity",type = "surface",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+
+bf1 <- stock_env(variable = "salinity",type = "bottom",
+                 season = "spring", svspp = svspp, mask_type = "unit")
+bs1 <- stock_env(variable = "salinity",type = "bottom",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+        
+surface <- rbind(sf1, ss1)
+bottom <- rbind(bf1, bs1)
+
+xmin <- rbind(min(surface$Time),min(bottom$Time))
+xmin <- min(xmin)
+
+s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
+  ylab("Surface Salinity (PSU)") +
+  xlab("") +
+  xlim(xmin, NA) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(Season ~., nrow = 1) +
+  theme_bw() +
+  theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
+  ylab("Surface Salinity (PSU)") +
+  xlab("Year") +
+  xlim(xmin, NA) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(Season ~., nrow = 1) +
+  theme_bw() +
+  theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+grid.arrange(s_plt, b_plt, nrow = 2)
+```
+
+## Chlorophyl concentration
+
+
+```{r chlorophyll, echo = F, fig.align="center", fig.height=2}
+cs1 <- stock_env(variable = "chlorophyll",
+                 season = "spring", svspp = svspp, mask_type = "unit")
+cf1 <- stock_env(variable = "chlorophyll",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+chl <- rbind(cs1, cf1)
+xmin <- rbind(min(chl$Time),min(chl$Time))
+xmin <- min(xmin)
+ggplot(data = chl, aes(x = Time, y = Value)) +
+    ylab("Chlorophyll mg m^-3") +
+    xlab("") +
+    xlim(xmin, NA) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(Season ~., nrow = 1) +
+    theme_bw() +
+    theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+    annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+```
+
+
+## Zooplankton abundance
+
+```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
+ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
+                 season = "spring", svspp = svspp, mask_type = "unit")
+
+ct2 <- stock_env(variable = "zooplankton", genus = "centropages",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+
+t1 <- stock_env(variable = "zooplankton", genus = "temora",
+                 season = "spring", svspp = svspp, mask_type = "unit")
+
+t2 <- stock_env(variable = "zooplankton", genus = "temora",
+                 season = "fall", svspp = svspp, mask_type = "unit")
+
+ps1 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
+                season = "spring", svspp = svspp, mask_type = "unit")
+
+ps2 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
+                season = "fall", svspp = svspp, mask_type = "unit")
+
+
+zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
+
+xmin <- min(zoo$Time)
+
+ggplot(data = zoo, aes(x = Time, y = Value)) +
+    ylab("Abundance log num m^-3") +
+    xlab("") +
+    xlim(xmin, NA) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(Var ~ ., nrow = 3, ncol = 2) +
+    theme_bw() +
+    theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+    annotate("text", label = c("A","B","C",
+                               "D","E","F"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+```
+
+
+
+## Probability of occurence and habitat area
 ```{r trawl-habitat, echo = FALSE, fig.align='center'}
 
 
@@ -92,182 +292,14 @@ ggplot(df_prob_occ,
 
 ```
 
-Or even something pulled from the web, for example:
-```{r kd, eval = TRUE, echo = FALSE, fig.cap= "Kernel density is ...", fig.align='center'}
-plot_type <- "kd"
-url <- sprintf("https://www.nefsc.noaa.gov/ecosys/current-conditions/figures/%s/%s-%s.png",
-               plot_type,
-               cc_name,
-               plot_type)
-
-knitr::include_graphics(url)
-```
-
-A standard map of strata:
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
-
-map_strata(common_name = common_name, spring_strata = spring_strata,
-           fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
 
 
-```
+## Kevin's Occupancy habitat
 
-```{r ocean temp, echo = F, fig.align='center'}
-sf1 <- stock_env(variable = "temperature",type = "surface",
-                  season = "spring", svspp = svspp, mask_type = "unit")
-ss1 <- stock_env(variable = "temperature",type = "surface",
-                 season = "fall", svspp = svspp, mask_type = "unit")
+add plot here
 
-bf1 <- stock_env(variable = "temperature",type = "bottom",
-                 season = "spring", svspp = svspp, mask_type = "unit")
-bs1 <- stock_env(variable = "temperature",type = "bottom",
-                 season = "fall", svspp = svspp, mask_type = "unit")
-        
-surface <- rbind(sf1, ss1)
-bottom <- rbind(bf1, bs1)
+## Diet composition
 
-xmin <- rbind(min(surface$Time),min(bottom$Time))
-xmin <- min(xmin)
-
-s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
-  ylab(expression(paste("Surface Temperature ",degree,"C"))) +
-  xlab("") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
-   ylab(expression(paste("Bottom Temperature ",degree,"C"))) +
-  xlab("Year") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-grid.arrange(s_plt, b_plt, nrow = 2)
-```
-
-
-```{r ocean sal, echo = F, fig.align='center'}
-sf1 <- stock_env(variable = "salinity",type = "surface",
-                  season = "spring", svspp = svspp, mask_type = "unit")
-ss1 <- stock_env(variable = "salinity",type = "surface",
-                 season = "fall", svspp = svspp, mask_type = "unit")
-
-bf1 <- stock_env(variable = "salinity",type = "bottom",
-                 season = "spring", svspp = svspp, mask_type = "unit")
-bs1 <- stock_env(variable = "salinity",type = "bottom",
-                 season = "fall", svspp = svspp, mask_type = "unit")
-        
-surface <- rbind(sf1, ss1)
-bottom <- rbind(bf1, bs1)
-
-xmin <- rbind(min(surface$Time),min(bottom$Time))
-xmin <- min(xmin)
-
-s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
-  ylab("Surface Salinity (PSU)") +
-  xlab("") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
-  ylab("Surface Salinity (PSU)") +
-  xlab("Year") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-grid.arrange(s_plt, b_plt, nrow = 2)
-```
-
-```{r chlorophyll, echo = F, fig.align="center", fig.height=2}
-cs1 <- stock_env(variable = "chlorophyll",
-                 season = "spring", svspp = svspp, mask_type = "unit")
-cf1 <- stock_env(variable = "chlorophyll",
-                 season = "fall", svspp = svspp, mask_type = "unit")
-chl <- rbind(cs1, cf1)
-xmin <- rbind(min(chl$Time),min(chl$Time))
-xmin <- min(xmin)
-ggplot(data = chl, aes(x = Time, y = Value)) +
-    ylab("Chlorophyll mg m^-3") +
-    xlab("") +
-    xlim(xmin, NA) +
-    geom_line() +
-    geom_point() +
-    facet_wrap(Season ~., nrow = 1) +
-    theme_bw() +
-    theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-    annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-```
-
-
-```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
-ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
-                 season = "spring", svspp = svspp, mask_type = "unit")
-
-ct2 <- stock_env(variable = "zooplankton", genus = "centropages",
-                 season = "fall", svspp = svspp, mask_type = "unit")
-
-t1 <- stock_env(variable = "zooplankton", genus = "temora",
-                 season = "spring", svspp = svspp, mask_type = "unit")
-
-t2 <- stock_env(variable = "zooplankton", genus = "temora",
-                 season = "fall", svspp = svspp, mask_type = "unit")
-
-ps1 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
-                season = "spring", svspp = svspp, mask_type = "unit")
-
-ps2 <- stock_env(variable = "zooplankton", genus = "pseudocalanus",
-                season = "fall", svspp = svspp, mask_type = "unit")
-
-
-zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
-
-xmin <- min(zoo$Time)
-
-ggplot(data = zoo, aes(x = Time, y = Value)) +
-    ylab("Abundance log num m^-3") +
-    xlab("") +
-    xlim(xmin, NA) +
-    geom_line() +
-    geom_point() +
-    facet_wrap(Var ~ ., nrow = 3, ncol = 2) +
-    theme_bw() +
-    theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-    annotate("text", label = c("A","B","C",
-                               "D","E","F"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-```
-
-
+add plot here
 
 
