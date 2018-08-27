@@ -58,7 +58,7 @@ map_strata(common_name = common_name, spring_strata = spring_strata,
 
 ## Surface and bottom temperature {.tabset .tabset-fade .tabset-pills}
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methods)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methods)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures.
 
 ### Figure
 
@@ -119,6 +119,8 @@ datatable(all_dat, rownames = FALSE)
 
 ## Surface and bottom salinity {.tabset .tabset-fade .tabset-pills}
 
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methods)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. 
+
 ### Figures
 ```{r ocean sal, echo = F, fig.align='center'}
 sf1 <- stock_env(variable = "salinity",type = "surface",
@@ -177,6 +179,10 @@ datatable(all_dat, rownames = FALSE)
 
 ## Chlorophyl concentration {.tabset .tabset-fade .tabset-pills}
 
+The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#sec:methods)). Chlorophyll concentrations in the spring and fall {{COMMON_NAME}} stock areas are shown in the left and right figures. The time series of spring chlorophyll concentration may have impacts on recruitment and growth of the stock, while fall chlorophyll values may affect overwintering nutrition. 
+
+The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for {{COMMON_NAME}}; investigation into the linkages between phytoplankton production and {{COMMON_NAME}} may require additional production metrics. 
+
 ## Figures
 ```{r chl fig, echo = F, fig.align="center", fig.height=2}
 
@@ -211,6 +217,8 @@ datatable(chl, rownames = FALSE)
 ```
 
 ## Zooplankton abundance {.tabset .tabset-fade .tabset-pills}
+
+
 
 ### Figure
 
