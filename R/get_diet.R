@@ -1,129 +1,151 @@
-# Original file from Brian Smith, August 23 2018 was allwt_nstoms.R, renamed as get_diet.R
+# # Original file from Brian Smith, August 23 2018 was allwt_nstoms.R, renamed as get_diet.R
+# 
+# #calc descriptive stats for diet data (aka allsum.sas) and weighted diet compositions (aka allwt.sas)
+# 
+# # this part to go in the template, defining the species and strata
+# 
+# #read pred-seas-strata definitions and add cols
+# sss <- read.csv("data/seasonal_stock_strata.csv")
+# sss$season <- toupper(sss$season)
+# sss$stratum <- sss$strata
+# 
+# splookup <- read.csv("data/species_list.csv") #this does not have all species in it yet
+# spsvspp <- unique(splookup[,c("six_name", "svspp")])
+# #this fills in the summer flounder number now, will do all when species_list is complete
+# sss$svspp <- spsvspp$svspp[match(sss$sp, spsvspp$six_name)]
+# 
+# # we dont need all these for the demo
+# # sss$svspp <- ifelse(sss$sp=='acared', 155, 
+# #              ifelse(sss$sp=='alewif', 33, 
+# #              ifelse(sss$sp=='amepla', 102, 
+# #              ifelse(sss$sp=='atlcod', 73, 
+# #              ifelse(sss$sp=='atlhal', 101, 
+# #              ifelse(sss$sp=='atlher', 32, 
+# #              ifelse(sss$sp=='atlmac', 121, 
+# #              ifelse(sss$sp=='atlwol', 192, 
+# #              ifelse(sss$sp=='barska', 22,
+# #              ifelse(sss$sp=='blabas', 141, 
+# #              ifelse(sss$sp=='bluefi', 135, 
+# #              ifelse(sss$sp=='bluher', 34,
+# #              ifelse(sss$sp=='butter', 131,
+# #              ifelse(sss$sp=='cleska', 24, 
+# #              ifelse(sss$sp=='haddoc', 74, 
+# #              ifelse(sss$sp=='litska', 26, 
+# #              ifelse(sss$sp=='monkfh', 197, 
+# #              ifelse(sss$sp=='ocpout', 193,
+# #              ifelse(sss$sp=='offhak', 69, 
+# #              ifelse(sss$sp=='polloc', 75, 
+# #              ifelse(sss$sp=='redhak', 77, 
+# #              ifelse(sss$sp=='rosska', 25, 
+# #              ifelse(sss$sp=='scupzz', 143,
+# #              ifelse(sss$sp=='silhak', 72, 
+# #              ifelse(sss$sp=='smodog', 13, 
+# #              ifelse(sss$sp=='smoska', 27,
+# #              ifelse(sss$sp=='spidog', 15, 
+# #              ifelse(sss$sp=='sumflo', 103,
+# #              ifelse(sss$sp=='thoska', 28,
+# #              ifelse(sss$sp=='whihak', 76,
+# #              ifelse(sss$sp=='window', 108,
+# #              ifelse(sss$sp=='winflo', 106,
+# #              ifelse(sss$sp=='winska', 23, 
+# #              ifelse(sss$sp=='witflo', 107, 
+# #              ifelse(sss$sp=='yelflo', 105,'X')))))))))))))))))))))))))))))))))))
+# 
+# ##sumflo example svspp==103
+# # this will come from the main template
+# sssin=subset(sss, sss$svspp==103)
+# SVSPP=unique(sssin$svspp)
+# #SEASON=unique(sssin$season)
+# 
+# #read in allfh
+# load("/Users/sgaichas/Documents/0_Data/ESR/SpeciesEcoreport/dietdata/allfhsg.RData")
+# #load("data/allfhsg.RData")
+# 
+# #allfh
+# allfh=allfhsg
+# 
+# #column names to lowercase 
+# names(allfh)=tolower(names(allfh))
+# 
+# 
+# #USER OPTIONS
+# #CHOOSE byvars and byvar names (e.g. geoarea, sizecat, season, year, etc.).  Order according to output and fill as necessary or leave 'x'. Allows for max of 4.
+# #1
+# allfh$byvar1=allfh$year
+# name_byvar1=c('year')
+# 
+# #2
+# #allfh$byvar2=allfh$season
+# #name_byvar2=c('season')
+# allfh$byvar2='x'
+# name_byvar2=c('x')
+# 
+# #3
+# allfh$byvar3='x'
+# name_byvar3=c('x')
+# 
+# #4
+# allfh$byvar4='x'
+# name_byvar4=c('x')
+# 
+# 
+# 
+# 
+# ################BEGIN ALLSUM CODE#################################
+# # DON'T CHANGE. This allows for the appropriate number of columns when setting up data.
+# nbyvar=4
+# 
+# #ALLSUM  Limit data here and select predators (svspp). 
+# allsum2= subset(allfh, allfh$pynam != 'BLOWN' & allfh$pynam != 'PRESERVED' & allfh$pynam != ' ' & allfh$purcode == 10 ) 
+# 
+# #this selects the species
+# allsum1a=subset(allsum2, allsum2$svspp%in%SVSPP )  #select svspp 
+# 
+# #this is selecting the seasonal strata
+# allsum1=subset(allsum1a,(allsum1a$season=='FALL' &allsum1a$stratum%in%sssin$stratum[sssin$season=='FALL'])|(allsum1a$season=='SPRING' &allsum1a$stratum%in%sssin$stratum[sssin$season=='SPRING'])|(allsum1a$season=='WINTER' &allsum1a$stratum%in%sssin$stratum[sssin$season=='WINTER']))
+# 
+# #attach(allsum1)
+# #allsum=allsum1[order(+svspp, year, #byvar,year
+# #+cruise, +station, +pdsex, +pdid, +pdlen),]
+# #detach(allsum1)
+# #head(allsum,10)
+# 
+# allsum=allsum1[order(allsum1$svspp, allsum1$byvar1, allsum1$byvar2, allsum1$byvar3, allsum1$byvar4,
+#                      allsum1$cruise, allsum1$station, allsum1$pdsex, allsum1$pdid, allsum1$pdlen),]
+# head(allsum,10)
+# 
+# ### this is the summer flounder raw data, not yet aggregated or weighted diets ###
+# save(allsum, file="/Users/sgaichas/Documents/0_Data/ESR/SpeciesEcoreport/dietdata/sumflodietraw.RData")
+# 
+# #attach(allsum)
+# #asum=allsum[order(+svspp, +year),] #+year, #byvar
+# #detach(allsum)
+# 
+# ###### read in the summer flounder data only to start calcs here #######
 
-#calc descriptive stats for diet data (aka allsum.sas) and weighted diet compositions (aka allwt.sas)
-
-# this part to go in the template, defining the species and strata
-
-#read pred-seas-strata definitions and add cols
-sss <- read.csv("data/seasonal_stock_strata.csv")
-sss$season <- toupper(sss$season)
-sss$stratum <- sss$strata
-
-splookup <- read.csv("data/species_list.csv") #this does not have all species in it yet
-spsvspp <- unique(splookup[,c("six_name", "svspp")])
-#this fills in the summer flounder number now, will do all when species_list is complete
-sss$svspp <- spsvspp$svspp[match(sss$sp, spsvspp$six_name)]
-
-# we dont need all these for the demo
-# sss$svspp <- ifelse(sss$sp=='acared', 155, 
-#              ifelse(sss$sp=='alewif', 33, 
-#              ifelse(sss$sp=='amepla', 102, 
-#              ifelse(sss$sp=='atlcod', 73, 
-#              ifelse(sss$sp=='atlhal', 101, 
-#              ifelse(sss$sp=='atlher', 32, 
-#              ifelse(sss$sp=='atlmac', 121, 
-#              ifelse(sss$sp=='atlwol', 192, 
-#              ifelse(sss$sp=='barska', 22,
-#              ifelse(sss$sp=='blabas', 141, 
-#              ifelse(sss$sp=='bluefi', 135, 
-#              ifelse(sss$sp=='bluher', 34,
-#              ifelse(sss$sp=='butter', 131,
-#              ifelse(sss$sp=='cleska', 24, 
-#              ifelse(sss$sp=='haddoc', 74, 
-#              ifelse(sss$sp=='litska', 26, 
-#              ifelse(sss$sp=='monkfh', 197, 
-#              ifelse(sss$sp=='ocpout', 193,
-#              ifelse(sss$sp=='offhak', 69, 
-#              ifelse(sss$sp=='polloc', 75, 
-#              ifelse(sss$sp=='redhak', 77, 
-#              ifelse(sss$sp=='rosska', 25, 
-#              ifelse(sss$sp=='scupzz', 143,
-#              ifelse(sss$sp=='silhak', 72, 
-#              ifelse(sss$sp=='smodog', 13, 
-#              ifelse(sss$sp=='smoska', 27,
-#              ifelse(sss$sp=='spidog', 15, 
-#              ifelse(sss$sp=='sumflo', 103,
-#              ifelse(sss$sp=='thoska', 28,
-#              ifelse(sss$sp=='whihak', 76,
-#              ifelse(sss$sp=='window', 108,
-#              ifelse(sss$sp=='winflo', 106,
-#              ifelse(sss$sp=='winska', 23, 
-#              ifelse(sss$sp=='witflo', 107, 
-#              ifelse(sss$sp=='yelflo', 105,'X')))))))))))))))))))))))))))))))))))
-
-##sumflo example svspp==103
-# this will come from the main template
-sssin=subset(sss, sss$svspp==103)
-SVSPP=unique(sssin$svspp)
-#SEASON=unique(sssin$season)
-
-#read in allfh
-load("/Users/sgaichas/Documents/0_Data/ESR/SpeciesEcoreport/dietdata/allfhsg.RData")
-#load("data/allfhsg.RData")
-
-#allfh
-allfh=allfhsg
-
-#column names to lowercase 
-names(allfh)=tolower(names(allfh))
-
-
-#USER OPTIONS
-#CHOOSE byvars and byvar names (e.g. geoarea, sizecat, season, year, etc.).  Order according to output and fill as necessary or leave 'x'. Allows for max of 4.
-#1
-allfh$byvar1=allfh$year
-name_byvar1=c('year')
-
-#2
-#allfh$byvar2=allfh$season
-#name_byvar2=c('season')
-allfh$byvar2='x'
-name_byvar2=c('x')
-
-#3
-allfh$byvar3='x'
-name_byvar3=c('x')
-
-#4
-allfh$byvar4='x'
-name_byvar4=c('x')
-
-
-
-
-################BEGIN ALLSUM CODE#################################
-# DON'T CHANGE. This allows for the appropriate number of columns when setting up data.
-nbyvar=4
-
-#ALLSUM  Limit data here and select predators (svspp). 
-allsum2= subset(allfh, allfh$pynam != 'BLOWN' & allfh$pynam != 'PRESERVED' & allfh$pynam != ' ' & allfh$purcode == 10 ) 
-
-#this selects the species
-allsum1a=subset(allsum2, allsum2$svspp%in%SVSPP )  #select svspp 
-
-#this is selecting the seasonal strata
-allsum1=subset(allsum1a,(allsum1a$season=='FALL' &allsum1a$stratum%in%sssin$stratum[sssin$season=='FALL'])|(allsum1a$season=='SPRING' &allsum1a$stratum%in%sssin$stratum[sssin$season=='SPRING'])|(allsum1a$season=='WINTER' &allsum1a$stratum%in%sssin$stratum[sssin$season=='WINTER']))
-
-#attach(allsum1)
-#allsum=allsum1[order(+svspp, year, #byvar,year
-#+cruise, +station, +pdsex, +pdid, +pdlen),]
-#detach(allsum1)
-#head(allsum,10)
-
-allsum=allsum1[order(allsum1$svspp, allsum1$byvar1, allsum1$byvar2, allsum1$byvar3, allsum1$byvar4,
-                     allsum1$cruise, allsum1$station, allsum1$pdsex, allsum1$pdid, allsum1$pdlen),]
-head(allsum,10)
-
-### this is the summer flounder raw data, not yet aggregated or weighted diets ###
-save(allsum, file="/Users/sgaichas/Documents/0_Data/ESR/SpeciesEcoreport/dietdata/sumflodietraw.RData")
-
-#attach(allsum)
-#asum=allsum[order(+svspp, +year),] #+year, #byvar
-#detach(allsum)
-
-###### read in the summer flounder data only to start calcs here #######
+get_diet <- function(overwrite = FALSE) {
 
 load("data/sumflodietraw.RData")
+  
+  # #CHOOSE byvars and byvar names (e.g. geoarea, sizecat, season, year, etc.).  Order according to output and fill as necessary or leave 'x'. Allows for max of 4.
+  # #1
+  # allfh$byvar1=allfh$year
+  #name_byvar1=c('year')
+  # 
+  # #2
+  # #allfh$byvar2=allfh$season
+  # #name_byvar2=c('season')
+  # allfh$byvar2='x'
+  # name_byvar2=c('x')
+  # 
+  # #3
+  # allfh$byvar3='x'
+  # name_byvar3=c('x')
+  # 
+  # #4
+  # allfh$byvar4='x'
+  # name_byvar4=c('x')
+  
 
 asum=allsum[order(allsum$svspp, allsum$byvar1, allsum$byvar2, allsum$byvar3, allsum$byvar4),]
 
@@ -790,3 +812,4 @@ compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) +
   #geom_bar(stat = "identity", aes(fill=fillwhite)) 
   geom_bar(stat = "identity") 
 compplot #+ theme(legend.position="none")
+}
