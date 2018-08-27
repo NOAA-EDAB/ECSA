@@ -346,11 +346,37 @@ Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} s
 
 
 ### Figures
-```{r diet, echo = FALSE, fig.align='center'}
+```{r diet, eval=F, echo = FALSE, fig.align='center'}
+  
+df_diet <- get_diet() #hidden output somewhere need to fix
+
+diet <- df_diet[,c("year","season", "prey","relmsw")]
+  
+dietmost <- diet %>%
+    dplyr::group_by(season, prey) %>%
+    dplyr::filter(max(relmsw)>1.0)
+  
+dietmain <- diet %>%
+    dplyr::group_by(season, prey) %>%
+    dplyr::filter(mean(relmsw)>5.0)  
+  
+# compplot2 <- ggplot(dietmain, aes(year, relmsw)) + 
+#     geom_bar(stat="identity")
+#   
+# compplot2 + facet_wrap(season ~ prey, nrow=10) + theme(legend.position="none")
+  
+compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
+    #geom_bar(stat = "identity", aes(fill=fillwhite)) 
+    geom_bar(stat = "identity") 
+
+compplot + facet_wrap("season") #+ theme(legend.position="none")
 
 ```
 
 ### Data
+```{r prob data, echo = F}
+#datatable(df_diet, rownames = FALSE)
+```
 
 ## Methods {#sec:methods}
 
