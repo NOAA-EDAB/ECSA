@@ -337,7 +337,7 @@ add plot here
 
 ## Diet composition {.tabset .tabset-fade .tabset-pills}
 
-Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see methods), as well as length composition of sampled fish and sample size. Depending on sample size (number of survey tows and stomachs) seasonal/annual estimates of diet composition or temporally aggregated estimates (5 or 10 year blocks) can be reported. {{COMMON_NAME}} have been collected as a "secondary" priority species from 1977-1980 and from 1985-present (Smith and Link, 2010). 
+Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Depending on sample size (number of survey tows and stomachs) seasonal/annual estimates of diet composition or temporally aggregated estimates (5 or 10 year blocks) can be reported. {{COMMON_NAME}} have been collected as a "secondary" priority species from 1977-1980 and from 1985-present (Smith and Link, 2010). 
 
 ```{r dietdat}
 #{{COMMON_NAME}} stomachs are collected in small (<30 cm), medium (31-70 cm), and large (>70 cm) size strata. Over 4,500 {{COMMON_NAME}} stomachs have been collected to date from over 1,400 survey tows. Predator length ranged in size from 3 to 118 cm.
@@ -376,7 +376,35 @@ Salinity was estimated in the same way with the exception of collection correcti
 Chlorophyll a concentration ([Chl]) data extracted from satellite remote-sensing databases based on measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors. We used the Garver, Siegel, Maritorena Model (GSM) merged data product at 100 km (equivalent to a 1° grid) and 8-day spatial and temporal resolutions, respectively, obtained from the Hermes GlobColour website (hermes.acri.fr/index.php). These four sensors provide an overlapping time series of [Chl] during the period 1997 to 2018 and were combined based on a bio-optical model inversion algorithm (Maritorena et al. 2010).  
 
 ### Zooplankton abundance {#sec:methodszoo}
-Zooplankton abundance is measured by the Ecosystem Monitoring Program (EcoMon), which conducts shelf-wide bimonthly surveys of the NES ecosystem (Kane 2007). Zooplankton and ichthyoplankton are collected throughout the water column to a maximum depth of 200 m using paired 61-cm Bongo samplers equipped with 333-micron mesh nets. Sample location in this survey is based on a randomized strata design, with strata defined by bathymetry and along-shelf location. Plankton taxa are sorted and identified. We used the bio-volume of the 18 most abundant taxonomic categories as potential predictor variables (Table 1). The zooplankton sample time series has some missing values, which necessitated the removal of spring data for the years 1989, 1990, 1991, and 1994 and fall data for the years 1989, 1990, and 1992. The data for each seasonal time frame was interpolated to a complete field over the estimation grid using ordinary kriging. 
+Zooplankton abundance is measured by the Ecosystem Monitoring Program (EcoMon), which conducts shelf-wide bimonthly surveys of the NES ecosystem (Kane 2007). Zooplankton and ichthyoplankton are collected throughout the water column to a maximum depth of 200 m using paired 61-cm Bongo samplers equipped with 333-micron mesh nets. Sample location in this survey is based on a randomized strata design, with strata defined by bathymetry and along-shelf location. Plankton taxa are sorted and identified. We used the bio-volume of the 18 most abundant taxonomic categories as potential predictor variables (Table \ref{tab:zooptab}). The zooplankton sample time series has some missing values, which necessitated the removal of spring data for the years 1989, 1990, 1991, and 1994 and fall data for the years 1989, 1990, and 1992. The data for each seasonal time frame was interpolated to a complete field over the estimation grid using ordinary kriging. 
+
+```{r zooptab, echo=F, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+|Variable name|Full name|
+|----------|-------------------------|
+|acarspp|*Acartia* spp. |
+|calfin|*Calanus finmarchicus* |
+|chaeto|*Chaetognatha*|
+|cham|*Centropages hamatus* |
+|cirr|*Cirripedia*|
+|ctyp|*Centropages typicus* |
+|echino|*Echinodermata*|
+|evadnespp|*Evadne* spp.|
+|gas|*Gastropoda*|
+|hyper|*Hyperiidea*|
+|larvaceans|*Appendicularians*|
+|mlucens|*Metridia lucens* |
+|oithspp|*Oithona* spp. |
+|para|*Paracalanus* parvus |
+|penilia|*Penilia* spp.|
+|pseudo|*Pseudocalanus* spp. |
+|salps|*Salpa*|
+|tlong|*Temora longicornis*| 
+|volume|bio-volume|
+"
+cat(tabl)
+```
+
 
 ### Occupancy models {#sec:methodsocc}
 to be added
