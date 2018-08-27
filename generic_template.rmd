@@ -58,7 +58,7 @@ map_strata(common_name = common_name, spring_strata = spring_strata,
 
 ## Surface and bottom temperature {.tabset .tabset-fade .tabset-pills}
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methods)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures.
 
 ### Figure
 
@@ -119,7 +119,7 @@ datatable(all_dat, rownames = FALSE)
 
 ## Surface and bottom salinity {.tabset .tabset-fade .tabset-pills}
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methods)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. 
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. 
 
 ### Figures
 ```{r ocean sal, echo = F, fig.align='center'}
@@ -269,7 +269,7 @@ datatable(zoo, rownames = FALSE)
 
 ## Probability of occurence and habitat area {.tabset .tabset-fade .tabset-pills}
 
-
+Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
 
 ### Figures
 ```{r trawl-habitat, echo = FALSE, fig.align='center'}
@@ -327,6 +327,8 @@ datatable(df_prob_occ, rownames = FALSE)
 
 ## Kevin's Occupancy habitat {.tabset .tabset-fade .tabset-pills}
 
+The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methods)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the middle plots and the occupancy area is shown in the bottom plots, with spring on the left and fall on the right for all plots.
+
 ### Figures
 add plot here
 
@@ -335,14 +337,18 @@ add plot here
 
 ## Diet composition {.tabset .tabset-fade .tabset-pills}
 
+Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see methods), as well as length composition of sampled fish and sample size. Depending on sample size (number of survey tows and stomachs) seasonal/annual estimates of diet composition or temporally aggregated estimates (5 or 10 year blocks) can be reported. 
+
 ### Figures
-add plot here
+```{r diet, echo = FALSE, fig.align='center'}
+
+```
 
 ### Data
 
 ## Methods {#sec:methods}
 
-### Surface and Bottom Temperature and Salinity
+### Surface and Bottom Temperature and Salinity {#sec:methodstempsalin}
 
 #### Study System
 The U.S. Northeast Shelf ecosystem, which roughly aligns with the boundaries of the Northeast U.S. Continental Shelf Large Marine Ecosystem (LME), is the study area for the surface and bottom thermal environments. Surface and bottom temperatures were estimated over a 0.1° latitude/longitude grid, termed the estimation grid, which circumscribes the range of ecosystem assessment areas in the region (Figure 1). The difference between the extents of the estimation grid from the extent of the LME relate to the resource management programs that are the sources of the data, which are focused on fishery management needs in the region. 
