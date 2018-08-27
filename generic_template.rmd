@@ -183,7 +183,7 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 
 The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for {{COMMON_NAME}}; investigation into the linkages between phytoplankton production and {{COMMON_NAME}} may require additional production metrics. 
 
-## Figures
+### Figures
 ```{r chl fig, echo = F, fig.align="center", fig.height=2}
 
 cs1 <- stock_env(variable = "chlorophyll",
@@ -218,9 +218,9 @@ datatable(chl, rownames = FALSE)
 
 ## Zooplankton abundance {.tabset .tabset-fade .tabset-pills}
 
+The primary zooplankton species identified in the diet of {{COMMON_NAME}} larvae are <!--{{Z1long}}, {{Z2long}}, and {{Z3long}} ({{Zref}})-->Centropages typicus (CTYP), Temora longicornis (TLONG), and Pseudocalanus spp. (PSEUDO) (Grover 1998). The abundance of these taxa within the respective seasonal stock areas for spring and fall depicted below (see [methods](#sec:methods)). It is assumed that the <!--{{larvalseason}}-->spring abundances of these taxa would be most relevant to the growth and survival of larval {{COMMON_NAME}}. Note that the abundance estimates are based on data that are spatially smoothed within year by first kriging the observational data before the abundances are extracted for the stock area. The spring abundance for <!--{{Z1}}, {{Z2}}, and {{Z3}}-->C. typicus, T. longicornis, and Pseudocalanus are shown in the plots on left, top to bottom, respectively. 
 
-
-### Figure
+### Figures
 
 ```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
 ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
@@ -268,6 +268,8 @@ datatable(zoo, rownames = FALSE)
 ```
 
 ## Probability of occurence and habitat area {.tabset .tabset-fade .tabset-pills}
+
+
 
 ### Figures
 ```{r trawl-habitat, echo = FALSE, fig.align='center'}
