@@ -403,7 +403,7 @@ Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} s
 load("data/df_diet.RData")
 
 diet <- df_diet %>%
-  dplyr::select(year, season, prey, relmsw)
+  dplyr::select(year, season, prey, relmsw, nstom, num_tows)
   
 dietmost <- diet %>%
     dplyr::group_by(season, prey) %>%
@@ -433,7 +433,7 @@ compplot + facet_wrap("season")
 
 ### Data
 ```{r diet data, echo = F}
-#datatable(df_diet, rownames = FALSE)
+datatable(diet, rownames = FALSE)
 ```
 
 ## Methods {#sec:methods}
