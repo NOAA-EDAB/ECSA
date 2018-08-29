@@ -184,7 +184,7 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for {{COMMON_NAME}}; investigation into the linkages between phytoplankton production and {{COMMON_NAME}} may require additional production metrics. 
 
 ### Figures
-```{r chl fig, echo = F, fig.align="center", fig.height=2}
+```{r chl fig, echo = F, fig.align="center", fig.height=3}
 
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
@@ -272,7 +272,7 @@ datatable(zoo, rownames = FALSE)
 Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
 
 ### Figures
-```{r trawl-habitat, echo = FALSE, fig.align='center'}
+```{r trawl-habitat, echo = FALSE, fig.align='center', fig.height=3}
 
 
 df_survdat_spring <-
@@ -325,15 +325,41 @@ ggplot(df_prob_occ,
 datatable(df_prob_occ, rownames = FALSE)
 ```
 
-## Kevin's Occupancy habitat {.tabset .tabset-fade .tabset-pills}
+## Occupancy habitat {.tabset .tabset-fade .tabset-pills}
 
 The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the middle plots and the occupancy area is shown in the bottom plots, with spring on the left and fall on the right for all plots.
 
 ### Figures
-add plot here
+```{r rf_occupancy, fig.align="center", echo = F, fig.height=3, warning=F}
+o1 <- stock_env(variable = "occupancy", season = "spring",
+                svspp = svspp, mask_type = "unit")
+
+o2 <- stock_env(variable = "occupancy", season = "fall",
+                svspp = svspp, mask_type = "unit")
+
+occ <- rbind(o1, o2)
+
+xmin <- min(occ$Time)
+
+ggplot(data = occ, aes(x = Time, y = Value)) +
+    ylab("Occupancy Probability") +
+    xlab("") +
+    xlim(xmin, NA) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(Var ~ ., nrow = 3, ncol = 2) +
+    theme_bw() +
+    theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+    annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+```
 
 ### Data
-
+```{r prob data2, echo = F}
+datatable(occ, rownames = FALSE)
+```
 
 ## Diet composition {.tabset .tabset-fade .tabset-pills}
 
@@ -435,7 +461,7 @@ cat(tabl)
 
 
 ### Occupancy models {#sec:methodsocc}
-to be added
+
 
 ### Diet composition {#sec:methodsdiet}
 NEFSC bottom-trawl sampling occurs twice annually in the spring (March-May) and fall (September-November). The survey area encompasses about 293,000 square km of continental shelf from Cape Hatteras, NC, to Nova Scotia, Canada in depths from 8-400 m. Food habits sampling has been conducted since 1973. 
