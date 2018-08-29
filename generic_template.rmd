@@ -247,7 +247,7 @@ zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
 xmin <- min(zoo$Time)
 
 ggplot(data = zoo, aes(x = Time, y = Value)) +
-    ylab("Abundance log num m^-3") +
+    ylab(expression(paste("Abundance log num m"^"-3"))) +
     xlab("") +
     xlim(xmin, NA) +
     geom_line() +
@@ -313,9 +313,9 @@ ggplot(df_prob_occ,
   xlab("Year") +
   ylab("Probability of occurence") +
   theme_bw() +
-  theme(axis.title = element_text(size = 13),
-        strip.text = element_text(size = 10),
-        strip.background = NULL) +
+  theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
   facet_wrap(~ SEASON)
 
 ```
@@ -330,30 +330,53 @@ datatable(df_prob_occ, rownames = FALSE)
 The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the middle plots and the occupancy area is shown in the bottom plots, with spring on the left and fall on the right for all plots.
 
 ### Figures
-```{r rf_occupancy, fig.align="center", echo = F, fig.height=3, warning=F}
-o1 <- stock_env(variable = "occupancy", season = "spring",
+```{r rf_occupancy, fig.align="center", echo = F, warning=F}
+o1 <- stock_env(variable = "occupancy prob", season = "spring",
                 svspp = svspp, mask_type = "unit")
 
-o2 <- stock_env(variable = "occupancy", season = "fall",
+o2 <- stock_env(variable = "occupancy prob", season = "fall",
                 svspp = svspp, mask_type = "unit")
 
-occ <- rbind(o1, o2)
+o3 <- stock_env(variable = "occupancy hab", season = "spring",
+                svspp = svspp, mask_type = "unit")
 
-xmin <- min(occ$Time)
+o4 <- stock_env(variable = "occupancy hab", season = "fall",
+                svspp = svspp, mask_type = "unit")
 
-ggplot(data = occ, aes(x = Time, y = Value)) +
-    ylab("Occupancy Probability") +
-    xlab("") +
-    xlim(xmin, NA) +
-    geom_line() +
-    geom_point() +
-    facet_wrap(Var ~ ., nrow = 3, ncol = 2) +
-    theme_bw() +
-    theme(plot.title = element_blank(),
+prob <- rbind(o1, o2)
+hab <- rbind(o3, o4)
+
+xmin <- rbind(min(hab$Time),min(prob$Time))
+xmin <- min(xmin)
+
+op_plt <- ggplot(data = prob, aes(x = Time, y = Value)) +
+  ylab("Occupancy Probability") +
+  xlab("") +
+  xlim(xmin, NA) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(Season ~., nrow = 1) +
+  theme_bw() +
+  theme(plot.title = element_blank(),
         strip.background = element_blank(),
         strip.text.x = element_blank()) +
-    annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
 
+oh_plt <- ggplot(data = hab, aes(x = Time, y = Value)) +
+  ylab(expression(paste("Occupancy Habitat km"^"-2"))) +
+  xlab("Year") +
+  xlim(xmin, NA) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(Season ~., nrow = 1) +
+  theme_bw() +
+  theme(plot.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+grid.arrange(op_plt, oh_plt, nrow = 2)
+occ <- rbind(prob, hab)
 ```
 
 ### Data
