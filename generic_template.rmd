@@ -389,7 +389,7 @@ datatable(occ, rownames = FALSE)
 
 Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show annual and seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). {{COMMON_NAME}} have been collected as a "secondary" priority species from 1977-1980 and from 1985-present [@smith_trophic_2010]. 
 
-```{r dietdat}
+```{r dietdat, eval=F, echo = FALSE}
 #{{COMMON_NAME}} stomachs are collected in small (<30 cm), medium (31-70 cm), and large (>70 cm) size strata. Over 4,500 {{COMMON_NAME}} stomachs have been collected to date from over 1,400 survey tows. Predator length ranged in size from 3 to 118 cm.
 #[add: number+hauls sampled and length comp of sampled {{COMMON_NAME}} in each time block below]
 ```
