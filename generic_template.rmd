@@ -363,7 +363,7 @@ datatable(occ, rownames = FALSE)
 
 ## Diet composition {.tabset .tabset-fade .tabset-pills}
 
-Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Depending on sample size (number of survey tows and stomachs) seasonal/annual estimates of diet composition or temporally aggregated estimates (5 or 10 year blocks) can be reported. {{COMMON_NAME}} have been collected as a "secondary" priority species from 1977-1980 and from 1985-present (Smith and Link, 2010). 
+Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show annual and seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). {{COMMON_NAME}} have been collected as a "secondary" priority species from 1977-1980 and from 1985-present [@smith_trophic_2010]. 
 
 ```{r dietdat}
 #{{COMMON_NAME}} stomachs are collected in small (<30 cm), medium (31-70 cm), and large (>70 cm) size strata. Over 4,500 {{COMMON_NAME}} stomachs have been collected to date from over 1,400 survey tows. Predator length ranged in size from 3 to 118 cm.
@@ -387,7 +387,8 @@ dietmost <- diet %>%
   
 dietmain <- diet %>%
     dplyr::group_by(season, prey) %>%
-    dplyr::filter(mean(relmsw)>5.0)  
+    dplyr::filter(relmsw>0.01) %>%
+    dplyr::filter(mean(relmsw)>10.0)
   
 # compplot2 <- ggplot(dietmain, aes(year, relmsw)) + 
 #     geom_bar(stat="identity")
@@ -396,9 +397,13 @@ dietmain <- diet %>%
   
 compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
     #geom_bar(stat = "identity", aes(fill=fillwhite)) 
-    geom_bar(stat = "identity") 
+    geom_bar(stat = "identity") +
+    theme_bw() + 
+    viridis::scale_fill_viridis(discrete = TRUE) +
+    theme(legend.position="bottom", 
+          legend.text=element_text(size=5))
 
-compplot + facet_wrap("season") #+ theme(legend.position="none")
+compplot + facet_wrap("season")
 
 ```
 
@@ -467,8 +472,8 @@ cat(tabl)
 ### Diet composition {#sec:methodsdiet}
 NEFSC bottom-trawl sampling occurs twice annually in the spring (March-May) and fall (September-November). The survey area encompasses about 293,000 square km of continental shelf from Cape Hatteras, NC, to Nova Scotia, Canada in depths from 8-400 m. Food habits sampling has been conducted since 1973. 
 
-Stomachs are collected at sea by NEFSC, and have been primarily analyzed at sea since 1981. Total stomach volume is estimated, each prey item is identified and sorted to the lowest possible taxonomic level, and the proportion of each prey item is estimated. Detailed methods are described in Link and Almeida (2000).
-Prey composition percent by weight was calculated using a weighted mean ($\overline{W_{ijs}}$) (Link and Almeida, 2000) to estimate mean weight of prey $i$ in predator $j$ for statistical group $s$. Note: Prey volumes are used as proxies for prey weight. It may be calculated as
+Stomachs are collected at sea by NEFSC, and have been primarily analyzed at sea since 1981. Total stomach volume is estimated, each prey item is identified and sorted to the lowest possible taxonomic level, and the proportion of each prey item is estimated. Detailed methods are described in @link_overview_2000.
+Prey composition percent by weight was calculated using a weighted mean ($\overline{W_{ijs}}$) [@link_overview_2000] to estimate mean weight of prey $i$ in predator $j$ for statistical group $s$. Note: Prey volumes are used as proxies for prey weight. It may be calculated as
 
 $$ \overline{W_{ijs}} = \frac{\sum_{t=1}^{N_{ts}}N_{jts}\overline{w_{ijts}}}{N_{ts}} $$
 
