@@ -16,6 +16,7 @@ library(dplyr)
 library(ggplot2)
 library(gridExtra)
 library(DT)
+library(jpeg)
 
 # Load in survey data, right now it is only for summer flounder
 load("data/df_survdat.rda")
