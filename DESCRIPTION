@@ -13,9 +13,10 @@ Description: This package automates the creation of stock-specific ecosystem
 Depends: R (>= 3.5.0)
 Imports: plyr,
 	      gridExtra,
-        dplyr,
-        raster,
-        rgdal,
+          dplyr,
+		  jpeg,
+          raster,
+          rgdal,
 	      RCurl,
 	      rnaturalearth,
 	      rnaturalearthhires,
