@@ -395,11 +395,14 @@ Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} s
 
 
 ### Figures
-```{r diet, eval=F, echo = FALSE, fig.align='center'}
+```{r diet, eval=T, echo = FALSE, fig.align='center'}
   
-df_diet <- get_diet() #hidden output somewhere need to fix
+#df_diet <- get_diet() #hidden output somewhere need to fix, function still broken dont use
 
-diet <- df_diet[,c("year","season", "prey","relmsw")]
+load("data/df_diet.RData")
+
+diet <- df_diet %>%
+  dplyr::select(year, season, prey, relmsw)
   
 dietmost <- diet %>%
     dplyr::group_by(season, prey) %>%
