@@ -329,7 +329,7 @@ datatable(df_prob_occ, rownames = FALSE)
 
 ## Occupancy habitat {.tabset .tabset-fade .tabset-pills}
 
-The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the middle plots and the occupancy area is shown in the bottom plots, with spring on the left and fall on the right for all plots.
+The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the upper plots and the occupancy area is shown in the lower plots, with spring on the left and fall on the right for all plots.
 
 ### Figures
 ```{r rf_occupancy, fig.align="center", echo = F, warning=F}
