@@ -418,6 +418,8 @@ dietmain <- diet %>%
   
 compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
     #geom_bar(stat = "identity", aes(fill=fillwhite)) 
+    ylab("Percent in Diet") +
+    xlab("Year") +
     geom_bar(stat = "identity") +
     theme_bw() + 
     viridis::scale_fill_viridis(discrete = TRUE) +
