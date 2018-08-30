@@ -3,6 +3,7 @@ title:
     | 
     | Ecosystem Context for Stock Assessments:
     | {{COMMON_NAME}}
+always_allow_html: yes
 output: 
         html_document:
                 fig_caption: yes
@@ -518,7 +519,7 @@ Station data included observations made contemporaneously to survey bottom trawl
 
 #### {#fig:occ_grid}
 
-```{r occ_grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width = '500'}
+```{r occ_grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width =switch(knitr::opts_knit$get("rmarkdown.pandoc.to"), latex = "0.5\\linewidth", html = '500')}
 knitr::include_graphics("data/images/ECSA_occ_grid.png")
 ```
 
