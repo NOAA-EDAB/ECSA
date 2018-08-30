@@ -17,6 +17,7 @@ library(ggplot2)
 library(gridExtra)
 library(DT)
 library(jpeg)
+library(ggiraph)
 
 # Load in survey data, right now it is only for summer flounder
 load("data/df_survdat.rda")
@@ -420,13 +421,16 @@ compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) +
     #geom_bar(stat = "identity", aes(fill=fillwhite)) 
     ylab("Percent in Diet") +
     xlab("Year") +
-    geom_bar(stat = "identity") +
+    #geom_bar(stat = "identity") +
+    facet_wrap("season", nrow=3) +
     theme_bw() + 
     viridis::scale_fill_viridis(discrete = TRUE) +
     theme(legend.position="bottom", 
           legend.text=element_text(size=5))
 
-compplot + facet_wrap("season", nrow=3)
+compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
+
+ggiraph(code = print(compi), height=14)
 
 ```
 
