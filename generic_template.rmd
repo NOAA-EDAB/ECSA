@@ -768,3 +768,7 @@ knitr::include_graphics("data/images/ECSA_oi_compare.png")
 
 
 ### References
+
+
+
+_Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
