@@ -6,6 +6,7 @@
 #' @param survdat_name A common species name as defined by survdat. Options as of 8/24 include 
 #' JONAH CRAB, AMERICAN LOBSTER, and SUMMER FLOUNDER.
 #' @param overwrite Logical. If TRUE, output will overwrite any existing template for chosen species.
+#' @param make_interactive Logical. If TRUE, template time series will be made interative through the ggiraph library.
 #'
 #' @return A .Rmd file populated with figures that can be knit into an ECSA report skeleton. 
 #'
@@ -18,7 +19,8 @@
 
 
 create_template <- function(survdat_name,
-                            overwrite = FALSE){
+                            overwrite = FALSE,
+                            make_interactive = FALSE){
   
   load("data/df_survdat.rda")
   spp <- read.csv("data/species_list.csv")
@@ -55,6 +57,7 @@ create_template <- function(survdat_name,
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
   dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$species_code, dat)  
   dat <- gsub("\\{\\{SVSPP\\}\\}", svspp, dat)  
+  dat <- gsub("\\{\\{INTERACTIVE\\}\\}", make_interactive, dat)
   file_name <- sprintf("ECSA_%s.rmd", clean_names$cc_name)
 
   if(file.exists(file_name) &

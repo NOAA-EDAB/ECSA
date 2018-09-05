@@ -18,6 +18,7 @@ library(ggplot2)
 library(gridExtra)
 library(DT)
 library(jpeg)
+library(cowplot)
 library(ggiraph)
 
 # Load in survey data, right now it is only for summer flounder
@@ -31,6 +32,7 @@ stock_code <- "{{SPECIES_CODE}}"
 common_name <- "{{COMMON_NAME}}"
 cc_name <- "{{CC_NAME}}"
 svspp <- "{{SVSPP}}"
+gg_int <- as.logical("{{INTERACTIVE}}")
 
 strata_spring <- all_stock_area %>% 
   dplyr::filter(sp == stock_code,
@@ -41,6 +43,10 @@ strata_fall <- all_stock_area %>%
   dplyr::filter(sp == stock_code,
          season == "fall") %>% 
   dplyr::pull(strata)
+
+label <- function(variable,value){
+  return(facet_names[value])
+}
 
 ```
 
@@ -66,7 +72,7 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 
 ### Figure
 
-```{r ocean temp, echo = F, fig.align='center'}
+```{r ocean temp, echo = F, fig.align='center', warning=F}
 sf1 <- stock_env(variable = "temperature",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
 ss1 <- stock_env(variable = "temperature",type = "surface",
@@ -80,53 +86,55 @@ bs1 <- stock_env(variable = "temperature",type = "bottom",
 surface <- rbind(sf1, ss1)
 bottom <- rbind(bf1, bs1)
 
+
 xmin <- rbind(min(surface$Time),min(bottom$Time))
 xmin <- min(xmin)
 
-s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
-  ylab(expression(paste("Surface Temperature ",degree,"C"))) +
-  xlab("") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+all_temp <- rbind(surface, bottom)
 
-b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
-   ylab(expression(paste("Bottom Temperature ",degree,"C"))) +
+facet_names <- list(
+  'surface temperature spring'="Spring surface",
+  'surface temperature fall'="Fall surface",
+  'bottom temperature spring'="Spring bottom",
+  'bottom temperature fall' = "Fall bottom")
+
+temp_plt <- ggplot(data = all_temp, aes(x = Time, y = Value)) +
+  ylab(expression(paste("Temperature ",degree,"C"))) +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
+  {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
+    else geom_point()} +
+  facet_wrap( ~Var, nrow = 2, labeller = label) +
   theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+  theme(strip.background = element_blank()) +
+  annotate("text", label = c("","","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
 
-grid.arrange(s_plt, b_plt, nrow = 2)
+if (gg_int){
+  ggiraph(code = print(temp_plt), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  temp_plt
+  }
+
 ```
 
 ### Data
+
 ```{r ocean data, echo = F}
 
-all_dat <- rbind(surface, bottom)
 
-datatable(all_dat, rownames = FALSE)
+datatable(all_temp, rownames = FALSE)
 
 ```
+
 
 ## Surface and bottom salinity {.tabset .tabset-fade .tabset-pills}
 
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. 
 
 ### Figures
-```{r ocean sal, echo = F, fig.align='center'}
+```{r ocean sal, echo = F, fig.align='center', warning=F}
 sf1 <- stock_env(variable = "salinity",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
 ss1 <- stock_env(variable = "salinity",type = "surface",
@@ -140,55 +148,56 @@ bs1 <- stock_env(variable = "salinity",type = "bottom",
 surface <- rbind(sf1, ss1)
 bottom <- rbind(bf1, bs1)
 
+all_sal <- rbind(surface, bottom)
+
 xmin <- rbind(min(surface$Time),min(bottom$Time))
 xmin <- min(xmin)
 
-s_plt <- ggplot(data = surface, aes(x = Time, y = Value)) +
-  ylab("Surface Salinity (PSU)") +
-  xlab("") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
 
-b_plt <- ggplot(data = bottom, aes(x = Time, y = Value)) +
-  ylab("Surface Salinity (PSU)") +
+facet_names <- list(
+  'surface salinity spring'="Spring surface",
+  'surface salinity fall'="Fall surface",
+  'bottom salinity spring'="Spring bottom",
+  'bottom salinity fall' = "Fall bottom")
+
+sal_plt <- ggplot(data = all_sal, aes(x = Time, y = Value)) +
+  ylab("Salinity (PSU)") +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
+  {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
+    else geom_point()} +
+  facet_wrap(Var ~., nrow = 2, labeller = label) +
   theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+  theme(#plot.title = element_blank(),
+        strip.background = element_blank()) +
+  annotate("text", label = c("","","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
 
-grid.arrange(s_plt, b_plt, nrow = 2)
+
+if (gg_int){
+  ggiraph(code = print(sal_plt), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  sal_plt
+  }
+
 ```
 
 ### Data
 ```{r sal data, echo = F}
 
-all_dat <- rbind(surface, bottom)
-
-datatable(all_dat, rownames = FALSE)
+datatable(all_sal, rownames = FALSE)
 
 ```
 
-## Chlorophyl concentration {.tabset .tabset-fade .tabset-pills}
+## Chlorophyll concentration {.tabset .tabset-fade .tabset-pills}
 
 The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#sec:methodschl)). Chlorophyll concentrations in the spring and fall {{COMMON_NAME}} stock areas are shown in the left and right figures. The time series of spring chlorophyll concentration may have impacts on recruitment and growth of the stock, while fall chlorophyll values may affect overwintering nutrition. 
 
 The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for {{COMMON_NAME}}; investigation into the linkages between phytoplankton production and {{COMMON_NAME}} may require additional production metrics. 
 
 ### Figures
-```{r chl fig, echo = F, fig.align="center", fig.height=3}
+```{r chl fig, echo = F, fig.align="center", fig.height=3, warning=F}
 
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
@@ -197,18 +206,30 @@ cf1 <- stock_env(variable = "chlorophyll",
 chl <- rbind(cs1, cf1)
 xmin <- rbind(min(chl$Time),min(chl$Time))
 xmin <- min(xmin)
-ggplot(data = chl, aes(x = Time, y = Value)) +
-    ylab("Chlorophyll mg m^-3") +
-    xlab("") +
+
+facet_names <- list(
+  'chlorophyll spring'="Spring",
+  'chlorophyll fall'="Fall")
+
+chl_plt <- ggplot(data = chl, aes(x = Time, y = Value)) +
+    ylab(expression(paste("Chlorophyll mg m"^"-3"))) +
+    xlab("Year") +
     xlim(xmin, NA) +
     geom_line() +
-    geom_point() +
-    facet_wrap(Season ~., nrow = 1) +
+    {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
+    else geom_point()}+
+    facet_wrap(Season ~., nrow = 1, labeller = label) +
     theme_bw() +
-    theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-    annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+    theme(strip.background = element_blank())+
+    annotate("text", label = c("",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+if (gg_int){
+  ggiraph(code = print(chl_plt), width = 0.9,  height_svg = 2.5,
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  chl_plt
+  }
+
 ```
 
 
@@ -250,19 +271,36 @@ zoo <- rbind(ct1, ct2, t1, t2, ps1, ps2)
 
 xmin <- min(zoo$Time)
 
-ggplot(data = zoo, aes(x = Time, y = Value)) +
+
+facet_names <- list(
+  'centropages zoo spring'=expression(paste(italic("Centropages "), "spring")),
+  'centropages zoo fall'=expression(paste(italic("Centropages "), "fall")),
+  'temora zoo spring'=expression(paste(italic("Temora "), "spring")),
+  'temora zoo fall' = expression(paste(italic("Temora "), "fall")),
+  'temora zoo spring'=expression(paste(italic("Pseudocalanus "), "spring")),
+  'temora zoo fall' = expression(paste(italic("Pseudocalanus "), "fall")))
+
+
+zoo_plt <- ggplot(data = zoo, aes(x = Time, y = Value)) +
     ylab(expression(paste("Abundance log num m"^"-3"))) +
-    xlab("") +
+    xlab("Year") +
     xlim(xmin, NA) +
     geom_line() +
-    geom_point() +
-    facet_wrap(Var ~ ., nrow = 3, ncol = 2) +
+    {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
+    else geom_point()}+
+    facet_wrap(Var ~ ., nrow = 3, ncol = 2, labeller = label) +
     theme_bw() +
-    theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-    annotate("text", label = c("A","B","C",
-                               "D","E","F"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+    theme(strip.background = element_blank()) +
+    annotate("text", label = c("","","",
+                               "","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+if (gg_int){
+  ggiraph(code = print(zoo_plt), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  zoo_plt
+  }
+
 
 ```
 
@@ -276,7 +314,7 @@ datatable(zoo, rownames = FALSE)
 Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
 
 ### Figures
-```{r trawl-habitat, echo = FALSE, fig.align='center', fig.height=3}
+```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3}
 
 
 df_survdat_spring <-
@@ -307,20 +345,31 @@ df_prob_occ <-
   mutate(SEASON = tolower(SEASON),
          SEASON = factor(SEASON, levels = c("spring", "fall")))
 
+facet_names <- list(
+  'spring'="Spring",
+  'fall' = "Fall")
+
 # Make plot
-ggplot(df_prob_occ, 
+prob_occ_plt <- ggplot(df_prob_occ, 
        aes(x = YEAR, y = p)) +
-  geom_point() +
+  {if(gg_int) geom_point_interactive(aes(tooltip = round(p,3), data_id = YEAR))
+    else geom_point()}+
   geom_errorbar(aes(ymin = p_low, ymax = p_high), 
                 size = 0.3, width = 0.3) +
   geom_line() +
   xlab("Year") +
   ylab("Probability of occurence") +
   theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  facet_wrap(~ SEASON)
+  theme(strip.background = element_blank()) +
+  facet_wrap(~ SEASON, labeller = label)
+
+
+if (gg_int){
+  ggiraph(code = print(prob_occ_plt), width = 0.9, height_svg = 2.5,
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  prob_occ_plt
+  }
 
 ```
 
@@ -350,41 +399,58 @@ o4 <- stock_env(variable = "occupancy hab", season = "fall",
 prob <- rbind(o1, o2)
 hab <- rbind(o3, o4)
 
+hab$Value <- hab$Value/100
+
 xmin <- rbind(min(hab$Time),min(prob$Time))
 xmin <- min(xmin)
 
+facet_names <- list(
+  'occupancy hab spring'="Occupancy prob. spring",
+  'occupancy hab fall' = "Occupancy prob.
+  fall")
+
 op_plt <- ggplot(data = prob, aes(x = Time, y = Value)) +
   ylab("Occupancy Probability") +
-  xlab("") +
-  xlim(xmin, NA) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
-  theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("A","B"), x = xmin, y = Inf, vjust = 1.5, size = 5)
-
-oh_plt <- ggplot(data = hab, aes(x = Time, y = Value)) +
-  ylab(expression(paste("Occupancy Habitat km"^"-2"))) +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
-  geom_point() +
-  facet_wrap(Season ~., nrow = 1) +
+  {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
+    else geom_point()}+
+  facet_wrap(Season ~., nrow = 1, labeller = label) +
   theme_bw() +
-  theme(plot.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  annotate("text", label = c("C","D"), x = xmin, y = Inf, vjust = 1.5, size = 5)
+  theme(strip.background = element_blank()) +
+  annotate("text", label = c("",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
 
-grid.arrange(op_plt, oh_plt, nrow = 2)
-occ <- rbind(prob, hab)
+label2 <- function(variable,value){
+  return(facet_names2[value])
+}
+facet_names2 <- list(
+  'occupancy prob spring'="Occupancy habitat spring",
+  'occupancy prob fall' = "Occupancy habitat fall")
+
+oh_plt <- ggplot(data = hab, aes(x = Time, y = Value)) +
+  ylab(expression(paste("Occupancy Habitat 10"^"2 "," km"^"-2"))) +
+  xlab("Year") +
+  xlim(xmin, NA) +
+  geom_line() +
+  {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
+    else geom_point()} +
+  facet_wrap(Season ~., nrow = 1, labeller = label2) +
+  theme_bw() +
+  theme(strip.background = element_blank()) +
+  annotate("text", label = c("",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+if (gg_int){
+  ggiraph(code = print(plot_grid(oh_plt, op_plt, nrow = 2)), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  grid.arrange(oh_plt, op_plt, nrow = 2)
+  }
 ```
 
 ### Data
 ```{r prob data2, echo = F}
+occ <- rbind(prob, hab)
 datatable(occ, rownames = FALSE)
 ```
 
@@ -519,7 +585,7 @@ Station data included observations made contemporaneously to survey bottom trawl
 
 #### {#fig:occ_grid}
 
-```{r occ_grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width =switch(knitr::opts_knit$get("rmarkdown.pandoc.to"), latex = "0.5\\linewidth", html = '500')}
+```{r occ_grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width=switch(knitr::opts_knit$get("rmarkdown.pandoc.to"), latex = "0.5\\linewidth", html = '500')}
 knitr::include_graphics("data/images/ECSA_occ_grid.png")
 ```
 
@@ -667,6 +733,3 @@ knitr::include_graphics("data/images/ECSA_oi_compare.png")
 
 
 ### References
-
-        
-

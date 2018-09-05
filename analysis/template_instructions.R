@@ -11,7 +11,7 @@
 ## converts all tags to appropriate R objects. e.g., {COMMON_NAME} == "summer flounder"
 devtools::install_github("NOAA-edab/ECSA")
 library(ecsa)
-create_template(survdat_name = "SUMMER FLOUNDER", overwrite = FALSE)
+create_template(survdat_name = "SUMMER FLOUNDER", overwrite = TRUE, make_interactive = TRUE)
 
 ## or, if you want to generate a series of templates, 
 ## lapply(c("SUMMER FLOUNDER", "ATLANTIC COD", "ATLANTIC HERRING"), create_template, overwrite = TRUE)
