@@ -32,7 +32,7 @@ stock_code <- "sumflo"
 common_name <- "summer flounder"
 cc_name <- "summer-flounder"
 svspp <- "103"
-gg_int <- F
+gg_int <- T
 
 strata_spring <- all_stock_area %>% 
   dplyr::filter(sp == stock_code,
@@ -90,19 +90,18 @@ bs1 <- stock_env(variable = "temperature",type = "bottom",
 surface <- rbind(sf1, ss1)
 bottom <- rbind(bf1, bs1)
 
-all_temp <- rbind(surface, bottom)
 
 xmin <- rbind(min(surface$Time),min(bottom$Time))
 xmin <- min(xmin)
 
 
-all_temp <- all_temp %>% mutate(Var, row = plyr::mapvalues(Var,
-                                                   from = unique(Var),
-                                                             to = c(1,1,2,2))) %>%
-  group_by(row) %>%
-  mutate(maxval = max(Value)) %>%
-  ungroup()
-
+# all_temp <- all_temp %>% mutate(Var, row = plyr::mapvalues(Var,
+#                                                    from = unique(Var),
+#                                                              to = c(1,1,2,2))) %>%
+#   group_by(row) %>%
+#   mutate(maxval = max(Value)) %>%
+#   ungroup()
+all_temp <- rbind(surface, bottom)
 
 facet_names <- list(
   'surface temperature spring'="Spring surface",
@@ -110,22 +109,30 @@ facet_names <- list(
   'bottom temperature spring'="Spring bottom",
   'bottom temperature fall' = "Fall bottom")
 
-ggplot(data = all_temp, aes(x = Time, y = Value)) +
+temp_plt <- ggplot(data = all_temp, aes(x = Time, y = Value)) +
   ylab(expression(paste("Temperature ",degree,"C"))) +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
-  geom_point() +  
-  facet_wrap( ~Var, nrow = 2, labeller = label, scales = "free_y") +
+  {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
+    else geom_point()} +
+  facet_wrap( ~Var, nrow = 2, labeller = label) +
   theme_bw() +
-  theme(#plot.title = element_blank(),
-        strip.background = element_blank()) +
+  theme(strip.background = element_blank()) +
   annotate("text", label = c("","","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+if (gg_int){
+  ggiraph(code = print(temp_plt), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  temp_plt
+  }
 
 ```
 
 ### Data
 ```{r ocean data, echo = F}
+
 
 datatable(all_temp, rownames = FALSE)
 
@@ -165,17 +172,26 @@ facet_names <- list(
   'bottom salinity spring'="Spring bottom",
   'bottom salinity fall' = "Fall bottom")
 
-ggplot(data = all_sal, aes(x = Time, y = Value)) +
+sal_plt <- ggplot(data = all_sal, aes(x = Time, y = Value)) +
   ylab("Salinity (PSU)") +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
-  geom_point() +
-  facet_wrap(Var ~., nrow = 2, labeller = label, scales = "free_y") +
+  {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
+    else geom_point()} +
+  facet_wrap(Var ~., nrow = 2, labeller = label) +
   theme_bw() +
   theme(#plot.title = element_blank(),
         strip.background = element_blank()) +
   annotate("text", label = c("","","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+
+if (gg_int){
+  ggiraph(code = print(sal_plt), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  sal_plt
+  }
 
 ```
 
@@ -207,16 +223,25 @@ facet_names <- list(
   'chlorophyll spring'="Spring",
   'chlorophyll fall'="Fall")
 
-ggplot(data = chl, aes(x = Time, y = Value)) +
+chl_plt <- ggplot(data = chl, aes(x = Time, y = Value)) +
     ylab(expression(paste("Chlorophyll mg m"^"-3"))) +
-    xlab("") +
+    xlab("Year") +
     xlim(xmin, NA) +
     geom_line() +
-    geom_point() +
+    {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
+    else geom_point()}+
     facet_wrap(Season ~., nrow = 1, labeller = label) +
     theme_bw() +
     theme(strip.background = element_blank())+
     annotate("text", label = c("",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+if (gg_int){
+  ggiraph(code = print(chl_plt), width = 0.9,  height_svg = 2.5,
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  chl_plt
+  }
+
 ```
 
 
@@ -271,17 +296,26 @@ facet_names <- list(
   'temora zoo fall' = expression(paste(italic("Pseudocalanus "), "fall")))
 
 
-ggplot(data = zoo, aes(x = Time, y = Value)) +
+zoo_plt <- ggplot(data = zoo, aes(x = Time, y = Value)) +
     ylab(expression(paste("Abundance log num m"^"-3"))) +
-    xlab("") +
+    xlab("Year") +
     xlim(xmin, NA) +
     geom_line() +
-    geom_point() +
-    facet_wrap(Var ~ ., nrow = 3, ncol = 2, labeller = label, scales = "free_y") +
+    {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
+    else geom_point()}+
+    facet_wrap(Var ~ ., nrow = 3, ncol = 2, labeller = label) +
     theme_bw() +
     theme(strip.background = element_blank()) +
     annotate("text", label = c("","","",
                                "","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
+
+if (gg_int){
+  ggiraph(code = print(zoo_plt), width = 0.9, 
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  zoo_plt
+  }
+
 
 ```
 
@@ -292,12 +326,13 @@ datatable(zoo, rownames = FALSE)
 
 ## Probability of occurence and habitat area {.tabset .tabset-fade .tabset-pills}
 
-Probability of occurrence of summer flounder in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
+Probability of occurrence of summer flounder in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/R/prob_occurence.R. Error bars represent the 95% confidence intervals.
 
 Probability of occurrence has been relatively high in recent years in both seasons. 
 
 ### Figures
-```{r trawl-habitat, echo = FALSE, fig.align='center', fig.height=3, warning=F}
+
+```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3}
 
 
 df_survdat_spring <-
@@ -333,9 +368,10 @@ facet_names <- list(
   'fall' = "Fall")
 
 # Make plot
-proc_occ_plt <- ggplot(df_prob_occ, 
+prob_occ_plt <- ggplot(df_prob_occ, 
        aes(x = YEAR, y = p)) +
-  geom_point()+
+  {if(gg_int) geom_point_interactive(aes(tooltip = round(p,3), data_id = YEAR))
+    else geom_point()}+
   geom_errorbar(aes(ymin = p_low, ymax = p_high), 
                 size = 0.3, width = 0.3) +
   geom_line() +
@@ -346,7 +382,12 @@ proc_occ_plt <- ggplot(df_prob_occ,
   facet_wrap(~ SEASON, labeller = label)
 
 
-proc_occ_plt
+if (gg_int){
+  ggiraph(code = print(prob_occ_plt), width = 0.9, height_svg = 2.5,
+         hover_css = "fill:red;r:6pt;")
+  } else {
+  prob_occ_plt
+  }
 
 ```
 
@@ -422,7 +463,7 @@ oh_plt <- ggplot(data = hab, aes(x = Time, y = Value)) +
 
 if (gg_int){
   ggiraph(code = print(plot_grid(oh_plt, op_plt, nrow = 2)), width = 0.9, 
-         hover_css = "fill:red;r:10pt;")
+         hover_css = "fill:red;r:6pt;")
   } else {
   grid.arrange(oh_plt, op_plt, nrow = 2)
   }
