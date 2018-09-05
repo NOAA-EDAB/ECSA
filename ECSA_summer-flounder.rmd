@@ -59,7 +59,7 @@ This report provides contextual ecosystem information for summer flounder (*Para
 Several aspects of the ecosystem seem to be changing in the most recent years. Fall bottom and surface temperature are increasing and salinity is at or near the historical high levels. These physical series may have shifted around 2012, the warmest year on record for this ecosystem. Spring chlorophyll concentrations, a measure of bottom-up ecosystem production in the summer flounder stock area, are variable, but the fall time series is decreasing, especially so over the period 2013-2017. Spring abundances for key zooplankton prey are variable and may be worth examining alongside recruitment patterns. Both probability of occurrence and modeled habitat area show similar patterns of increases from the 1990s to the present, which suggests despite reduced abundance in the past five years, the distribution footprint has not contracted.
 
 ### Strata definition
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for summer flounder (*Paralichthys dentatus*) on the NE Shelf.", message = FALSE, warning = FALSE, fig.align='center'}
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
            fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
