@@ -5,6 +5,8 @@ title: |
 bibliography: ECSA_bibliography.bib
 output:
   html_document:
+    includes:
+      after_body: footer.html
     fig_caption: yes
   pdf_document: default
 always_allow_html: yes
@@ -758,5 +760,3 @@ knitr::include_graphics("data/images/ECSA_oi_compare.png")
 
 
 ### References
-
-_Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._

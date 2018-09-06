@@ -4,9 +4,11 @@ title:
     | Ecosystem Context for Stock Assessments:
     | {{COMMON_NAME}}
 always_allow_html: yes
-output: 
-        html_document:
-                fig_caption: yes
+output:  
+  html_document:
+    includes:
+      after_body: footer.html
+    fig_caption: yes
 bibliography: ECSA_bibliography.bib
 ---
 
