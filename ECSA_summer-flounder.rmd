@@ -62,7 +62,8 @@ Several aspects of the ecosystem seem to be changing in the most recent years. F
 
 
 ### Strata definition
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap=  "Strata map for summer flounder (*Paralichthys dentatus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap="Strata map for summer flounder (*Paralichthys dentatus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
            fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
