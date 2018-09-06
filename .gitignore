@@ -5,4 +5,4 @@
 *.html
 *.pdf
 *.docx
-!footer.html
+!template.html
