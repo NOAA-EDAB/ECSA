@@ -62,7 +62,7 @@ Several aspects of the ecosystem seem to be changing in the most recent years. F
 
 
 ### Strata definition
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap=  for summer flounder (*Paralichthys dentatus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
            fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
@@ -78,7 +78,7 @@ Spring surface and bottom temperatures within the spring summer flounder stock a
 
 ### Figure
 
-```{r ocean temp, echo = F, fig.align='center', warning=F}
+```{r ocean temp, echo = F, fig.align='center', warning=F, fig.cap = "Fall surface and bottom temperature within the fall summer flounder stock areas.  Error bars show &plusmn;1 SD of the observations."}
 sf1 <- stock_env(variable = "temperature",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
 ss1 <- stock_env(variable = "temperature",type = "surface",
@@ -149,7 +149,7 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 Similar to fall temperature, in recent years bottom and surface salinity are at or near historical highs. Shifting salinity conditions in concert with changing temperature suggest the stock area for summer flounder may be impacted by different source water, which may have different nutrient loading supporting primary production.
 
 ### Figures
-```{r ocean sal, echo = F, fig.align='center', warning=F}
+```{r ocean sal, echo = F, fig.align='center', warning=F, fig.cap = "Fall surface and bottom salinity within the fall summer flounder stock areas. Error bars show &plusmn;1 SD of the observations."}
 sf1 <- stock_env(variable = "salinity",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
 ss1 <- stock_env(variable = "salinity",type = "surface",
@@ -219,7 +219,7 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for summer flounder; investigation into the linkages between phytoplankton production and summer flounder may require additional production metrics.
 
 ### Figures
-```{r chl fig, echo = F, fig.align="center", fig.height=3, warning=F}
+```{r chl fig, echo = F, fig.align="center", fig.height=3, warning=F, fig.cap = "Chlorophyll concentrations in the spring and fall summer flounder stock areas. Error bars show &plusmn;1 SD of the observations."}
 
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
@@ -278,7 +278,7 @@ The abundance *C. typicus* and *T. longicornis* increased through the 1980s and 
 
 ### Figures
 
-```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
+```{r zooplankton, echo = F, fig.align="center", warning=F, message=F, fig.cap = "The spring (left) and fall (right) abundance for *C. typicus*, *T. longicornis*, and *Pseudocalanus*. Error bars indicate &plusmn;1 SD of the observations."}
 ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
                  season = "spring", svspp = svspp, mask_type = "unit")
 
@@ -349,7 +349,7 @@ datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
 
 ## Diet composition {.tabset .tabset-fade .tabset-pills}
 
-Trends in diet composition may indicate changes in the habitat for generalist predators, and may have implications for growth and productivity at the population level if the overall energy content of the diet changes. Food habits collected aboard NEFSC bottom trawl surveys in the summer flounder seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show annual and seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). Food habits data for summer flounder have been collected from 1977-present [@smith_trophic_2010].
+Trends in diet composition may indicate changes in the habitat for generalist predators, and may have implications for growth and productivity at the population level if the overall energy content of the diet changes. Food habits collected aboard NEFSC bottom trawl surveys in the summer flounder seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). Food habits data for summer flounder have been collected from 1977-present [@smith_trophic_2010].
 
 Using the criteria above, more of the spring diet composition is captured than the fall or winter, suggesting more diverse diets in those seasons. Diet compositions across seasons and years include "*Loligo*" (recently renamed *Doryteuthis*) squid species as a major component, as well as unidentified bony fish ("other fish" and "osteichthyes" below). Cephalopods in addition to *Loligo* are major components in winter and spring, but not fall. Scombrids, *Scomber scombrus* (Atlantic mackerel), *Clupea harengus* (Atlantic herring), and *Stenotomus chrysops* (scup) are intermittent spring diet components, while *Etrumeus teres* (round herring), Gadids and *Urophycis regia* (spotted hake) appear in fall diets. *Ammodytes* spp. (sandlance) appear in both spring and fall diets, but more consistently in fall.
 
@@ -363,7 +363,7 @@ While trends are difficult to discern in diet components, Gadids only appear in 
 
 
 ### Figures
-```{r diet, eval=T, echo = FALSE, fig.align='center', fig.height=14}
+```{r diet, eval=T, echo = FALSE, fig.align='center', warning = F, fig.cap = "Seasonal weighted diet composition for major summer flounder prey (1977-2016)."}
   
 #df_diet <- get_diet() #hidden output somewhere need to fix, function still broken dont use
 
@@ -414,7 +414,7 @@ datatable(diet, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
 Probability of occurrence of summer flounder in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
 
 ### Figures
-```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3}
+```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3, fig.cap = "Probability of occurrence of summer flounder in NEFSC bottom trawl tows. Error bars represent the 95% confidence intervals."}
 
 
 df_survdat_spring <-
@@ -485,12 +485,12 @@ datatable(df_prob_occ, rownames = FALSE,filter = list(position = 'top', clear = 
 
 ## Occupancy habitat {.tabset .tabset-fade .tabset-pills}
 
-The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy area is shown in the upper plots and the occupancy probability is shown in the lower plots, with spring on the left and fall on the right for all plots.
+The probability of occurrence was also estimated using random forest classification models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy area is shown in the upper plots and the occupancy probability is shown in the lower plots, with spring on the left and fall on the right for all plots.
 
 The occupancy probability has increased in both stock areas and suggest similar trends to the GLM model results above for the overlapping period. The area of the Northeast Shelf with an estimated occurrence probability of 0.5 or greater has increased in both seasons. In spring, the occupancy area have increased from approximately 50,000 km$^2$ to 80,000 km$^2$, noting a decrease in 2017. The fall habitat has increased from approximately 40,000 km$^2$ to 60,000 km$^2$ with no indication of the trend abating.
 
 ### Figures
-```{r rf_occupancy, fig.align="center", echo = F, warning=F}
+```{r rf_occupancy, fig.align="center", echo = F, warning=F, fig.cap = "Probability of occurrence estimated using random forest classification models."}
 o1 <- stock_env(variable = "occupancy prob", season = "spring",
                 svspp = svspp, mask_type = "unit")
 
