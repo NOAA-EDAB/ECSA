@@ -58,6 +58,16 @@ This report provides contextual ecosystem information for summer flounder (*Para
 
 Several aspects of the ecosystem seem to be changing in the most recent years. Fall bottom and surface temperature are increasing and salinity is at or near the historical high levels. These physical series may have shifted around 2012, the warmest year on record for this ecosystem. Spring chlorophyll concentrations, a measure of bottom-up ecosystem production in the summer flounder stock area, are variable, but the fall time series is decreasing, especially so over the period 2013-2017. Spring abundances for key zooplankton prey are variable and may be worth examining alongside recruitment patterns. Both probability of occurrence and modeled habitat area show similar patterns of increases from the 1990s to the present, which suggests despite reduced abundance in the past five years, the distribution footprint has not contracted.
 
+#### Summary
+
+* The environment within the stock area for summer flounder has changed in recent decades as indicated by increasing temperature and salinity. These changes may indicate a shift in ecosystem function and productivity. 
+
+* Change in the ecology of the stock area is supported by the declining trends in both primary (chlorophyll) and secondary (zooplankton) production indicators. In addition to serving as indicators of secondary production, these zooplankton taxa have been observed in the diet of larval summer flounder, hence the recent decline in spring abundance of these taxa may play a role in summer flounder recruitment. 
+
+* Summer flounder diet has changed in recent decades, which may be driven by ecosystem effects on the distribution and availability of forage species. 
+
+* Occupancy habitat models for summer flounder suggest the size of the summer flounder habitat is increasing, which may create a mismatch between the areas used by the species and the stock definition area.
+
 
 ### Strata definition
 
@@ -119,7 +129,7 @@ temp_plt <- ggplot(data = all_temp, aes(x = Time, y = Value)) +
 
 if (gg_int){
   ggiraph(code = print(temp_plt), width = 0.9, 
-         hover_css = "fill:red;r:6pt;")
+         hover_css = "fill:red;r:4pt;")
   } else {
   temp_plt
   }
@@ -192,7 +202,7 @@ sal_plt <- ggplot(data = all_sal, aes(x = Time, y = Value)) +
 
 if (gg_int){
   ggiraph(code = print(sal_plt), width = 0.9, 
-         hover_css = "fill:red;r:6pt;")
+         hover_css = "fill:red;r:4pt;")
   } else {
   sal_plt
   }
@@ -248,7 +258,7 @@ chl_plt <- ggplot(data = chl, aes(x = Time, y = Value)) +
 
 if (gg_int){
   ggiraph(code = print(chl_plt), width = 0.9,  height_svg = 2.5,
-         hover_css = "fill:red;r:6pt;")
+         hover_css = "fill:red;r:4pt;")
   } else {
   chl_plt
   }
@@ -328,7 +338,7 @@ zoo_plt <- ggplot(data = zoo, aes(x = Time, y = Value)) +
 
 if (gg_int){
   ggiraph(code = print(zoo_plt), width = 0.9, 
-         hover_css = "fill:red;r:6pt;")
+         hover_css = "fill:red;r:4pt;")
   } else {
   zoo_plt
   }
@@ -469,7 +479,7 @@ prob_occ_plt <- ggplot(df_prob_occ,
 
 if (gg_int){
   ggiraph(code = print(prob_occ_plt), width = 0.9, height_svg = 2.5,
-         hover_css = "fill:red;r:6pt;")
+         hover_css = "fill:red;r:4pt;")
   } else {
   prob_occ_plt
   }
@@ -552,7 +562,7 @@ oh_plt <- ggplot(data = hab, aes(x = Time, y = Value)) +
 
 if (gg_int){
   ggiraph(code = print(plot_grid(oh_plt, op_plt, nrow = 2)), width = 0.9, 
-         hover_css = "fill:red;r:6pt;")
+         hover_css = "fill:red;r:4pt;")
   } else {
   grid.arrange(oh_plt, op_plt, nrow = 2)
   }
@@ -568,12 +578,6 @@ datatable(occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
   scrollY = 200,
   scroller = TRUE))
 ```
-
-
-## Summary
-
-The environment within the stock area for summer flounder has changed in recent decades as indicated by increasing temperature and salinity. In addition to their direct effects on the growth and reproduction of summer flounder, these changes may indicate a shift in ecosystem function and productivity. Change in the ecology of the stock area is supported by the declining trends in both primary (chlorophyll) and secondary (zooplankton) production indicators. In addition to serving as indicators of secondary production, these zooplankton taxa have been observed in the diet of larval summer flounder, hence the recent decline in spring abundance of these taxa may play a role in summer flounder recruitment. Summer flounder diet has changed in recent decades, which may be driven by ecosystem effects on the distribution and availability of forage species. Occupancy habitat models for summer flounder suggest the size of the summer flounder habitat is increasing, which may create a mismatch between the areas used by the species and the stock definition area.
-
 
 ## Methods {#sec:methods}
 
