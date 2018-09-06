@@ -157,7 +157,7 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
 
   if (variable != "occupancy hab"){
     #create null df to fill with results
-    data = data.frame(array(NA,dim= c(raster::nlayers(ecsa_dat),4)))
+    data = data.frame(array(NA,dim= c(raster::nlayers(ecsa_dat),5)))
     
     #loops through layers in raster brick
     for(i in 1:raster::nlayers(ecsa_dat)){
@@ -175,13 +175,24 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
       
       #find mean BT of stock area
       data[i,4] = raster::cellStats(masked.raster, stat='mean', na.rm=TRUE)
+      data[i,5] = raster::cellStats(masked.raster, stat = 'sd', na.rm=TRUE)
+      # 
+      # if (layer_id[[1]][[1]] == "1995"){
+      #   break
+      # }
     }
-    x <- data$X1
+    x <- as.numeric(data$X1)
     y.out <- data$X4
+    y.sd <- data$X5
     
+    sd.low <- y.out - y.sd
+    sd.high <- y.out + y.sd
+  
   } else {
     
     x <- data$Year
+    sd.low <- NA
+    sd.high <- NA
     if (season == "spring"){
       y.out <- data$spring
     } else if (season == "fall"){
@@ -189,18 +200,21 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
     }
     
   }
-  
-  
 
-    
     # remove 
     if (variable == "zooplankton"){
       if (season == "spring"){
         y.out[x %in% c(1989, 1990, 1991, 1994)] <- NA
-      } else if (season == "fall")
+        sd.low[x %in% c(1989, 1990, 1991, 1994)] <- NA
+        sd.high[x %in% c(1989, 1990, 1991, 1994)] <- NA
+      } else if (season == "fall") {
         y.out[x %in% c(1989, 1990, 1992)] <- NA
+        sd.low[x %in% c(1989, 1990, 1992)] <- NA
+        sd.high[x %in% c(1989, 1990, 1992)] <- NA
+      }
     }
-      
+  
+
   #plot------------------------------------------------------------------------------------
   if (plt){
     par(mar=c(5, 5, 4, 1))
@@ -245,17 +259,20 @@ stock_env <- function(variable, type = NULL, season, genus = NULL,
   }
   
   
+
+  
   if(variable == "chlorophyll"){
     type <- ""
   } else if (variable == "zooplankton"){
       type <- genus
       variable <- "zoo"
-  }
-  
+  } 
   
   out <- data.frame(Var = paste(paste(type,variable),season),
                     Time = as.numeric(x),
                     Value = y.out,
+                    sd.low = sd.low,
+                    sd.high = sd.high,
                     Species = svspp,
                     Season = season,
                     Stock_type = mask_type)
