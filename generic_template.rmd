@@ -3,11 +3,11 @@ title:
     | 
     | Ecosystem Context for Stock Assessments:
     | {{COMMON_NAME}}
+date: "`r format(Sys.time(), '%B %d, %Y')`"
 always_allow_html: yes
 output:  
   html_document:
-    includes:
-      after_body: footer.html
+    template: template.html
     fig_caption: yes
 bibliography: ECSA_bibliography.bib
 ---
