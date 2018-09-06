@@ -376,22 +376,26 @@ dietmain <- diet %>%
     dplyr::group_by(season, prey) %>%
     dplyr::filter(relmsw>0.01) %>%
     dplyr::filter(mean(relmsw)>10.0)
+    
   
-# compplot2 <- ggplot(dietmain, aes(year, relmsw)) + 
-#     geom_bar(stat="identity")
-#   
-# compplot2 + facet_wrap(season ~ prey, nrow=10) + theme(legend.position="none")
+facet_names <- list(
+  'FALL' = "Fall",
+  'SPRING' = "Spring",
+  'SUMMER'='Summer',
+  'WINTER'="Winter")
   
 compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
     #geom_bar(stat = "identity", aes(fill=fillwhite)) 
     ylab("Percent in Diet") +
     xlab("Year") +
     #geom_bar(stat = "identity") +
-    facet_wrap("season", nrow=3) +
+    facet_wrap(season~., nrow=3, labeller = label) +
     theme_bw() + 
     viridis::scale_fill_viridis(discrete = TRUE) +
     theme(legend.position="bottom", 
-          legend.text=element_text(size=5))
+          legend.text=element_text(size=5),
+          strip.background = element_blank())
+
 
 compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
 
