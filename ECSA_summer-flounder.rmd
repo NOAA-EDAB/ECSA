@@ -1,15 +1,15 @@
 ---
-title: |
-  | Ecosystem Context for Stock Assessments:
-  | Summer Flounder
-bibliography: ECSA_bibliography.bib
-output:
-  html_document:
-    includes:
-      after_body: footer.html
-    fig_caption: yes
-  pdf_document: default
+title:
+    | 
+    | Ecosystem Context for Stock Assessments:
+    | Summer Flounder
 always_allow_html: yes
+output: 
+        html_document:
+          includes:
+            after_body: footer.html
+          fig_caption: yes
+bibliography: ECSA_bibliography.bib
 ---
 
 ```{r setup, include = FALSE}
@@ -34,7 +34,7 @@ stock_code <- "sumflo"
 common_name <- "summer flounder"
 cc_name <- "summer-flounder"
 svspp <- "103"
-gg_int <- T
+gg_int <- as.logical("TRUE")
 
 strata_spring <- all_stock_area %>% 
   dplyr::filter(sp == stock_code,
@@ -60,8 +60,9 @@ This report provides contextual ecosystem information for summer flounder (*Para
 
 Several aspects of the ecosystem seem to be changing in the most recent years. Fall bottom and surface temperature are increasing and salinity is at or near the historical high levels. These physical series may have shifted around 2012, the warmest year on record for this ecosystem. Spring chlorophyll concentrations, a measure of bottom-up ecosystem production in the summer flounder stock area, are variable, but the fall time series is decreasing, especially so over the period 2013-2017. Spring abundances for key zooplankton prey are variable and may be worth examining alongside recruitment patterns. Both probability of occurrence and modeled habitat area show similar patterns of increases from the 1990s to the present, which suggests despite reduced abundance in the past five years, the distribution footprint has not contracted.
 
+
 ### Strata definition
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for summer flounder (*Paralichthys dentatus*) on the NE Shelf.", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map ...", message = FALSE, warning = FALSE, fig.align='center'}
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
            fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
@@ -71,10 +72,9 @@ map_strata(common_name = common_name, spring_strata = spring_strata,
 
 
 ## Surface and bottom temperature {.tabset .tabset-fade .tabset-pills}
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring summer flounder stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall summer flounder stock areas are shown in the upper and lower right figures. Error bars show +/- 1 SD.
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring summer flounder stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall summer flounder stock areas are shown in the upper and lower right figures.
-
-Spring surface and bottom temperatures within the spring summer flounder stock areas vary over an approximate range of 3°C. It is difficult to see a clear trend in the spring data, however, the fall surface and bottom temperatures (upper and lower right figures) are clearly increasing, especially over the most recent decade. It is worth noting that in 2012, the warmest year on record on the Northeast Shelf, those warm condition are evident in the spring but not in the fall where the warmest conditions were recorded with the last two years.
+Spring surface and bottom temperatures within the spring summer flounder stock areas vary over an approximate range of 3°C. It is difficult to see a clear trend in the spring data, however, the fall surface and bottom temperatures (upper and lower right figures) are clearly increasing, especially over the most recent decade. It is worth noting that in 2012, the warmest year on record on the Northeast Shelf, those warm condition are evident in the spring but not in the fall where the warmest conditions were recorded with the last two years. Marine organisms have thermal tolerances and optima that define in which habitats they can grow and reproduce. The warming conditions within the stock area for summer flounder is likely changing its use of habitats both within and outside the stock area.
 
 ### Figure
 
@@ -96,13 +96,6 @@ bottom <- rbind(bf1, bs1)
 xmin <- rbind(min(surface$Time),min(bottom$Time))
 xmin <- min(xmin)
 
-
-# all_temp <- all_temp %>% mutate(Var, row = plyr::mapvalues(Var,
-#                                                    from = unique(Var),
-#                                                              to = c(1,1,2,2))) %>%
-#   group_by(row) %>%
-#   mutate(maxval = max(Value)) %>%
-#   ungroup()
 all_temp <- rbind(surface, bottom)
 
 facet_names <- list(
@@ -116,9 +109,11 @@ temp_plt <- ggplot(data = all_temp, aes(x = Time, y = Value)) +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
+  geom_errorbar(aes(ymin = sd.low, ymax = sd.high), 
+              size = 0.3, width = 0.3) +
   {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
     else geom_point()} +
-  facet_wrap( ~Var, nrow = 2, labeller = label) +
+  facet_wrap( ~Var, nrow = 2, labeller = label, scales = "free_y") +
   theme_bw() +
   theme(strip.background = element_blank()) +
   annotate("text", label = c("","","",""), x = xmin, y = Inf, vjust = 1.5, size = 5)
@@ -133,19 +128,25 @@ if (gg_int){
 ```
 
 ### Data
+
 ```{r ocean data, echo = F}
 
 
-datatable(all_temp, rownames = FALSE)
+datatable(all_temp, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
 
 ```
 
+
 ## Surface and bottom salinity {.tabset .tabset-fade .tabset-pills}
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring summer flounder stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall summer flounder stock areas are shown in the upper and lower right figures. 
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring summer flounder stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall summer flounder stock areas are shown in the upper and lower right figures. Error bars show +/- 1 SD.
 
-Similar to fall temperature, in recent years bottom and surface salinity are at or near historical highs.
-
+Similar to fall temperature, in recent years bottom and surface salinity are at or near historical highs. Shifting salinity conditions in concert with changing temperature suggest the stock area for summer flounder may be impacted by different source water, which may have different nutrient loading supporting primary production.
 
 ### Figures
 ```{r ocean sal, echo = F, fig.align='center', warning=F}
@@ -179,6 +180,8 @@ sal_plt <- ggplot(data = all_sal, aes(x = Time, y = Value)) +
   xlab("Year") +
   xlim(xmin, NA) +
   geom_line() +
+  geom_errorbar(aes(ymin = sd.low, ymax = sd.high), 
+              size = 0.3, width = 0.3) +
   {if(gg_int) geom_point_interactive(aes(tooltip = Value, data_id = Time))
     else geom_point()} +
   facet_wrap(Var ~., nrow = 2, labeller = label) +
@@ -200,15 +203,20 @@ if (gg_int){
 ### Data
 ```{r sal data, echo = F}
 
-datatable(all_sal, rownames = FALSE)
+datatable(all_sal, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
 
 ```
 
 ## Chlorophyll concentration {.tabset .tabset-fade .tabset-pills}
 
-The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#sec:methodschl)). Chlorophyll concentrations in the spring and fall summer flounder stock areas are shown in the left and right figures. The time series of spring chlorophyll concentration may have impacts on recruitment and growth of the stock, while fall chlorophyll values may affect overwintering nutrition. 
+The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#sec:methodschl)). Chlorophyll concentrations in the spring and fall summer flounder stock areas are shown in the left and right figures, and error bars show +/- 1 SD. The time series of spring chlorophyll concentration may have impacts on recruitment and growth of the stock, while fall chlorophyll values may affect overwintering nutrition.
 
-The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for summer flounder; investigation into the linkages between phytoplankton production and summer flounder may require additional production metrics. 
+The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for summer flounder; investigation into the linkages between phytoplankton production and summer flounder may require additional production metrics.
 
 ### Figures
 ```{r chl fig, echo = F, fig.align="center", fig.height=3, warning=F}
@@ -230,6 +238,8 @@ chl_plt <- ggplot(data = chl, aes(x = Time, y = Value)) +
     xlab("Year") +
     xlim(xmin, NA) +
     geom_line() +
+    geom_errorbar(aes(ymin = sd.low, ymax = sd.high), 
+                size = 0.3, width = 0.3) +
     {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
     else geom_point()}+
     facet_wrap(Season ~., nrow = 1, labeller = label) +
@@ -251,16 +261,18 @@ if (gg_int){
 ```{r chl data, echo = F}
 
 
-datatable(chl, rownames = FALSE)
+datatable(chl, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
 
 ```
 
 ## Zooplankton abundance {.tabset .tabset-fade .tabset-pills}
 
-The primary zooplankton species identified in the diet of summer flounder larvae are <!--{{Z1long}}, {{Z2long}}, and {{Z3long}} ({{Zref}})-->*Centropages typicus* (CTYP), *Temora longicornis* (TLONG), and *Pseudocalanus* spp. (PSEUDO) (Grover 1998). The abundance of these taxa within the respective seasonal stock areas for spring and fall depicted below (see [methods](#sec:methodszoo)). It is assumed that the <!--{{larvalseason}}-->spring abundances of these taxa would be most relevant to the growth and survival of larval summer flounder. Note that the abundance estimates are based on data that are spatially smoothed within year by first kriging the observational data before the abundances are extracted for the stock area. The spring abundance for <!--{{Z1}}, {{Z2}}, and {{Z3}}-->*C. typicus*, *T. longicornis*, and *Pseudocalanus* are shown in the plots on left, top to bottom, respectively. 
-
-The abundance *C. typicus* and *T. longicornis* increased through the 1980s and 1990s before declining over the most recent decades noting that the last few years suggest higher abundances. *Pseudocalanus*, on the other hand, remained at a high abundance level until the year 2001, when it abundance declined and in some years dramatically so. It should also be noted that the larval stomach content data from Glover (1998) would be condition on pre-2000 samples. The fall abundance of these taxa have all declined in spring; precipitously for *Pseudocalanus*. Though the fall time frame would be past the larval feeding period, the changes in zooplankton abundance may be an indication of changes in the food web in the fall that might impact the success of young of the year and feeding and condition of adults.
-
+The primary zooplankton species identified in the diet of summer flounder larvae are <!--{{Z1long}}, {{Z2long}}, and {{Z3long}} ({{Zref}})-->*Centropages typicus* (CTYP), *Temora longicornis* (TLONG), and *Pseudocalanus* spp. (PSEUDO) (Grover 1998). The abundance of these taxa within the respective seasonal stock areas for spring and fall are depicted below (see [methods](#sec:methodszoo)). It is assumed that the <!--{{larvalseason}}-->spring abundances of these taxa would be most relevant to the growth and survival of larval summer flounder. Note that the abundance estimates are based on data that are spatially smoothed within year by first kriging the observational data before the abundances are extracted for the stock area. The spring abundance for <!--{{Z1}}, {{Z2}}, and {{Z3}}-->*C. typicus*, *T. longicornis*, and *Pseudocalanus* are shown in the plots on left, top to bottom, respectively. Error bars indicate +/- 1 SD.
 
 ### Figures
 
@@ -303,9 +315,11 @@ zoo_plt <- ggplot(data = zoo, aes(x = Time, y = Value)) +
     xlab("Year") +
     xlim(xmin, NA) +
     geom_line() +
+    geom_errorbar(aes(ymin = sd.low, ymax = sd.high), 
+                size = 0.3, width = 0.3) +
     {if(gg_int) geom_point_interactive(aes(tooltip = round(Value,3), data_id = Time))
     else geom_point()}+
-    facet_wrap(Var ~ ., nrow = 3, ncol = 2, labeller = label) +
+    facet_wrap(Var ~ ., nrow = 3, ncol = 2, labeller = label, scales = "free_y") +
     theme_bw() +
     theme(strip.background = element_blank()) +
     annotate("text", label = c("","","",
@@ -323,17 +337,81 @@ if (gg_int){
 
 ### Data
 ```{r zoo data, echo = F}
-datatable(zoo, rownames = FALSE)
+datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
+```
+
+## Diet composition {.tabset .tabset-fade .tabset-pills}
+
+Trends in diet composition may indicate changes in the habitat for generalist predators, and may have implications for growth and productivity at the population level if the overall energy content of the diet changes.  Food habits collected aboard NEFSC bottom trawl surveys in the summer flounder seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show annual and seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). Food habits data for summer flounder have been collected from 1977-present [@smith_trophic_2010].
+
+Using the criteria above, more of the spring diet composition is captured than the fall or winter, suggesting more diverse diets in those seasons. Diet compositions across seasons and years include "*Loligo*" (recently renamed *Doryteuthis*) squid species as a major component, as well as unidentified bony fish ("other fish" and "osteichthyes" below). Cephalopods in addition to *Loligo* are major components in winter and spring, but not fall. Scombrids, *Scomber scombrus* (Atlantic mackerel), *Clupea harengus* (Atlantic herring), and *Stenotomus chrysops* (scup) are intermittent spring diet components, while *Etrumeus teres* (round herring), Gadids and *Urophycis regia* (spotted hake) appear in fall diets. *Ammodytes* sp. (sandlance) appear in both spring and fall diets, but more consistently in fall.
+
+While trends are difficult to discern in diet components, Gadids only appear in fall diets since 2008 and may be increasing, while spotted hake proportions may be decreasing over the same period. Similarly, the proportion of scup in spring diets may be decreasing since 2010. Full seasonal diet compositions with numbers of stomachs and survey stations are part of the diet dataset for analysis but not visualized in this summary.
+
+
+```{r dietdat, eval=F, echo = FALSE}
+#summer flounder stomachs are collected XXX size strata. Over XX summer flounder stomachs have been collected to date from over XXX survey tows. Predator length ranged in size from X to X cm.
+#[add: number+hauls sampled and length comp of sampled summer flounder in each time block below]
+```
+
+
+### Figures
+```{r diet, eval=T, echo = FALSE, fig.align='center', fig.height=14}
+  
+#df_diet <- get_diet() #hidden output somewhere need to fix, function still broken dont use
+
+load("data/df_diet.RData")
+
+diet <- df_diet %>%
+  dplyr::select(year, season, prey, relmsw, nstom, num_tows)
+  
+dietmain <- diet %>%
+    dplyr::group_by(season, prey) %>%
+    dplyr::filter(relmsw>0.01) %>%
+    dplyr::filter(mean(relmsw)>10.0)
+  
+# compplot2 <- ggplot(dietmain, aes(year, relmsw)) + 
+#     geom_bar(stat="identity")
+#   
+# compplot2 + facet_wrap(season ~ prey, nrow=10) + theme(legend.position="none")
+  
+compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
+    #geom_bar(stat = "identity", aes(fill=fillwhite)) 
+    ylab("Percent in Diet") +
+    xlab("Year") +
+    #geom_bar(stat = "identity") +
+    facet_wrap("season", nrow=3) +
+    theme_bw() + 
+    viridis::scale_fill_viridis(discrete = TRUE) +
+    theme(legend.position="bottom", 
+          legend.text=element_text(size=5))
+
+compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
+
+ggiraph(code = print(compi), height=14)
+
+```
+
+### Data
+```{r diet data, echo = F}
+datatable(diet, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
 ```
 
 ## Probability of occurence and habitat area {.tabset .tabset-fade .tabset-pills}
 
-Probability of occurrence of summer flounder in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/R/prob_occurence.R. Error bars represent the 95% confidence intervals.
-
-Probability of occurrence has been relatively high in recent years in both seasons. 
+Probability of occurrence of summer flounder in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
 
 ### Figures
-
 ```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3}
 
 
@@ -395,15 +473,17 @@ if (gg_int){
 
 ### Data
 ```{r prob data, echo = F}
-datatable(df_prob_occ, rownames = FALSE)
+datatable(df_prob_occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
 ```
 
 ## Occupancy habitat {.tabset .tabset-fade .tabset-pills}
 
-The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the upper plots and the occupancy area is shown in the lower plots, with spring on the left and fall on the right for all plots.
-
-The occupancy probability has increased in both stock areas (see upper plots) and suggest similar trends to the GLM model results above for the overlapping period. The area of the Northeast Shelf with an estimated occurrence probability of 0.5 or greater has increased in both seasons. In spring, the occupancy area have increased from approximately 50,000 km$^2$ to 80,000 km$^2$, noting a decrease in 2017 (lower left plot). The fall habitat has increased from approximately 40,000 km$^2$ to 60,000 km$^2$ with no indication of the trend abating (lower right plot).
-
+The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy area is shown in the upper plots and the occupancy probability is shown in the lower plots, with spring on the left and fall on the right for all plots.
 
 ### Figures
 ```{r rf_occupancy, fig.align="center", echo = F, warning=F}
@@ -474,64 +554,19 @@ if (gg_int){
 ### Data
 ```{r prob data2, echo = F}
 occ <- rbind(prob, hab)
-datatable(occ, rownames = FALSE)
-```
-
-## Diet composition {.tabset .tabset-fade .tabset-pills}
-
-Food habits collected aboard NEFSC bottom trawl surveys in the summer flounder seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show annual and seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). Food habits data for summer flounder have been collected from 1977-present [@smith_trophic_2010]. 
-
-Using the criteria above, more of the spring diet composition is captured than the fall or winter, suggesting more diverse diets in those seasons. Diet compositions across seasons and years include "*Loligo*" (recently renamed *Doryteuthis*) squid species as a major component, as well as unidentified bony fish ("other fish" and "osteichthies" below). Cephalopods in addition to *Loligo* are major components in winter and spring, but not fall. Scombrids, *Scomber scombrus* (Atlantic mackerel),  *Clupea hargengus* (Atlantic herring), and *Stenotomus chrysops* (scup) are intermittent spring diet components, while *Etrumeus teres* (round herring), Gadids and *Urophycis regia* (spotted hake) appear in fall diets. *Ammodytes* sp. (sandlance) appear in both spring and fall diets, but more consistently in fall.
-
-While trends are difficult to discern in diet components, Gadids only appear in fall diets in 2008 and may be increasing, while spotted hake proportions may be decreasing over the same period. Similarly, the proportion of scup in spring diets may be decreasing since 2010. Full seasonal diet compositions with numbers of stomachs and survey stations are part of the diet dataset for analysis but not visualized in this summary.
-
-```{r dietdat, eval=F, echo = FALSE}
-#summer flounder stomachs are collected XXX size strata. Over XX summer flounder stomachs have been collected to date from over XXX survey tows. Predator length ranged in size from X to X cm.
-#[add: number+hauls sampled and length comp of sampled summer flounder in each time block below]
+datatable(occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
 ```
 
 
-### Figures
-```{r diet, eval=T, echo = FALSE, fig.align='center', fig.height=14}
-  
-#df_diet <- get_diet() #hidden output somewhere need to fix, function still broken dont use
+## Summary
 
-load("data/df_diet.RData")
+The environment within the stock area for summer flounder has changed in recent decades as indicated by increasing temperature and salinity. In addition to their direct effects on the growth and reproduction of summer flounder, these changes may indicate a shift in ecosystem function and productivity. Change in the ecology of the stock area is supported by the declining trends in both primary (chlorophyll) and secondary (zooplankton) production indicators. In addition to serving as indicators of secondary production, these zooplankton taxa have been observed in the diet of larval summer flounder, hence the recent decline in spring abundance of these taxa may play a role in summer flounder recruitment. Summer flounder diet has changed in recent decades, which may be driven by ecosystem effects on the distribution and availability of forage species. Occupancy habitat models for summer flounder suggest the size of the summer flounder habitat is increasing, which may create a mismatch between the areas used by the species and the stock definition area.
 
-diet <- df_diet %>%
-  dplyr::select(year, season, prey, relmsw, nstom, num_tows)
-  
-dietmain <- diet %>%
-    dplyr::group_by(season, prey) %>%
-    dplyr::filter(relmsw>0.01) %>%
-    dplyr::filter(mean(relmsw)>10.0)
-  
-# compplot2 <- ggplot(dietmain, aes(year, relmsw)) + 
-#     geom_bar(stat="identity")
-#   
-# compplot2 + facet_wrap(season ~ prey, nrow=10) + theme(legend.position="none")
-  
-compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
-    #geom_bar(stat = "identity", aes(fill=fillwhite)) 
-    ylab("Percent in Diet") +
-    xlab("Year") +
-    #geom_bar(stat = "identity") +
-    facet_wrap("season", nrow=3) +
-    theme_bw() + 
-    viridis::scale_fill_viridis(discrete = TRUE) +
-    theme(legend.position="bottom", 
-          legend.text=element_text(size=5))
-
-compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
-
-ggiraph(code = print(compi), height=14)
-
-```
-
-### Data
-```{r diet data, echo = F}
-datatable(diet, rownames = FALSE)
-```
 
 ## Methods {#sec:methods}
 
@@ -558,7 +593,8 @@ knitr::include_graphics('data/images/ECSA_study_area.jpg')
 ```
 
 ### Chlorophyll data {#sec:methodschl}
-Chlorophyll a concentration ([Chl]) data extracted from satellite remote-sensing databases based on measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors. We used the Garver, Siegel, Maritorena Model (GSM) merged data product at 100 km (equivalent to a 1° grid) and 8-day spatial and temporal resolutions, respectively, obtained from the Hermes GlobColour website (hermes.acri.fr/index.php). These four sensors provide an overlapping time series of [Chl] during the period 1997 to 2018 and were combined based on a bio-optical model inversion algorithm (Maritorena et al. 2010).  
+Chlorophyll a concentration ([Chl]) data extracted from satellite remote-sensing databases based on measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors. We used the Garver, Siegel, Maritorena Model (GSM) merged data product at 100 km (equivalent to a 1° grid) and 8-day spatial and temporal resolutions, respectively, obtained from the 
+[Hermes GlobColour website](www.hermes.acri.fr/index.php). These four sensors provide an overlapping time series of [Chl] during the period 1997 to 2018 and were combined based on a bio-optical model inversion algorithm (Maritorena et al. 2010).  
 
 ### Zooplankton abundance {#sec:methodszoo}
 Zooplankton abundance is measured by the Ecosystem Monitoring Program (EcoMon), which conducts shelf-wide bimonthly surveys of the NES ecosystem [@Kane2007]. Zooplankton and ichthyoplankton are collected throughout the water column to a maximum depth of 200 m using paired 61-cm Bongo samplers equipped with 333-micron mesh nets. Sample location in this survey is based on a randomized strata design, with strata defined by bathymetry and along-shelf location. Plankton taxa are sorted and identified. We used the bio-volume of the 18 most abundant taxonomic categories as potential predictor variables [(Table 2)](#fig:habitatdesc). The zooplankton sample time series has some missing values, which necessitated the removal of spring data for the years 1989, 1990, 1991, and 1994 and fall data for the years 1989, 1990, and 1992. The data for each seasonal time frame was interpolated to a complete field over the estimation grid using ordinary kriging. 
@@ -630,7 +666,7 @@ Habitat descriptors are a series of static variables that reflect the shape and 
 Zooplankton abundance is measured by the Ecosystem Monitoring Program (EcoMon), which conducts shelf-wide bimonthly surveys of the NES ecosystem [@Kane2007]. Zooplankton and ichthyoplankton are collected throughout the water column to a maximum depth of 200 m using paired 61-cm Bongo samplers equipped with 333-micron mesh nets. Sample location in this survey is based on a randomized strata design, with strata defined by bathymetry and along-shelf location. Plankton taxa are sorted and identified. We used the bio-volume of the 18 most abundant taxonomic categories as potential predictor variables [(Table 2)](#fig:habitatdesc). The zooplankton sample time series has some missing values which were ameliorated by summing data over five-year time steps for each seasonal time frame and interpolating a complete field using ordinary kriging. Thus, for example, the data for spring 2000 would include the available data from 1998-2002 tows. 
 
 #### Remote Sensing Data
-Chlorophyll concentration and SST from remote sensing sources were applied in the habitat models as static variables. Chlorophyll and SST were summarized as monthly means with their associated gradient magnitude or frontal fields. The basis for the chlorophyll concentration was measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data is a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm obtained from the [Hermes GlobColour website](hermes.acri.fr/index.php). 
+Chlorophyll concentration and SST from remote sensing sources were applied in the habitat models as static variables. Chlorophyll and SST were summarized as monthly means with their associated gradient magnitude or frontal fields. The basis for the chlorophyll concentration was measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data is a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm obtained from the [Hermes GlobColour website](www.hermes.acri.fr/index.php). 
 
 These four sensors provide an overlapping time series of chlorophyll concentration during the period and were combined based on a bio-optical model inversion algorithm (Maritorena et al. 2010). Monthly SST fields were based on data from the MODIS Terra sensor data available from the [Ocean Color Website](http://oceancolor.gsfc.nasa.gov/cms/). From these data, mean monthly fields were generated for both chlorophyll and SST. There are a range of methods used to identify fronts [@Belkin2009] in oceanographic data that usually apply some focal filter to reduce noise and identify gradient magnitude with a Sobel filter. These calculations were done in R using the raster package [@raster, version 2.6-7] using a 3 by 3 mean focal filter and a Sobel filter to generate x and y derivatives, which are then used to calculate gradient magnitude. 
 
