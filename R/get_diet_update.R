@@ -1,7 +1,7 @@
 library(dplyr)
 library(tidyr)
 # library(reshape2)
-# library(data.table)
+library(data.table)
 # library(ggplot2)
 # library(ggiraph)
 # library(profvis)
@@ -70,7 +70,7 @@ species_code <- 103
   winter_strata <- seasonal_strata$stratum[seasonal_strata$season == 'WINTER']
   
   ## Filter out only good stomachs for strata and species
-  allsum_raw <- allfh %>%
+  allsum <- allfh %>%
     dplyr::filter(pynam != 'BLOWN', 
                   pynam != 'PRESERVED',
                   pynam != ' ',
@@ -153,8 +153,8 @@ species_code <- 103
   # allfh1$pyamt <- allfh1$pyamtw
   
   ## Select and rename the appropriate columns
-  allsum_strat <- allsum_raw %>% 
-    # allfh2 <- allsum %>% 
+  # allsum_strat <- allsum_raw %>% 
+  allfh2 <- allsum %>%
     dplyr::select(cruise6, stratum, station, 
                   year,
                   season,
@@ -167,17 +167,17 @@ species_code <- 103
                   stratum_area)
   
   ## Group into seasonal length-class and remove NAs
-  num_strat <- allsum_strat %>%
-    # allfh <- allfh2 %>%
-    # group_by(cruise6, 
-    #          station, 
-    #          year,
-    #          season, 
-    #          svspp, 
-    #          pdid, 
-    #          pdsex, 
-    #          pdlen) %>%
-    # dplyr::summarise(xxxx = n()) %>%
+  # num_strat <- allsum_strat %>%
+    allfh <- allfh2 %>%
+    group_by(cruise6,
+             station,
+             year,
+             season,
+             svspp,
+             pdid,
+             pdsex,
+             pdlen) %>%
+    dplyr::summarise(xxxx = n()) %>%
     group_by(cruise6,
              station, 
              year,
@@ -186,7 +186,7 @@ species_code <- 103
              pdsex, 
              pdlen) %>%
     dplyr::summarise(numlen2 = n()) %>%
-    left_join(allsum_strat,  by = c("cruise6", "station", "year",
+    left_join(allfh2,  by = c("cruise6", "station", "year",
                               "season", "svspp", "pdsex", "pdlen")) %>% 
     mutate(numlen_fin = dplyr::case_when(numlen < numlen2 ~ numlen2,
                                          numlen >= numlen2 ~ numlen,
@@ -198,8 +198,8 @@ species_code <- 103
                     catnum, tot_catnum_stratum, tot_catwgt_stratum,
                     tot_tows_spp_stratum, stratum_area, numlen, numlen_fin))
 
-  # allfh2 <- allfh %>%
-  sum_strat <- num_strat %>%
+  allfh2 <- allfh %>%
+  # sum_strat <- num_strat %>%
     group_by(cruise6,
              station, 
              year, 
@@ -217,7 +217,7 @@ species_code <- 103
              svspp, 
              pdlen) %>%
     dplyr::summarise(rnumlen_fin = sum(numlen_fin, na.rm = TRUE)) %>%
-    left_join(num_strat, by = c("cruise6", "station", "year", "season", "svspp", "pdlen")) %>% 
+    left_join(allfh, by = c("cruise6", "station", "year", "season", "svspp", "pdlen")) %>% 
     dplyr::mutate(rnumlen_fin = ifelse(svspp !=13 | svspp !=15, 
                                        numlen_fin, 
                                        rnumlen_fin)) %>%
@@ -232,8 +232,8 @@ species_code <- 103
     na.omit()
   
   
-  # allfh <- allfh2 %>% 
-  sum_catnum <- sum_strat %>% 
+  allfh <- allfh2 %>%
+  # sum_catnum <- sum_strat %>% 
     group_by(cruise6,
              station, 
              year,
@@ -241,13 +241,13 @@ species_code <- 103
              svspp) %>%
     dplyr::summarise(rcatnum = sum(catnum, na.rm = TRUE)) %>%
     na.omit() %>%
-    left_join(num_strat,  by = c("cruise6", "station", "year", "season", "svspp")) %>% 
+    left_join(allfh,  by = c("cruise6", "station", "year", "season", "svspp")) %>% 
     mutate(rcatnum = ifelse(svspp != 13 | svspp != 15, 
                             catnum, 
                             rcatnum))
   
-  # allfh_catstratum <- allfh %>%
-  sum_catstratum <- sum_catnum %>%
+  allfh_catstratum <- allfh %>%
+  # sum_catstratum <- sum_catnum %>%
     group_by(cruise6, stratum, 
              year,
              season, 
@@ -261,8 +261,8 @@ species_code <- 103
   
   ####################################################################################################################################
   
-  # max_tot_tows_spp_stratum <- allfh_catstratum %>% 
-  max_tot_tows_spp_stratum <- sum_catstratum %>% 
+  max_tot_tows_spp_stratum <- allfh_catstratum %>%
+  # max_tot_tows_spp_stratum <- sum_catstratum %>% 
     group_by(cruise6, 
              stratum, 
              year,
@@ -270,8 +270,8 @@ species_code <- 103
              svspp) %>% 
     dplyr::summarise(tot_tows_spp_stratum = max(tot_tows_spp_stratum, na.rm = TRUE))
 
-  # allfh_rcatstratum <- allfh_catstratum %>%
-  sum_rcatstratum <- sum_catstratum %>%
+  allfh_rcatstratum <- allfh_catstratum %>%
+  # sum_rcatstratum <- sum_catstratum %>%
     group_by(cruise6, 
              stratum, 
              year,
@@ -283,9 +283,9 @@ species_code <- 103
     left_join(max_tot_tows_spp_stratum, by = c("cruise6", "stratum", "year", "season", "svspp")) %>%
     dplyr::rename(rtot_tows_spp_stratum = tot_tows_spp_stratum)
   
-   final_strat <- sum_rcatstratum %>% 
-    #   allfh <- allfh_rcatstratum %>% 
-    left_join(sum_catnum, by = c("cruise6", "stratum", "year", "season", "svspp")) %>% 
+   # final_strat <- sum_rcatstratum %>% 
+      allfh <- allfh_rcatstratum %>%
+    left_join(allfh, by = c("cruise6", "stratum", "year", "season", "svspp")) %>% 
     mutate(rtot_catnum_stratum = ifelse(svspp != 13 | svspp != 15, 
                                         tot_catnum_stratum, 
                                         rtot_catnum_stratum),
@@ -311,8 +311,8 @@ species_code <- 103
   
   
   ####################################################################################################################################
-  # fish <- allfh %>%
-   py_raw <- final_strat %>%
+  fish <- allfh %>%
+   # py_raw <- final_strat %>%
     group_by(cruise6, 
              station, 
              year,
@@ -320,22 +320,22 @@ species_code <- 103
              svspp, pdid, pdlen, tax) %>%
     dplyr::summarise(pysum = sum(pyamt, na.rm = TRUE)) %>% 
     na.omit() 
+      
+      pred <- fish %>%
+        # pred <- py_raw %>%
+        ungroup() %>%
+        dplyr::select(cruise6, station, pdid, pysum,
+                      year,
+                      season,
+                      svspp) %>%
+        dplyr::arrange(cruise6, station,
+                       year,
+                       season,
+                       svspp,
+                       pdid)
   
-  # pred <- py_raw %>%
-  #   #   pred <- fish %>%
-  #   ungroup() %>% 
-  #   dplyr::select(cruise6, station, pdid, pysum,
-  #                 year,
-  #                 season, 
-  #                 svspp) %>% 
-  #   dplyr::arrange(cruise6, station, 
-  #                  year, 
-  #                  season,
-  #                  svspp,
-  #                  pdid)
-  
-  # new <- pred %>% 
-  py_nostom <- py_raw %>% 
+  new <- pred %>%
+  # py_nostom <- py_raw %>% 
     ungroup %>% 
       dplyr::arrange(cruise6, station,
                      year,
@@ -356,17 +356,17 @@ species_code <- 103
              svspp) %>%
     dplyr::summarise(nostom = n())
   
-  py_list <- data.frame(tax = unique(py_raw$tax),
-                       pycode = paste0('prey', 1:length(unique(py_raw$tax))))
+  py_list <- data.frame(tax = unique(fish$tax),
+                       pycode = paste0('prey', 1:length(unique(fish$tax))))
   
-  # fish <- new %>% 
-  py_all <- py_nostom %>% 
-    left_join(py_raw, by = c("cruise6", "station", "year", "season", "svspp")) %>% 
+  fish <- new %>%
+  # py_all <- py_nostom %>% 
+    left_join(fish, by = c("cruise6", "station", "year", "season", "svspp")) %>% 
     left_join(py_list, by = "tax")
   
   
-  # length2 <- allfh %>%
-  pd_strat <- final_strat %>% 
+  length2 <- allfh %>%
+  # pd_strat <- final_strat %>% 
     group_by(cruise6, 
              station, 
              year,
@@ -377,8 +377,8 @@ species_code <- 103
     top_n(-1, wt = stratum_area) 
   
   
-  # missingvars <- length2 %>% 
-  pd_nas <- pd_strat %>% 
+  missingvars <- length2 %>%
+  # pd_nas <- pd_strat %>% 
     group_by(cruise6, 
              station, 
              year,
@@ -388,9 +388,9 @@ species_code <- 103
     dplyr::summarise(rnumlen_fin = sum(numlen_fin, na.rm = TRUE)) %>%
     na.omit()
   
-  # length2 <- length2 %>%
-  pd_strat <- pd_strat %>% 
-    left_join(pd_nas, by = c("cruise6", "year", "season", "svspp", "station", "pdlen")) %>% 
+  length2 <- length2 %>%
+  # pd_strat <- pd_strat %>% 
+    left_join(missingvars, by = c("cruise6", "year", "season", "svspp", "station", "pdlen")) %>% 
     dplyr::select(cruise6, station, stratum, 
                   year,
                   season,
@@ -408,16 +408,16 @@ species_code <- 103
   
   
   #Working with fish data.frame----------------------------------------------------------------------------------#
-  # fish <- fish %>% 
-  fish_ply <- py_all %>% 
+  fish_ply <- fish %>%
+  # fish_ply <- py_all %>% 
     dplyr::select(-tax) %>% 
-    left_join(pd_strat, by = c("cruise6", "station", "year", "season", "svspp", "pdid", "pdlen"))
+    left_join(length2, by = c("cruise6", "station", "year", "season", "svspp", "pdid", "pdlen"))
 
   
   ####################################################################################################################################
   
   #transpose cast pycode data and merge table to fish
-
+  fish = data.table(fish_ply)
   #THIS KEEPS ALL OF THE DATA FROM 'FISH'
   # tran1=data.frame(dcast.data.table(fish,cruise6 + stratum + station +
   #                                     byvar1 + byvar2 + byvar3 + byvar4 +
@@ -429,20 +429,20 @@ species_code <- 103
   #                                     fun.aggregate=median, value.var='pysum') )   #add byvars before svspp
 
   #THIS IS A STRIPPED DOWN VERSION
-  # tran1 = data.frame(dcast.data.table(fish,
-  #                                     cruise6 + stratum + station +
-  #                                     year + season + #byvar3 + byvar4 +
-  #                                     svspp + rcatnum +
-  #                                     rtot_catnum_stratum +
-  #                                     rtot_catwgt_stratum +
-  #                                     rtot_tows_spp_stratum +
-  #                                     stratum_area + rnumlen_fin  ~ pycode,
-  #                                     fun.aggregate = median, value.var='pysum'))   #add byvars before svspp
-  # 
+  tran1 = data.frame(dcast.data.table(fish,
+                                      cruise6 + stratum + station +
+                                      year + season + #byvar3 + byvar4 +
+                                      svspp + rcatnum +
+                                      rtot_catnum_stratum +
+                                      rtot_catwgt_stratum +
+                                      rtot_tows_spp_stratum +
+                                      stratum_area + rnumlen_fin  ~ pycode,
+                                      fun.aggregate = median, value.var='pysum'))   #add byvars before svspp
+
 
   ## Take the median value for each prey group
-  #   tran1_ply = fish_ply %>% 
-  trans_ply <- fish_ply %>% 
+  tran1_ply = fish_ply %>%
+  # trans_ply <- fish %>%
     group_by(cruise6, stratum, station,
            year, season, 
            svspp, rcatnum,
@@ -450,12 +450,10 @@ species_code <- 103
            rtot_catwgt_stratum,
            rtot_tows_spp_stratum,
            stratum_area, rnumlen_fin, pycode) %>%
-    summarize(pysum = median(pysum, na.rm = FALSE)) 
-  ## Transpose into wide-form data
-  # %>% 
-  #   tidyr::spread(pycode, pysum) %>% 
-  #   filter(!is.na(rnumlen_fin)) %>% 
-  #   replace(., is.na(.), 0)
+    summarize(pysum = median(pysum, na.rm = FALSE)) %>% 
+    tidyr::spread(pycode, pysum) %>%
+    filter(!is.na(rnumlen_fin)) %>%
+    replace(., is.na(.), 0)
   
   
   # new11_ply <- fish_ply %>%
@@ -494,10 +492,10 @@ species_code <- 103
   
   #set prey NA to zero in fish
   
-  # preycol <- as.character(pylist$pycode)
-  # tran1[,preycol][is.na(tran1[,preycol])]=0
+  preycol <- as.character(py_list$pycode)
+  tran1[,preycol][is.na(tran1[,preycol])]=0
   # 
-  # tran1=data.table(tran1)
+  tran1=data.table(tran1)
   #Am I missing something, or does this do not do anything?
   # new1=tran2[,lapply(.SD,mean, na.rm=T),by=list(cruise6, stratum, station, byvar1, byvar2, byvar3, byvar4, svspp, pdid, pdlen, catnum, rcatnum, tot_catnum_stratum, rtot_catnum_stratum, tot_catwgt_stratum,  #add byvars before svspp
   #                                               rtot_catwgt_stratum, tot_tows_spp_stratum, rtot_tows_spp_stratum, stratum_area, numlen, rnumlen_fin, nostom)]
@@ -505,7 +503,7 @@ species_code <- 103
   #NA for many rnumlen_fin records??
   
   #remove NAs here
-  # new1rm <- tran1[!is.na(tran1$rnumlen_fin)]
+  new1rm <- tran1[!is.na(tran1$rnumlen_fin)]
 
   ## Weighted means
   # new11 = new1rm[,lapply(.SD,  weighted.mean,
@@ -517,9 +515,9 @@ species_code <- 103
   #                                                         stratum_area)]
   
   ## Weighted mean and mean of pysum
-  # new11_ply <- trans_ply %>% 
-  pysum_wm <- trans_ply %>% 
-    # tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>% 
+  new11_ply <- tran1_ply %>%
+  # pysum_wm <- trans_ply %>% 
+    tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>%
     group_by(cruise6, stratum, station, 
              year, season,
              svspp, rcatnum, 
@@ -527,11 +525,11 @@ species_code <- 103
              rtot_tows_spp_stratum,
              stratum_area, 
              pycode) %>% 
-    # dplyr::summarize(wmean = weighted.mean(val, w = rnumlen_fin)) %>% 
-    dplyr::summarize(wmean = weighted.mean(pysum, w = rnumlen_fin),
-                     musw = mean(wmean, na.rm = TRUE)) %>% 
-    dplyr::mutate(musw2 = wmean * rcatnum) # %>% 
-    # tidyr::spread(pycode, wmean)
+    dplyr::summarize(wmean = weighted.mean(val, w = rnumlen_fin)) %>%
+    # dplyr::summarize(wmean = weighted.mean(pysum, w = rnumlen_fin),
+    #                  musw = mean(wmean, na.rm = TRUE)) %>% 
+    # dplyr::mutate(musw2 = wmean * rcatnum) %>% 
+    tidyr::spread(pycode, wmean)
   
 
   ## need to remove unnecessary columns
@@ -550,32 +548,32 @@ species_code <- 103
 #                                                  stratum_area)]
 
   ## Mean
-  # # new2_ply <- new11_ply %>% 
-  # pysum_m <- pysum_wm %>% 
-  #   # tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>% 
-  #   group_by(cruise6, stratum, station, 
-  #            year, season,
-  #            svspp, rcatnum, 
-  #            rtot_catnum_stratum,
-  #            rtot_tows_spp_stratum,
-  #            stratum_area, 
-  #            pycode) %>% 
-  #   # dplyr::summarize(mean = mean(val)) %>% 
-  #   dplyr::summarize(musw = mean(wmean, na.rm = TRUE))# %>% 
-  #   # tidyr::spread(pycode, mean)
+  # pysum_m <- pysum_wm %>%
+  new2_ply <- new11_ply %>%
+    tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>%
+    group_by(cruise6, stratum, station,
+             year, season,
+             svspp, rcatnum,
+             rtot_catnum_stratum,
+             rtot_tows_spp_stratum,
+             stratum_area,
+             pycode) %>%
+    dplyr::summarize(mean = mean(val)) %>%
+    # dplyr::summarize(musw = mean(wmean, na.rm = TRUE))# %>%
+    tidyr::spread(pycode, mean)
 
-  
-  # musw2_ply <- new11_ply %>% 
-  #   tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>% 
-  #   group_by(cruise6, stratum, station, 
-  #            year, season,
-  #            svspp, rcatnum, 
-  #            rtot_catnum_stratum,
-  #            rtot_tows_spp_stratum,
-  #            stratum_area, 
-  #            pycode) %>% 
-  #   summarize(catweight = val * rcatnum) %>%
-  #   tidyr::spread(pycode, catweight)
+  # 
+  musw2_ply <- new11_ply %>%
+    tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>%
+    group_by(cruise6, stratum, station,
+             year, season,
+             svspp, rcatnum,
+             rtot_catnum_stratum,
+             rtot_tows_spp_stratum,
+             stratum_area,
+             pycode) %>%
+    summarize(catweight = val * rcatnum) %>%
+    tidyr::spread(pycode, catweight)
   
   # musw2 = new11[,lapply(.SD,function(x) x*rcatnum),by=list(cruise6, stratum, station, year,
   #                                                          season,
@@ -583,7 +581,7 @@ species_code <- 103
   #                                                          svspp, rcatnum,
   #                                                          rtot_catnum_stratum, rtot_tows_spp_stratum,
   #                                                          stratum_area)] #add byvars before svspp
-  # 
+
 
   # new2s = musw2[,lapply(.SD,sum ), by=list(cruise6, stratum, year, season,
   #                                          # byvar3, byvar4,
@@ -591,35 +589,36 @@ species_code <- 103
   #                                        rtot_catnum_stratum, rtot_tows_spp_stratum, stratum_area)] #add byvars before svspp
 
   ## by station
-  # new2s_ply <- musw2_ply %>%
-  pysum_wm_s <- pysum_wm %>%
-    # tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>% 
+  new2s_ply <- musw2_ply %>%
+  # pysum_wm_s <- pysum_wm %>%
+    tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>%
     group_by(cruise6, stratum, 
              year, season,
-             svspp, 
+             svspp,
              rtot_catnum_stratum,
              rtot_tows_spp_stratum,
              stratum_area, 
              pycode) %>% 
-    summarize(tmsw_strat = sum(musw2, na.rm = TRUE)) %>% 
-    dplyr::mutate(rat = tmsw_strat/rtot_tows_spp_stratum,
-                  munfish_strat = rtot_catnum_stratum / rtot_tows_spp_stratum)# %>%
-    # tidyr::spread(pycode, catsum)
+    summarize(tmsw_strat = sum(val, na.rm = TRUE)) %>% 
+    # dplyr::mutate(rat = tmsw_strat/rtot_tows_spp_stratum,
+    #               munfish_strat = rtot_catnum_stratum / rtot_tows_spp_stratum) %>%
+    tidyr::spread(pycode, tmsw_strat)
     
     
   musw_strat_ply <- new2s_ply %>% 
     tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>%
     group_by(cruise6, stratum, 
              year, season,
-             svspp, 
+             svspp,
              rtot_catnum_stratum,
              rtot_tows_spp_stratum,
              stratum_area, 
              pycode) %>% 
-    dplyr::summarize(rat = val/rtot_tows_spp_stratum) %>% 
+    dplyr::summarize(rat = val/rtot_tows_spp_stratum) %>%
+    # dplyr::mutate(rat = val/rtot_tows_spp_stratum) %>% 
+    tidyr::spread(pycode, rat) %>% 
     ungroup %>%
-    dplyr::mutate(munfish_strat = rtot_catnum_stratum / rtot_tows_spp_stratum) %>%
-    tidyr::spread(pycode, rat)
+    dplyr::mutate(munfish_strat = rtot_catnum_stratum / rtot_tows_spp_stratum)
   
 
   munfish_stratdat_ply <- musw_strat_ply %>%
@@ -647,7 +646,7 @@ species_code <- 103
   #                             musw_strat$season #musw_strat$byvar3,
   #                             # musw_strat$byvar4
   #                             ),] #byvars AFTER svspp
-  
+
   #weight by stratum area
   
   new3s_ply <- musw_strat_ply %>% 
@@ -666,10 +665,10 @@ species_code <- 103
   # 
   # new3s[,':='(cruise6=NULL, stratum=NULL ,station=NULL, rcatnum=NULL, rtot_catnum_stratum=NULL, rtot_tows_spp_stratum=NULL, stratum_area=NULL)]
   # 
-  ## new3s$num_stra=NROW(musw_stratum) #fix for multiple svspp
+  # # new3s$num_stra=NROW(musw_stratum) #fix for multiple svspp
   # num_stra=musw_stratum[, .N,by=list(svspp,year,season)]#,byvar3,byvar4)] #add byvars AFTER svspp
   # names(num_stra)=gsub('N','num_stra',names(num_stra))
-  #  
+
   
     meansw_s_ply <- new3s_ply %>% 
     tidyr::gather(key = "pycode", value = "val", starts_with("prey")) %>% 
@@ -687,29 +686,29 @@ species_code <- 103
     
     
   # new3s=merge(new3s, num_stra, by=c('svspp', 'year', 'season'),
-  #             # 'byvar3', 'byvar4'), 
+  #             # 'byvar3', 'byvar4'),
   #             all.x=T)  #add byvars AFTER svspp
   # 
-  # meansw_s=new3s[,lapply(.SD,function(x) x/munfish_strat),by=list(svspp,year,season)]#,byvar3,byvar4)] #add byvars AFTER svspp 
+  # meansw_s=new3s[,lapply(.SD,function(x) x/munfish_strat),by=list(svspp,year,season)]#,byvar3,byvar4)] #add byvars AFTER svspp
   # 
   # meansw_s[,':='(munfish_strat=NULL, num_stra=NULL)]
   # 
   #CHANGE labels to meansw_s by prey number
-  
+
   # three=new2[order(new2$svspp,new2$year, new2$season)]#, new2$byvar3,new2$byvar4),] #add byvars AFTER svspp
-  
+
   # meansw = three[,lapply(.SD,weighted.mean, rcatnum, na.rm=T), by=list(svspp,year, season)]#, byvar3,byvar4)] #add byvars AFTER svspp
   # meansw[,':='(cruise6=NULL, stratum=NULL ,station=NULL, rcatnum=NULL, rtot_catnum_stratum=NULL, rtot_tows_spp_stratum=NULL, stratum_area=NULL)]
-  
-  
+
+
   # #meansw$num_tows=NROW(three) fix for multiple svspp
   # num_tows=three[, .N,by=list(svspp,year,season)]#,byvar3,byvar4)] #add byvars AFTER svspp
   # names(num_tows)=gsub('N','num_tows',names(num_tows))
-  # 
+  #
   # meansw=merge(meansw, num_tows, by=c('svspp',  'year', 'season'),
-  #              # 'byvar3', 'byvar4'), 
+  #              # 'byvar3', 'byvar4'),
   #              all.x=T)  #add byvars AFTER svspp
-  # 
+  #
   
   master_musw_ply <- new2_ply %>% 
     tidyr::gather(key = "pycode", value = "musw", starts_with("prey"))
@@ -749,33 +748,33 @@ species_code <- 103
   # 
   # master_musw_strat=melt(musw_strat, id.vars=c("cruise6", "stratum",  "svspp", "year", "season"), #"byvar3", "byvar4" ),
   #                        measure.vars=preycol, variable.name='pycode', value.name='musw_strat')
-  
+
   # master_meansw=melt(meansw, id.vars=c("svspp", "year", "season"), #"byvar3", "byvar4"),     #add byvars AFTER svspp
   #                    measure.vars=preycol, variable.name='pycode', value.name='meansw')
-  
+
   # master_meansw_s=melt(meansw_s, id.vars=c("svspp", "year", "season"), #"byvar3", "byvar4"),   #add byvars AFTER svspp
   #                      measure.vars=preycol, variable.name='pycode', value.name='meansw_s')
-  
+
   # master_msw_strat=melt(new3s, id.vars=c("svspp", "year", "season"), #"byvar3", "byvar4"),   #add byvars AFTER svspp
   #                       measure.vars=preycol, variable.name='pycode', value.name='msw_strat')
   # 
   # keep7=c('cruise6', 'stratum',  'svspp',  'year', 'season')#, #'byvar3', 'byvar4', 'munfish_strat') #add byvars AFTER svspp
   # master_munfish_strat=musw_strat[,keep7, with=F]
 
-  master_munfish_strat_ply <- musw_strat %>% 
+  master_munfish_strat_ply <- musw_strat_ply %>% 
     select(cruise6, stratum, svspp, year, season)
   
     
   # num_stra_fish=new3s[,c('svspp',  'year', 'season', #'byvar3', 'byvar4',
   #                        'munfish_strat', 'num_stra'),with=F] #add byvars AFTER svspp
   # names(num_stra_fish)=gsub('munfish_strat','m_nfish_strat',names(num_stra_fish))
-  # 
-  num_stra_fish_ply <- new3s %>% 
+
+  num_stra_fish_ply <- new3s_ply %>% 
     select(svspp, year, season, m_nfish_strat = munfish_strat, num_stra)
   
   # master_num_tows=meansw[,c('svspp',  'year', 'season', #'byvar3', 'byvar4',
   #                           'num_tows'), with=F] #add byvars AFTER svspp
-  
+
 master_num_tows_ply <- meansw_ply %>% 
   select(svspp, year, season, num_tows)
   
@@ -832,7 +831,7 @@ master_num_tows_ply <- meansw_ply %>%
 #                all.x=T)           #add byvars AFTER svspp
 #   master=merge(merge8, master_msw_strat, by=c('svspp', 'year', 'season', #'byvar3', 'byvar4',
 #                                               'pycode'), all.x=T)  #add byvars AFTER svspp
-# 
+
 #   
   # #prod    
   # master$prod=master$rcatnum^2*((master$musw-master$meansw))^2
@@ -845,7 +844,7 @@ master_num_tows_ply <- meansw_ply %>%
   
   
   # #sprod   better way?  remove cols except svspp and pycode?
-  # sprod=master[,lapply(.SD, sum, na.rm=T), by=list(svspp,year,season,#byvar3,byvar4, 
+  # sprod=master[,lapply(.SD, sum, na.rm=T), by=list(svspp,year,season,#byvar3,byvar4,
   #                                                  pycode)]#, num_tows, meansw, meansw_s, msw_strat, m_nfish_strat, num_stra)] #add byvars AFTER svspp
   # 
   # keep8=c('svspp',  'year', 'season',# 'byvar3', 'byvar4',
@@ -880,7 +879,7 @@ master_num_tows_ply <- meansw_ply %>%
   
   # new4=merge(sprod2, mprod_mnumfish2, by=c('svspp',  'year', 'season', #'byvar3', 'byvar4',
   #                                          'pycode'), all.x=T)#, 'num_tows', 'meansw', 'meansw_s', 'msw_strat', 'm_nfish_strat', 'num_stra'), all.x=T)
-  #add byvars?
+  # add byvars?
   
   # sprodf_d_cov=master[,lapply(.SD, sum, na.rm=T), by=list(svspp, year,season,#byvar3,byvar4,
   #                                                         pycode, cruise6, stratum, stratum_area, rtot_tows_spp_stratum, m_nfish_strat)]      #add byvars after svspp
@@ -952,7 +951,7 @@ master_num_tows_ply <- meansw_ply %>%
   # #new4_strat
   # new4_strat=merge(new4, sumvarprod, by=c('svspp',  'year', 'season',# 'byvar3', 'byvar4',
   #                                         'pycode'), all.x=T) #add byvars AFTER svspp
-  # 
+
   #merge with  select master columns
 six_ply <- new4_strat_ply %>% 
   left_join(master_meansw_ply) %>% 
@@ -971,7 +970,7 @@ six_ply <- new4_strat_ply %>%
                         0),
          cv_s = ifelse(num_tows > 1 & mnumfish != 0 & meansw != 0 & m_nfish_strat != 0 & meansw_s != 0,
                        ((var_s)^0.5)/meansw_s,0)) %>% 
-  select(-tt, -vard, -varf, -var_cov, -stratum_area)
+  select(-vard, -varf, -var_cov, -stratum_area)
   
 
 # six1=merge(new4_strat, master_meansw, by=c('svspp',  'year', 'season', #'byvar3', 'byvar4',
@@ -984,7 +983,7 @@ six_ply <- new4_strat_ply %>%
 #            all.x=T) #add byvars AFTER svspp
 # six=merge(six4, num_stra_fish, by=c('svspp', 'year', 'season'),#, 'byvar3', 'byvar4'),
 #           all.x=T) #add byvars AFTER svspp
-# 
+
 
   # six$variance=ifelse(six$num_tows>1&six$mnumfish!=0&six$meansw!=0&six$m_nfish_strat!=0&six$meansw_s!=0, 1/(six$num_tows*(six$mnumfish)^2)*(six$sprod/(six$num_tows-1)),0)
   # six$cv=ifelse(six$num_tows>1&six$mnumfish!=0&six$meansw!=0&six$m_nfish_strat!=0&six$meansw_s!=0,((six$variance)^0.5)/six$meansw,0)
@@ -996,12 +995,12 @@ six_ply <- new4_strat_ply %>%
   # meanswf=six[,':='(sprod=NULL, mprod=NULL, mnumfish=NULL, msw_strat=NULL, svarprodf=NULL, svarprodd=NULL, svarprod_cov=NULL, sstratum_area=NULL, varf=NULL, vard=NULL, var_cov=NULL)]
   
  #merge tax names back in
-  # output=merge(meanswf, pylist, by=c('pycode'), all.x=T)
+  # output=merge(meanswf, py_list, by=c('pycode'), all.x=T)
   # names(output)=gsub('tax', 'prey', names(output))
 
   final_ply <- six_ply %>% 
     mutate(pycode = as.factor(pycode)) %>% 
-    left_join(pylist) %>% 
+    left_join(py_list) %>% 
     group_by(svspp, year, season) %>% 
     mutate(totwt = sum(meansw, na.rm = TRUE),
            totwt_s = sum(meansw_s, na.rm = TRUE),
@@ -1014,30 +1013,30 @@ six_ply <- new4_strat_ply %>%
     select(svspp, year, season, prey = tax, relmsw, num_tows)
   
   
-  # 
-  # totwt1=output[,lapply(.SD,sum, na.rm=T), by=list(svspp,year,season),#,byvar3,byvar4),
-  #               .SDcols=c('meansw', 'meansw_s')] #add byvars AFTER svspp
-  # keep12=c('svspp',  'year', 'season',# 'byvar3', 'byvar4',
-  #          'meansw', 'meansw_s')  #add byvars AFTER svspp
-  # totwt=totwt1[,keep12,with=F]
-  # names(totwt)=gsub('meansw', 'totwt', names(totwt))
-  # names(totwt)=gsub('meansw_s', 'totwt_s', names(totwt))
-  # 
-  # final=merge(output, totwt, by=c('svspp',  'year', 'season'),# 'byvar3', 'byvar4'),
-  #             all.x=T)  #add byvars AFTER svspp
-  # 
-  # final=final[,':='(pycode=NULL, m_nfish_strat=NULL)]
-  # 
-  # final$relmsw=100*(final$meansw/final$totwt)
-  # final$relmsw_s=100*(final$meansw_s/final$totwt_s)
-  # final$ci=sqrt(final$variance/final$num_tows)*2
-  # final$relci=(final$ci/final$totwt)*100
-  # final$ci_s=sqrt(final$var_s/final$num_tows)*2
-  # final$relci_s=(final$ci_s/final$totwt_s)*100
-  # 
-  # #remove strata-based metrics for now; only minor differences from original weighted metrics by tow  
-  # final[,':=' (meansw_s=NULL, num_stra=NULL, var_s=NULL, cv_s=NULL, totwt_s=NULL, relmsw_s=NULL, ci_s=NULL, relci_s=NULL )]
-  # 
+# 
+#   totwt1=output[,lapply(.SD,sum, na.rm=T), by=list(svspp,year,season),#,byvar3,byvar4),
+#                 .SDcols=c('meansw', 'meansw_s')] #add byvars AFTER svspp
+#   keep12=c('svspp',  'year', 'season',# 'byvar3', 'byvar4',
+#            'meansw', 'meansw_s')  #add byvars AFTER svspp
+#   totwt=totwt1[,keep12,with=F]
+#   names(totwt)=gsub('meansw', 'totwt', names(totwt))
+#   names(totwt)=gsub('meansw_s', 'totwt_s', names(totwt))
+# 
+#   final=merge(output, totwt, by=c('svspp',  'year', 'season'),# 'byvar3', 'byvar4'),
+#               all.x=T)  #add byvars AFTER svspp
+# 
+#   final=final[,':='(pycode=NULL, m_nfish_strat=NULL)]
+# 
+#   final$relmsw=100*(final$meansw/final$totwt)
+#   final$relmsw_s=100*(final$meansw_s/final$totwt_s)
+#   final$ci=sqrt(final$variance/final$num_tows)*2
+#   final$relci=(final$ci/final$totwt)*100
+#   final$ci_s=sqrt(final$var_s/final$num_tows)*2
+#   final$relci_s=(final$ci_s/final$totwt_s)*100
+# 
+#   #remove strata-based metrics for now; only minor differences from original weighted metrics by tow
+#   final[,':=' (meansw_s=NULL, num_stra=NULL, var_s=NULL, cv_s=NULL, totwt_s=NULL, relmsw_s=NULL, ci_s=NULL, relci_s=NULL )]
+
 
   # names(final)[names(final)=='byvar1']=name_byvar1
   # names(final)[names(final)=='byvar2']=name_byvar2
@@ -1065,9 +1064,9 @@ six_ply <- new4_strat_ply %>%
   #   ylab("Percent in Diet") +
   #   xlab("Year") +
   #   facet_wrap("season", nrow=3) +
-  #   theme_bw() + 
+  #   theme_bw() +
   #   viridis::scale_fill_viridis(discrete = TRUE) +
-  #   theme(legend.position="bottom", 
+  #   theme(legend.position="bottom",
   #         legend.text=element_text(size=5))
   # 
   # compplot_ply <- ggplot(diet_ply, aes(year, relmsw, fill=prey)) +
@@ -1075,15 +1074,15 @@ six_ply <- new4_strat_ply %>%
   #   ylab("Percent in Diet") +
   #   xlab("Year") +
   #   facet_wrap("season", nrow=3) +
-  #   theme_bw() + 
+  #   theme_bw() +
   #   viridis::scale_fill_viridis(discrete = TRUE) +
-  #   theme(legend.position="bottom", 
+  #   theme(legend.position="bottom",
   #         legend.text=element_text(size=5))
   # 
   # library(patchwork)
   # 
-  # compplot+ compplot_ply
-  # compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
+  compplot+ compplot_ply
+  # compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey))
 
   # return(compi)
 # }  
