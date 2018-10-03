@@ -4,13 +4,16 @@
 \alias{create_template}
 \title{Create a ECSA template}
 \usage{
-create_template(survdat_name, overwrite = FALSE)
+create_template(survdat_name, overwrite = FALSE,
+  make_interactive = FALSE)
 }
 \arguments{
 \item{survdat_name}{A common species name as defined by survdat. Options as of 8/24 include 
 JONAH CRAB, AMERICAN LOBSTER, and SUMMER FLOUNDER.}
 
 \item{overwrite}{Logical. If TRUE, output will overwrite any existing template for chosen species.}
+
+\item{make_interactive}{Logical. If TRUE, template time series will be made interative through the ggiraph library.}
 }
 \value{
 A .Rmd file populated with figures that can be knit into an ECSA report skeleton.

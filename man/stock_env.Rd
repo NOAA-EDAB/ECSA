@@ -8,6 +8,9 @@ stock_env(variable, type = NULL, season, genus = NULL, svspp,
   mask_type, xlab, interpo = F, ylab, ylim = NULL, plt = F)
 }
 \arguments{
+\item{variable}{Can be "chlorophyll", "temperature", "salinity",
+"zooplankton", "occupancy hab", or "occupancy prob".}
+
 \item{type}{Specific to temperature and salinity variables. Either "bottom" or "surface".}
 
 \item{season}{Either "spring" or "fall".}
@@ -28,8 +31,6 @@ If mask is "unit", then returned time series reflect stock boundaries drawn from
 \item{ylim}{Vector in the form of c(min,max) to specifiy y limits if plt = T.}
 
 \item{plt}{Plots output rather than returning a data frame of results.}
-
-\item{Variable}{Can be "chlorophyll", "temperature", "salinity", "zooplankton", or "occupancy".}
 }
 \value{
 If plt = F, a data frame containing time series of compiled data is returned.
