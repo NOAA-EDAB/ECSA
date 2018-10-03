@@ -11,7 +11,6 @@
 #' @return A .Rmd file populated with figures that can be knit into an ECSA report skeleton. 
 #'
 #' @export
-#' @importFrom magrittr "%>%"
 #' @examples  
 #'
 #' create_template(survdat_name = "SUMMER FLOUNDER", overwrite = TRUE)
