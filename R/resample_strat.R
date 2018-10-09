@@ -19,41 +19,21 @@
 resample_strat <- function(svspp, season, mask_type){
   
   sea_stock_strata <- read.csv('data/seasonal_stock_strata.csv', stringsAsFactors = F)
-  sps1 <- read.csv("data/species_list.csv", stringsAsFactors = F)
-  all_stocks <- read.csv("data/all_strata.csv", stringsAsFactors = F)
-  sp <- 1
-  
-  # choose season
-  sps = sps1[sps1$season==season,]
-  if (nrow(sps) < 1){stop("invalid season")}
-  
-  # choose for single species
-  sps = sps[sps$svspp==svspp,]
-  if (nrow(sps) < 1){stop("invalid svspp")}
-  
-  # choose for single species
-  sps = sps[sps$stock_area==mask_type,]
-  if (nrow(sps) < 1){stop("invalid mask type")}
-  
-  #filter season
-  temp_strata = sea_stock_strata[sea_stock_strata$season==season,]
-  
-  #filter species
-  temp_strata = temp_strata[temp_strata$sp==as.character(unlist(sps[sp,5])),]
-  
-  #filter stock area type and strata
-  if (mask_type %in% unique(temp_strata$stock_area)){
-    temp_strata = temp_strata[temp_strata$stock_area==as.character(unlist(sps[sp,7])),]
-    temp_strata = temp_strata[temp_strata$strata%in%all_stocks$strata,]
-  } else {
-    nes <- unique(sea_stock_strata$strata)
+
+  #Filter strata
+  temp_strata <- sea_stock_strata %>% filter(season_ == season, 
+                                                SVSPP == svspp,
+                                                stock_area == mask_type)
+  #Break if no matching variables
+  if (nrow(temp_strata) == 0){
+    stop('Seasonal stock strata, species code, and stock area ("mask type") must correspond.\n See seasonal_stock_strata.csv for complete listing.')
   }
   
-
-  
-  #read in shape files
+  #read in shape file
   strata <- rgdal::readOGR(dsn = 'data/strata_shapefiles', verbose = F)
+  
   if (mask_type == 'nes'){
+    nes <- unique(sea_stock_strata$strata)
     stock_strata <- strata[strata@data$STRATA %in% nes,]
   } else {
     stock_strata <- strata[strata@data$STRATA %in% temp_strata$strata,]
