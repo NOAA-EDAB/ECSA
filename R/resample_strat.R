@@ -1,15 +1,17 @@
 #' Downsample strata for masking 
 #' 
 #' This function converts NEFSC Bottom Trawl depth stata in "BTS_strata" shapefiles to a downsampled raster format,
-#' which is necessary for masking target rasters containing ecosystem data. Primarily an interal function used by \code{stock_env()}
+#' which is necessary for masking target rasters containing ecosystem data. See the file "seasonal_stock_strata.csv"
+#' for choosing species and stock areas of interest. 
 #' 
 #'   
 #' @param svspp Species code as specified in data/species_list.csv
 #' @param season Season in which trawl survey occurred.
-#' @param mask_type Specifies raster masking behavior. Can be one of "nes", "gom", "gbk", "sne", or "unit".
-#' If mask is "unit", then returned time series reflect stock boundaries drawn from depth strata.
+#' @param mask_type Specifies masking behavior for specific stock areas. Can be one of "unit", "gbk",
+#'  "gom", "south", "north", "snemab", "gbkgom", "ccgom", or "sne".  
 #' 
-#' @return Returns a downsampled raster depicting area of interest. 
+#' 
+#' @return Returns a downsampled raster depicting stock area of interest. 
 #' @export
 #' 
 #' @examples
