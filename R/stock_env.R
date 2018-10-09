@@ -118,8 +118,8 @@
 
 
 stock_env <- function(variable, type = NULL, season, genus = NULL,
-                         svspp, mask_type, xlab,interpo = F,
-                      ylab, ylim = NULL, plt = F){
+                         svspp, mask_type, xlab = "", interpo = F,
+                      ylab = "", ylim = NULL, plt = F){
   
   svspp <- as.numeric(svspp)
   if(!is.null(type) & !variable %in% c("salinity","temperature")){
