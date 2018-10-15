@@ -7,7 +7,6 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 always_allow_html: yes
 output:  
   html_document:
-    template: template.html
     fig_caption: yes
 bibliography: ECSA_bibliography.bib
 ---
@@ -24,10 +23,19 @@ library(cowplot)
 library(ggiraph)
 
 # Load in survey data, right now it is only for summer flounder
-load("data/df_survdat.rda")
+# load("data/df_survdat.rda")
+# colnames(survdat)
+# colnames(df_survdat)
+
+# load("data/Survdat.RData")
+# tt <- survdat
 
 ## Read in stock area vectors
-all_stock_area <- read.csv("data/seasonal_stock_strata.csv")
+# all_stock_area2 <- read.csv("data/seasonal_stock_strata.csv")
+
+## Read in stock area vectors
+all_stock_area <- read.csv("data/stock_list.csv", stringsAsFactors = FALSE)
+
 
 ## Put all mustaches here
 stock_code <- "{{SPECIES_CODE}}"
@@ -37,14 +45,14 @@ svspp <- "{{SVSPP}}"
 gg_int <- as.logical("{{INTERACTIVE}}")
 
 strata_spring <- all_stock_area %>% 
-  dplyr::filter(sp == stock_code,
-         season == "spring") %>% 
-  dplyr::pull(strata)
+  dplyr::filter(species_code == stock_code,
+                season == "spring") %>% 
+  dplyr::pull(strat)
 
 strata_fall <- all_stock_area %>% 
-  dplyr::filter(sp == stock_code,
+  dplyr::filter(species_code == stock_code,
          season == "fall") %>% 
-  dplyr::pull(strata)
+  dplyr::pull(strat)
 
 label <- function(variable,value){
   return(facet_names[value])
@@ -79,7 +87,7 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 
 ### Figure
 
-```{r ocean temp, echo = F, fig.align='center', warning=F, fig.cap = "Fall and spring surface and bottom temperature within {{COMMON_NAME}} stock areas.  Error bars show &plusmn;1 SD of the observations.}
+```{r ocean temp, echo = F, fig.align='center', warning=F, fig.cap = "Fall and spring surface and bottom temperature within {{COMMON_NAME}} stock areas.  Error bars show &plusmn;1 SD of the observations."}
 
 sf1 <- stock_env(variable = "temperature",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
@@ -131,7 +139,7 @@ if (gg_int){
 ```{r ocean data, echo = F}
 
 
-datatable(all_temp, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(all_temp, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -198,7 +206,7 @@ if (gg_int){
 ### Data
 ```{r sal data, echo = F}
 
-datatable(all_sal, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(all_sal, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -254,7 +262,7 @@ if (gg_int){
 ```{r chl data, echo = F}
 
 
-datatable(chl, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(chl, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -328,7 +336,7 @@ if (gg_int){
 
 ### Data
 ```{r zoo data, echo = F}
-datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -351,7 +359,7 @@ Trends in diet composition may indicate changes in the habitat for generalist pr
 ### Figures
 ```{r diet, eval=T, echo = FALSE, fig.align='center',warning=F, message=F,fig.cap = "Seasonal weighted diet composition for major {{COMMON_NAME}} (1977-2016)."}
   
-df_diet <- get_diet(103) #hidden output somewhere need to fix, function still broken dont use
+df_diet <- get_diet(as.numeric(svspp)) #hidden output somewhere need to fix, function still broken dont use
 
 # load("data/df_diet.RData")
 
@@ -391,7 +399,7 @@ ggiraph(code = print(compi), height=14)
 
 ### Data
 ```{r diet data, echo = F}
-datatable(diet, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(diet, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -408,28 +416,46 @@ Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows was esti
 ```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3,  fig.cap = "Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows. Error bars represent the 95% confidence intervals."}
 
 
-df_survdat_spring <-
-  df_survdat %>%
-  dplyr::filter(YEAR > 1976,
-                ## place holder for filtering survdat by species
-                SEASON == "SPRING",
-                STRATUM %in% strata_spring)
+clean_survdat <- survdat %>%
+  filter(STRATUM %in% c(strata_fall, strata_spring),
+         YEAR > 1976) %>% 
+  select(CRUISE6, YEAR, SEASON, STRATUM, STATION, LAT, LON, EST_TOWDATE) %>% 
+  distinct(.keep_all = TRUE)
 
-df_survdat_fall <-
-  df_survdat %>%
-  dplyr::filter(YEAR > 1976,
-                ## place holder for filtering survdat by species
-                SEASON == "FALL",
-                STRATUM %in% strata_fall)
+stock_survdat <- survdat %>% 
+  filter(STRATUM %in% c(strata_fall, strata_spring),
+         SVSPP == svspp,
+         YEAR > 1976) %>% 
+  group_by(CRUISE6, YEAR, SEASON, STRATUM, STATION, LAT, LON,
+           EST_TOWDATE) %>% 
+  summarize(BIOMASS = mean(BIOMASS)) %>% 
+  right_join(clean_survdat, 
+             by = c("CRUISE6", "YEAR", "SEASON", "STRATUM", "STATION", "LAT", "LON", "EST_TOWDATE")) %>% 
+  mutate(pres = case_when(BIOMASS > 0 ~ TRUE,
+                          BIOMASS == 0 ~ FALSE,
+                          is.na(BIOMASS) ~ FALSE))
 
-df_survdat2use <-
-  rbind(df_survdat_spring,
-        df_survdat_fall) %>%
-  dplyr::mutate(pres = BIOMASS > 0)
+
+# df_survdat_spring <- #survdat %>%
+#   df_survdat %>%
+#   dplyr::filter(YEAR > 1976,
+#                 # SVSPP == svspp,
+#                 SEASON == "SPRING",
+#                 STRATUM %in% strata_spring)
+# 
+# df_survdat_fall <- #survdat %>%
+#   df_survdat %>%
+#   dplyr::filter(YEAR > 1976,
+#                 # SVSPP == svspp,
+#                 SEASON == "FALL",
+#                 STRATUM %in% strata_fall)
+# 
+# df_survdat2use <- rbind(df_survdat_spring,
+#                         df_survdat_fall) %>%
+#   dplyr::mutate(pres = BIOMASS > 0)
 
 
-df_prob_occ <-
-  df_survdat2use %>%
+df_prob_occ <- stock_survdat %>% #df_survdat2use %>%
   dplyr::group_by(SEASON, YEAR) %>%
   dplyr::do(calc_p(df = .)) %>% 
   ungroup() %>% 
@@ -466,7 +492,8 @@ if (gg_int){
 
 ### Data
 ```{r prob data, echo = F}
-datatable(df_prob_occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(df_prob_occ, rownames = FALSE,
+              filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -547,7 +574,8 @@ if (gg_int){
 ### Data
 ```{r prob data2, echo = F}
 occ <- rbind(prob, hab)
-datatable(occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(occ, rownames = FALSE,
+              filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,

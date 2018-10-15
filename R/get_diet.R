@@ -19,32 +19,43 @@
 get_diet <- function(species_code){
   
   #### This part here should be replaced with a file for all NEUS stocks
-  sss <- read.csv("data/seasonal_stock_strata.csv",
-                  stringsAsFactors = FALSE)
+  # sss <- read.csv("data/seasonal_stock_strata.csv",
+  #                 stringsAsFactors = FALSE)
+  # 
+  # sixcode <- c('acared','alewif','amepla','atlcod','atlhal','atlher','atlmac','atlwol',
+  #              'barska','blabas','bluefi','bluher','butter','cleska','haddoc',
+  #              'litska','monkfh','ocpout','offhak','polloc','redhak','rosska',
+  #              'scupzz','silhak','smodog','smoska','spidog','sumflo','thoska',
+  #              'whihak','window','winflo','winska','witflo','yelflo','amlobs','joncra')
+  # 
+  # svspp_list <- c(155,33,102,73,101,32,121,192,22,141,
+  #                 135,34,131,24,74,26,197,193,69,
+  #                 75,77,25,143,72,13,27,15,103,
+  #                 28,76,108,106,23,107,105,301,312)
+  # 
+  # 
+  # #Get data, manipulate, set constants
+  # svspp_df <- data.frame(sp = sixcode,
+  #                        svspp = svspp_list, 
+  #                        stringsAsFactors = FALSE)
+  # 
+  # seasonal_strata <- sss %>% 
+  #   mutate(season = toupper(season)) %>% 
+  #   left_join(svspp_df, by = "sp") %>% 
+  #   rename(stratum = strata) %>% 
+  #   filter(svspp %in% species_code)
+
+
+  seasonal_strata <- read.csv("data/stock_list.csv", stringsAsFactors = FALSE) %>% 
+    dplyr::select(season,
+                  sp = species_code,
+                  stock_area = stock,
+                  stratum = strat,
+                  svspp) %>% 
+    dplyr::filter(svspp == species_code,
+                  season %in% c("fall", "spring")) %>% 
+    dplyr::mutate(season = toupper(season))
   
-  sixcode <- c('acared','alewif','amepla','atlcod','atlhal','atlher','atlmac','atlwol',
-               'barska','blabas','bluefi','bluher','butter','cleska','haddoc',
-               'litska','monkfh','ocpout','offhak','polloc','redhak','rosska',
-               'scupzz','silhak','smodog','smoska','spidog','sumflo','thoska',
-               'whihak','window','winflo','winska','witflo','yelflo','amlobs','joncra')
-  
-  svspp_list <- c(155,33,102,73,101,32,121,192,22,141,
-                  135,34,131,24,74,26,197,193,69,
-                  75,77,25,143,72,13,27,15,103,
-                  28,76,108,106,23,107,105,301,312)
-  
-  
-  #Get data, manipulate, set constants
-  svspp_df <- data.frame(sp = sixcode,
-                         svspp = svspp_list, 
-                         stringsAsFactors = FALSE)
-  
-  seasonal_strata <- sss %>% 
-    mutate(season = toupper(season)) %>% 
-    left_join(svspp_df, by = "sp") %>% 
-    rename(stratum = strata) %>% 
-    filter(svspp %in% species_code)
-  ####  
   
   ## Need to figure out how to access via ERDDAP
   load("data/allfhsg.RData")
