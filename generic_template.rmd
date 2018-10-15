@@ -7,7 +7,6 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 always_allow_html: yes
 output:  
   html_document:
-    template: template.html
     fig_caption: yes
 bibliography: ECSA_bibliography.bib
 ---
@@ -17,17 +16,26 @@ bibliography: ECSA_bibliography.bib
 library(ecsa)
 library(dplyr)
 library(ggplot2)
-library(gridExtra)
+# library(gridExtra)
 library(DT)
 library(jpeg)
 library(cowplot)
 library(ggiraph)
 
 # Load in survey data, right now it is only for summer flounder
-load("data/df_survdat.rda")
+# load("data/df_survdat.rda")
+# colnames(survdat)
+# colnames(df_survdat)
+
+# load("data/Survdat.RData")
+# tt <- survdat
 
 ## Read in stock area vectors
-all_stock_area <- read.csv("data/seasonal_stock_strata.csv")
+# all_stock_area2 <- read.csv("data/seasonal_stock_strata.csv")
+
+## Read in stock area vectors
+all_stock_area <- read.csv("data/stock_list.csv", stringsAsFactors = FALSE)
+
 
 ## Put all mustaches here
 stock_code <- "{{SPECIES_CODE}}"
@@ -37,14 +45,14 @@ svspp <- "{{SVSPP}}"
 gg_int <- as.logical("{{INTERACTIVE}}")
 
 strata_spring <- all_stock_area %>% 
-  dplyr::filter(sp == stock_code,
-         season == "spring") %>% 
-  dplyr::pull(strata)
+  dplyr::filter(species_code == stock_code,
+                season == "spring") %>% 
+  dplyr::pull(strat)
 
 strata_fall <- all_stock_area %>% 
-  dplyr::filter(sp == stock_code,
+  dplyr::filter(species_code == stock_code,
          season == "fall") %>% 
-  dplyr::pull(strata)
+  dplyr::pull(strat)
 
 label <- function(variable,value){
   return(facet_names[value])
@@ -58,23 +66,29 @@ label <- function(variable,value){
 ### Introduction
 This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
+#### Summary
+
+* Add summary point 
+* Add summary point 
+* Add summary point 
+
 ### Strata definition
 ```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 
 map_strata(common_name = common_name, spring_strata = spring_strata,
            fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
-
-
 ```
+
 
 
 ## Surface and bottom temperature {.tabset .tabset-fade .tabset-pills}
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2017. Spring surface and bottom temperature within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom temperature within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. Error bars show &plusmn;1 SD of the observations.
 
 ### Figure
 
-```{r ocean temp, echo = F, fig.align='center', warning=F}
+```{r ocean temp, echo = F, fig.align='center', warning=F, fig.cap = "Fall and spring surface and bottom temperature within {{COMMON_NAME}} stock areas.  Error bars show &plusmn;1 SD of the observations."}
+
 sf1 <- stock_env(variable = "temperature",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
 ss1 <- stock_env(variable = "temperature",type = "surface",
@@ -87,7 +101,6 @@ bs1 <- stock_env(variable = "temperature",type = "bottom",
         
 surface <- rbind(sf1, ss1)
 bottom <- rbind(bf1, bs1)
-
 
 xmin <- rbind(min(surface$Time),min(bottom$Time))
 xmin <- min(xmin)
@@ -126,7 +139,7 @@ if (gg_int){
 ```{r ocean data, echo = F}
 
 
-datatable(all_temp, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(all_temp, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -138,10 +151,10 @@ datatable(all_temp, rownames = FALSE,filter = list(position = 'top', clear = FAL
 
 ## Surface and bottom salinity {.tabset .tabset-fade .tabset-pills}
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. 
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2017. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Spring surface and bottom salinity within the spring {{COMMON_NAME}} stock areas are shown in the upper and lower left figures. Fall surface and bottom salinity within the fall {{COMMON_NAME}} stock areas are shown in the upper and lower right figures. Error bars show &plusmn;1 SD of the observations.
 
 ### Figures
-```{r ocean sal, echo = F, fig.align='center', warning=F}
+```{r ocean sal, echo = F, fig.align='center', warning=F, , fig.cap = "Fall and spring surface and bottom salinity within {{COMMON_NAME}} stock areas. Error bars show &plusmn;1 SD of the observations."}
 sf1 <- stock_env(variable = "salinity",type = "surface",
                   season = "spring", svspp = svspp, mask_type = "unit")
 ss1 <- stock_env(variable = "salinity",type = "surface",
@@ -193,7 +206,7 @@ if (gg_int){
 ### Data
 ```{r sal data, echo = F}
 
-datatable(all_sal, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(all_sal, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -209,7 +222,7 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 The production cycle of the Northeast Shelf is complex and varies spatially. Patterns of seasonal blooms and the overall annual primary production varies within the stock area for {{COMMON_NAME}}; investigation into the linkages between phytoplankton production and {{COMMON_NAME}} may require additional production metrics. 
 
 ### Figures
-```{r chl fig, echo = F, fig.align="center", fig.height=3, warning=F}
+```{r chl fig, echo = F, fig.align="center", fig.height=3, warning=F, fig.cap = "Chlorophyll concentrations in the spring and fall {{COMMON_NAME}}  stock areas. Error bars show &plusmn;1 SD of the observations."}
 
 cs1 <- stock_env(variable = "chlorophyll",
                  season = "spring", svspp = svspp, mask_type = "unit")
@@ -249,7 +262,7 @@ if (gg_int){
 ```{r chl data, echo = F}
 
 
-datatable(chl, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(chl, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -264,7 +277,7 @@ The primary zooplankton species identified in the diet of {{COMMON_NAME}} larvae
 
 ### Figures
 
-```{r zooplankton, echo = F, fig.align="center", warning=F, message=F}
+```{r zooplankton, echo = F, fig.align="center", warning=F, message=F, fig.cap = "The spring (left) and fall (right) abundance for *C. typicus*, *T. longicornis*, and *Pseudocalanus*. Error bars indicate &plusmn;1 SD of the observations."}
 ct1 <- stock_env(variable = "zooplankton", genus = "centropages",
                  season = "spring", svspp = svspp, mask_type = "unit")
 
@@ -323,7 +336,7 @@ if (gg_int){
 
 ### Data
 ```{r zoo data, echo = F}
-datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -331,36 +344,118 @@ datatable(zoo, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
   scroller = TRUE))
 ```
 
+
+## Diet composition {.tabset .tabset-fade .tabset-pills}
+
+Trends in diet composition may indicate changes in the habitat for generalist predators, and may have implications for growth and productivity at the population level if the overall energy content of the diet changes. Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). Food habits data for {{COMMON_NAME}} have been collected from 1977-present [@smith_trophic_2010].
+
+
+```{r dietdat, eval=FALSE, echo = FALSE}
+#summer flounder stomachs are collected XXX size strata. Over XX summer flounder stomachs have been collected to date from over XXX survey tows. Predator length ranged in size from X to X cm.
+#[add: number+hauls sampled and length comp of sampled summer flounder in each time block below]
+```
+
+
+### Figures
+```{r diet, eval=T, echo = FALSE, fig.align='center',warning=F, message=F,fig.cap = "Seasonal weighted diet composition for major {{COMMON_NAME}} (1977-2016)."}
+  
+df_diet <- get_diet(as.numeric(svspp)) #hidden output somewhere need to fix, function still broken dont use
+
+# load("data/df_diet.RData")
+
+diet <- df_diet %>%
+  dplyr::select(year, season, prey, relmsw, nstom, num_tows)
+  
+dietmain <- diet %>%
+    dplyr::group_by(season, prey) %>%
+    dplyr::filter(relmsw>0.01) %>%
+    dplyr::filter(mean(relmsw)>10.0)
+    
+  
+facet_names <- list(
+  'FALL' = "Fall",
+  'SPRING' = "Spring",
+  'SUMMER'='Summer',
+  'WINTER'="Winter")
+  
+compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
+    #geom_bar(stat = "identity", aes(fill=fillwhite)) 
+    ylab("Percent in Diet") +
+    xlab("Year") +
+    #geom_bar(stat = "identity") +
+    facet_wrap(season~., nrow=3, labeller = label) +
+    theme_bw() + 
+    viridis::scale_fill_viridis(discrete = TRUE) +
+    theme(legend.position="bottom", 
+          legend.text=element_text(size=5),
+          strip.background = element_blank())
+
+
+compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
+
+ggiraph(code = print(compi), height=14)
+
+```
+
+### Data
+```{r diet data, echo = F}
+DT::datatable(diet, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+          extensions = 'Scroller',
+          options = list(search = list(regex = TRUE),
+  deferRender = TRUE,
+  scrollY = 200,
+  scroller = TRUE))
+```
+
+
 ## Probability of occurence and habitat area {.tabset .tabset-fade .tabset-pills}
 
 Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows was estimated in each season and year using a logistic regression, i.e., a GLM with a bionomial response and log-odds link (code: https://github.com/NOAA-EDAB/ECSA/blob/master/prob_occurence.R). Error bars represent the 95% confidence intervals.
 
 ### Figures
-```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3}
+```{r trawl-habitat, echo = FALSE, fig.align='center', warning=F, fig.height=3,  fig.cap = "Probability of occurrence of {{COMMON_NAME}} in NEFSC bottom trawl tows. Error bars represent the 95% confidence intervals."}
 
 
-df_survdat_spring <-
-  df_survdat %>%
-  dplyr::filter(YEAR > 1976,
-                ## place holder for filtering survdat by species
-                SEASON == "SPRING",
-                STRATUM %in% strata_spring)
+clean_survdat <- survdat %>%
+  filter(STRATUM %in% c(strata_fall, strata_spring),
+         YEAR > 1976) %>% 
+  select(CRUISE6, YEAR, SEASON, STRATUM, STATION, LAT, LON, EST_TOWDATE) %>% 
+  distinct(.keep_all = TRUE)
 
-df_survdat_fall <-
-  df_survdat %>%
-  dplyr::filter(YEAR > 1976,
-                ## place holder for filtering survdat by species
-                SEASON == "FALL",
-                STRATUM %in% strata_fall)
+stock_survdat <- survdat %>% 
+  filter(STRATUM %in% c(strata_fall, strata_spring),
+         SVSPP == svspp,
+         YEAR > 1976) %>% 
+  group_by(CRUISE6, YEAR, SEASON, STRATUM, STATION, LAT, LON,
+           EST_TOWDATE) %>% 
+  summarize(BIOMASS = mean(BIOMASS)) %>% 
+  right_join(clean_survdat, 
+             by = c("CRUISE6", "YEAR", "SEASON", "STRATUM", "STATION", "LAT", "LON", "EST_TOWDATE")) %>% 
+  mutate(pres = case_when(BIOMASS > 0 ~ TRUE,
+                          BIOMASS == 0 ~ FALSE,
+                          is.na(BIOMASS) ~ FALSE))
 
-df_survdat2use <-
-  rbind(df_survdat_spring,
-        df_survdat_fall) %>%
-  dplyr::mutate(pres = BIOMASS > 0)
+
+# df_survdat_spring <- #survdat %>%
+#   df_survdat %>%
+#   dplyr::filter(YEAR > 1976,
+#                 # SVSPP == svspp,
+#                 SEASON == "SPRING",
+#                 STRATUM %in% strata_spring)
+# 
+# df_survdat_fall <- #survdat %>%
+#   df_survdat %>%
+#   dplyr::filter(YEAR > 1976,
+#                 # SVSPP == svspp,
+#                 SEASON == "FALL",
+#                 STRATUM %in% strata_fall)
+# 
+# df_survdat2use <- rbind(df_survdat_spring,
+#                         df_survdat_fall) %>%
+#   dplyr::mutate(pres = BIOMASS > 0)
 
 
-df_prob_occ <-
-  df_survdat2use %>%
+df_prob_occ <- stock_survdat %>% #df_survdat2use %>%
   dplyr::group_by(SEASON, YEAR) %>%
   dplyr::do(calc_p(df = .)) %>% 
   ungroup() %>% 
@@ -397,7 +492,8 @@ if (gg_int){
 
 ### Data
 ```{r prob data, echo = F}
-datatable(df_prob_occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(df_prob_occ, rownames = FALSE,
+              filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,
@@ -410,7 +506,7 @@ datatable(df_prob_occ, rownames = FALSE,filter = list(position = 'top', clear = 
 The probability of occurrence was also estimated using classification random forest models (see [methods](#sec:methodsocc)). The probabilities were extracted for the spring and fall stock definition areas. The occupancy probability is shown in the upper plots and the occupancy area is shown in the lower plots, with spring on the left and fall on the right for all plots.
 
 ### Figures
-```{r rf_occupancy, fig.align="center", echo = F, warning=F}
+```{r rf_occupancy, fig.align="center", echo = F, warning=F, fig.cap = "Probability of occurrence estimated using random forest classification models."}
 o1 <- stock_env(variable = "occupancy prob", season = "spring",
                 svspp = svspp, mask_type = "unit")
 
@@ -478,64 +574,8 @@ if (gg_int){
 ### Data
 ```{r prob data2, echo = F}
 occ <- rbind(prob, hab)
-datatable(occ, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
-          extensions = 'Scroller',
-          options = list(search = list(regex = TRUE),
-  deferRender = TRUE,
-  scrollY = 200,
-  scroller = TRUE))
-```
-
-## Diet composition {.tabset .tabset-fade .tabset-pills}
-
-Food habits collected aboard NEFSC bottom trawl surveys in the {{COMMON_NAME}} seasonal survey strata were used to estimate weighted diet composition over time (see [methods](#sec:methodsdiet)), as well as length composition of sampled fish and sample size. Here we show annual and seasonal weighted diet composition for major prey (averaging over 10 percent of diet across years). Food habits data for {{COMMON_NAME}} have been collected from 1977-present [@smith_trophic_2010]. 
-
-```{r dietdat, eval=F, echo = FALSE}
-#{{COMMON_NAME}} stomachs are collected XXX size strata. Over XX {{COMMON_NAME}} stomachs have been collected to date from over XXX survey tows. Predator length ranged in size from X to X cm.
-#[add: number+hauls sampled and length comp of sampled {{COMMON_NAME}} in each time block below]
-```
-
-
-### Figures
-```{r diet, eval=T, echo = FALSE, fig.align='center', fig.height=14}
-  
-#df_diet <- get_diet() #hidden output somewhere need to fix, function still broken dont use
-
-load("data/df_diet.RData")
-
-diet <- df_diet %>%
-  dplyr::select(year, season, prey, relmsw, nstom, num_tows)
-  
-dietmain <- diet %>%
-    dplyr::group_by(season, prey) %>%
-    dplyr::filter(relmsw>0.01) %>%
-    dplyr::filter(mean(relmsw)>10.0)
-  
-# compplot2 <- ggplot(dietmain, aes(year, relmsw)) + 
-#     geom_bar(stat="identity")
-#   
-# compplot2 + facet_wrap(season ~ prey, nrow=10) + theme(legend.position="none")
-  
-compplot <- ggplot(dietmain, aes(year, relmsw, fill=prey)) + 
-    #geom_bar(stat = "identity", aes(fill=fillwhite)) 
-    ylab("Percent in Diet") +
-    xlab("Year") +
-    #geom_bar(stat = "identity") +
-    facet_wrap("season", nrow=3) +
-    theme_bw() + 
-    viridis::scale_fill_viridis(discrete = TRUE) +
-    theme(legend.position="bottom", 
-          legend.text=element_text(size=5))
-
-compi <- compplot + geom_bar_interactive(stat = "identity", aes(tooltip = prey, data_id = prey)) 
-
-ggiraph(code = print(compi), height=14)
-
-```
-
-### Data
-```{r diet data, echo = F}
-datatable(diet, rownames = FALSE,filter = list(position = 'top', clear = FALSE),
+DT::datatable(occ, rownames = FALSE,
+              filter = list(position = 'top', clear = FALSE),
           extensions = 'Scroller',
           options = list(search = list(regex = TRUE),
   deferRender = TRUE,

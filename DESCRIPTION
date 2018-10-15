@@ -2,7 +2,7 @@ Package: ecsa
 Type: Package
 Title: Ecosystem Context for Stock Assessments
 Version: 0.0.0.9000
-Author@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov", role = c("cre","aut")),
+Authors@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov", role = c("cre","aut")),
             person("Scott", "Large", email = "scott.large@noaa.gov", role = "aut"),
 		        person("Charles","Perretti", email = "charles.perretti@noaa.gov", role = "aut"),
 		        person("Kevin","Friedland", email = "kevin.friedland@noaa.gov", role = "aut"),
