@@ -29,6 +29,9 @@ create_template <- function(survdat_name,
   #   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
   #   x
   # }
+  
+  `%>%` <- magrittr::`%>%`
+  
   clean_names <- read.csv("data/stock_list.csv") %>% 
     dplyr::select(common_name,
                   sci_name,
@@ -38,7 +41,7 @@ create_template <- function(survdat_name,
     dplyr::filter(common_name == tolower(survdat_name)) %>% 
     dplyr::distinct(.keep_all = TRUE)
   
-  if(length(clean_names < 1)){
+  if(length(clean_names) < 1){
     stop(sprintf("%s is not found. Check spelling or add %s as a new stock to '%s'", survdat_name, survdat_name, path.expand("data/stock_list.csv")))
   }
   # 
@@ -62,7 +65,8 @@ create_template <- function(survdat_name,
   #                 -SCINAME,
   #                 -COMNAME)
   
-  dat <- readLines("generic_template.rmd")
+  #Create .Rmd file to be written to book
+  dat <- readLines("templates/generic_template.rmd")
   dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
   dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
@@ -71,6 +75,13 @@ create_template <- function(survdat_name,
   dat <- gsub("\\{\\{INTERACTIVE\\}\\}", make_interactive, dat)
   file_name <- sprintf("ECSA_%s.rmd", clean_names$cc_name)
 
+  #Adjust _bookdown.yml accordingly
+  bookyml <- readLines("_bookdown.yml")
+  bookyml <- stringr::str_replace(bookyml,
+                                  "\\[.*\\]",
+                                  sprintf('["ECSA_%s.rmd"]',
+                                          clean_names$cc_name))
+  
   if(file.exists(file_name) &
      !overwrite){
     stop(sprintf("\nEasy, Cowboy!\n%s already exists. If you want to do this, change 'overwrite = TRUE'",
@@ -80,4 +91,14 @@ create_template <- function(survdat_name,
   file_connection <- file(file_name)
   writeLines(dat, file_connection)
   close(file_connection)
+  message(sprintf("ECSA template written to %s",
+                  file_name))
+  
+  book_connection <- file("_bookdown.yml")
+  writeLines(bookyml, book_connection)
+  close(book_connection)
+  message("\n_bookdown.yml successfully updated.")
+
 }
+# create_template(survdat_name = "smooth dogfish", overwrite = T)
+# bookdown::render_book("ECSA_smooth-dogfish.rmd")
