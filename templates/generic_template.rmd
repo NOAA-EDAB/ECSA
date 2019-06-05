@@ -8,7 +8,7 @@ always_allow_html: yes
 site: "bookdown::bookdown_site"
 output:
   bookdown::gitbook:
-    lib_dir: "book_output"
+    lib_dir: "book_assets"
 ---
 
 ```{r setup, include = FALSE}
@@ -36,7 +36,7 @@ library(cowplot)
 # all_stock_area2 <- read.csv("data/seasonal_stock_strata.csv")
 
 ## Read in stock area vectors
-all_stock_area <- read.csv("data/stock_list.csv", stringsAsFactors = FALSE)
+all_stock_area <- read.csv("data/stock_data/stock_list.csv", stringsAsFactors = FALSE)
 
 
 ## Put all mustaches here

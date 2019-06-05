@@ -1,0 +1,5 @@
+rmd_files: [""]
+delete_merged_file: true
+new_session: yes
+output_dir: ""
+book_filename: ""

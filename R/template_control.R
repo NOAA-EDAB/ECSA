@@ -1,25 +1,33 @@
 #' Create a ECSA template
 #'
-#' A function to create an ECSA Rmarkdown template given the common name of a species of interest. 
+#' A function to create an ECSA bookdown template for a species of interest. 
 #'
 #'
 #' @param survdat_name A common species name as defined by survdat. Options as of 8/24 include 
 #' JONAH CRAB, AMERICAN LOBSTER, and SUMMER FLOUNDER.
+#' @param output_dir The output directory for the compiled bookdown HTML document and supporting files.
+#' @param book_filename The filename of the compiled bookdown HTML document. Defaults "to ECSA_\code{survdat_name}.html".
+#' @param render_book Logical. If TRUE, the generated template will render a bookdown HTML document into the chosen directory.
+#' Otherwise, a template .Rmd file will be generated in the ECSA package directory.   
 #' @param overwrite Logical. If TRUE, output will overwrite any existing template for chosen species.
-#' @param make_interactive Logical. If TRUE, template time series will be made interative through the ggiraph library.
+#' @param make_interactive Logical. If TRUE, template time series will be made interative through the plotly library.
 #'
 #' @return A .Rmd file populated with figures that can be knit into an ECSA report skeleton. 
 #'
 #' @export
+#' 
 #' @examples  
 #'
-#' create_template(survdat_name = "SUMMER FLOUNDER", overwrite = TRUE, make_interactive = FALSE)
+#' create_template(survdat_name = "SMOOTH DOGFISH", overwrite = T, output_dir = getwd())
 #'
 
 
 create_template <- function(survdat_name,
                             overwrite = FALSE,
-                            make_interactive = FALSE){
+                            make_interactive = FALSE,
+                            output_dir = NULL,
+                            book_filename = NULL,
+                            render_book = F){
   
   # load("data/df_survdat.rda")
   # spp <- read.csv("data/species_list.csv")
@@ -32,7 +40,7 @@ create_template <- function(survdat_name,
   
   `%>%` <- magrittr::`%>%`
   
-  clean_names <- read.csv("data/stock_list.csv") %>% 
+  clean_names <- read.csv("data/stock_data/stock_list.csv") %>% 
     dplyr::select(common_name,
                   sci_name,
                   cc_name,
@@ -76,12 +84,38 @@ create_template <- function(survdat_name,
   file_name <- sprintf("ECSA_%s.rmd", clean_names$cc_name)
 
   #Adjust _bookdown.yml accordingly
-  bookyml <- readLines("_bookdown.yml")
+  bookyml <- suppressWarnings(
+    readLines("templates/_bookdown_template.yml")
+  )
   bookyml <- stringr::str_replace(bookyml,
                                   "\\[.*\\]",
                                   sprintf('["ECSA_%s.rmd"]',
                                           clean_names$cc_name))
   
+  #Set output directory for bookdown files
+  if(is.null(output_dir)){
+    stop("Output directory must be specified.")
+  } else {
+    bookyml <- stringr::str_replace(bookyml,
+                                    'output_dir: ".*"',
+                                    sprintf('output_dir: "%s"',
+                                    output_dir))
+  }
+  
+  #Set filename of final HTML document (by default this is the title of the template)
+  if (!is.null(book_filename)) {
+    bookyml <- stringr::str_replace(bookyml,
+                                    'book_filename: ".*"',
+                                    sprintf('book_filename: "%s"',
+                                            book_filename))
+  } else {
+    bookyml <- stringr::str_replace(bookyml,
+                                    'book_filename: ".*"',
+                                    sprintf('book_filename: "ECSA_%s"',
+                                            clean_names$cc_name))
+  }
+  
+  #Check to make sure existing file is not over-written
   if(file.exists(file_name) &
      !overwrite){
     stop(sprintf("\nEasy, Cowboy!\n%s already exists. If you want to do this, change 'overwrite = TRUE'",
@@ -94,10 +128,15 @@ create_template <- function(survdat_name,
   message(sprintf("ECSA template written to %s",
                   file_name))
   
-  book_connection <- file("_bookdown.yml")
+  book_connection <- file("_bookdown.yml",open = "w")
   writeLines(bookyml, book_connection)
   close(book_connection)
-  message("\n_bookdown.yml successfully updated.")
+  message("\n_bookdown.yml successfully created.")
+  
+  if (render_book){
+    bookdown::render_book(sprintf("ECSA_%s.rmd",
+                                  clean_names$cc_name))
+  }
 
 }
 # create_template(survdat_name = "smooth dogfish", overwrite = T)

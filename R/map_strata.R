@@ -56,8 +56,7 @@ map_strata <- function(common_name, spring_strata, fall_strata, overwrite = FALS
   ne_states <- rnaturalearth::ne_states(country = "united states of america",
                                         returnclass = "sf") %>% 
     sf::st_transform(crs = crs)
-  
-  ## 
+
   
   strata_grid <- sf::st_read("data/strata_shapefiles/BTS_Strata.shp",
                              quiet = TRUE) %>% 
