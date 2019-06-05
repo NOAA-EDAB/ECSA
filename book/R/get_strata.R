@@ -26,7 +26,4 @@ get_strata <- function(overwrite = FALSE) {
       download.file(strata_dir[i], file, method = "auto", mode = "wb")
     }
   }
-  if (overwrite){
-    message("Strata shapefiles successfully downloaded to data/strata_shapefiles")
-  }
 }
