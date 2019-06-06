@@ -23,6 +23,7 @@ library(patchwork)
 library(ggiraph)
 library(ggthemes)
 library(cowplot)
+library(stringr)
 
 # Load in survey data, right now it is only for summer flounder
 # load("data/df_survdat.rda")
@@ -41,27 +42,17 @@ all_stock_area <- read.csv("data/stock_data/stock_list.csv", stringsAsFactors = 
 
 ## Put all mustaches here
 stock_code <- "{{SPECIES_CODE}}"
-common_name <- "{{COMMON_NAME}}"
+# common_name <- "{{COMMON_NAME}}"
 cc_name <- "{{CC_NAME}}"
-svspp <- "{{SVSPP}}"
-gg_int <- as.logical("{{INTERACTIVE}}")
+# svspp <- "{{SVSPP}}"
+# gg_int <- as.logical("{{INTERACTIVE}}")
 
 source("R/map_strata.R")
 source("R/get_strata.R")
+source("R/crop_to_strata.R")
 
-strata_spring <- all_stock_area %>% 
-  dplyr::filter(species_code == stock_code,
-                season == "spring") %>% 
-  dplyr::pull(strat)
-
-strata_fall <- all_stock_area %>% 
-  dplyr::filter(species_code == stock_code,
-         season == "fall") %>% 
-  dplyr::pull(strat)
-
-label <- function(variable,value){
-  return(facet_names[value])
-}
+strata <- all_stock_area %>% 
+  dplyr::filter(sp == stock_code)
 
 ```
 
@@ -80,10 +71,89 @@ This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SC
 ### Strata definition
 ```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 
-map_strata(common_name = common_name, spring_strata = spring_strata,
-           fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
+map_strata(stock_code = stock_code, strata = strata, overwrite = FALSE, save_plot = FALSE)
 ```
 
 
+### Bottom Temperature
+
+```{r, echo = F, warning=F, fig.align='center'}
+
+## Spring bottom temperature: If only one stock area is listed, show that area with spring data
+spring_bot_temp <- try(
+  crop_to_strata(r = "bot_temp_spring_spdf.rdata",
+                 stock_code = stock_code, season_ = "spring") %>% 
+                 as.tbl_cube() 
+  )
+
+if (class(spring_bot_temp) == "try-error"){
+    spring_bot_temp <- try(
+      crop_to_strata(r = "bot_temp_spring_spdf.rdata",
+                     stock_code = stock_code, season_ = "fall") %>% 
+                     as.tbl_cube() 
+    )
+}
+
+if (class(spring_bot_temp) == "try-error"){
+    spring_bot_temp <- try(
+      crop_to_strata(r = "bot_temp_spring_spdf.rdata",
+                     stock_code = stock_code, season_ = "both") %>% 
+                     as.tbl_cube() 
+    )
+}
+
+names(spring_bot_temp$mets) <- "spring_bot_temp"
+
+mean_spring_bot_temp <- spring_bot_temp %>% 
+  group_by(band) %>% 
+  dplyr::summarise(Temp = mean(spring_bot_temp, na.rm = T)) %>% 
+  as.data.frame() %>% 
+  mutate(Time = as.numeric(str_extract(band, "\\d{4}"))) %>% 
+  dplyr::select(-band)
+
+spring_bt_plot <- 
+  ggplot(data = mean_spring_bot_temp) +
+  geom_line(aes(x = Time, y = Temp))
+
+
+## Fall bottom temperature
+fall_bot_temp <- try(
+  crop_to_strata(r = "bot_temp_fall_spdf.rdata",
+                 stock_code = stock_code, season_ = "fall") %>% 
+                 as.tbl_cube() 
+  )
+
+if (class(fall_bot_temp) == "try-error"){
+    fall_bot_temp <- try(
+      crop_to_strata(r = "bot_temp_fall_spdf.rdata",
+                     stock_code = stock_code, season_ = "spring") %>% 
+                     as.tbl_cube() 
+    )
+}
+
+if (class(fall_bot_temp) == "try-error"){
+    fall_bot_temp <- try(
+      crop_to_strata(r = "bot_temp_fall_spdf.rdata",
+                     stock_code = stock_code, season_ = "both") %>% 
+                     as.tbl_cube() 
+    )
+}
+
+names(fall_bot_temp$mets) <- "fall_bot_temp"
+
+mean_fall_bot_temp <- fall_bot_temp %>% 
+  group_by(band) %>% 
+  dplyr::summarise(Temp = mean(fall_bot_temp, na.rm = T)) %>% 
+  as.data.frame() %>% 
+  mutate(Time = as.numeric(str_extract(band, "\\d{4}"))) %>% 
+  dplyr::select(-band)
+
+fall_bt_plot <- 
+  ggplot(data = mean_fall_bot_temp) +
+  geom_line(aes(x = Time, y = Temp))
+
+fall_bt_plot + spring_bt_plot
+
+```
 
 _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._

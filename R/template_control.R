@@ -23,6 +23,7 @@
 
 
 create_template <- function(survdat_name,
+                            stock_code,
                             overwrite = FALSE,
                             make_interactive = FALSE,
                             output_dir = NULL,
@@ -41,13 +42,10 @@ create_template <- function(survdat_name,
   `%>%` <- magrittr::`%>%`
   
   clean_names <- read.csv("data/stock_data/stock_list.csv") %>% 
-    dplyr::select(common_name,
-                  sci_name,
-                  cc_name,
-                  species_code,
-                  svspp) %>% 
-    dplyr::filter(common_name == tolower(survdat_name)) %>% 
-    dplyr::distinct(.keep_all = TRUE)
+    dplyr::select(sp) %>% 
+    dplyr::filter(sp == tolower(stock_code)) %>% 
+    dplyr::distinct(.keep_all = TRUE) %>% 
+    mutate(cc_name = survdat_name)
   
   if(length(clean_names) < 1){
     stop(sprintf("%s is not found. Check spelling or add %s as a new stock to '%s'", survdat_name, survdat_name, path.expand("data/stock_list.csv")))
@@ -75,12 +73,12 @@ create_template <- function(survdat_name,
   
   #Create .Rmd file to be written to book
   dat <- readLines("templates/generic_template.rmd")
-  dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
-  dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
+  # dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
+  # dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
-  dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$species_code, dat)  
-  dat <- gsub("\\{\\{SVSPP\\}\\}", clean_names$svspp, dat)  
-  dat <- gsub("\\{\\{INTERACTIVE\\}\\}", make_interactive, dat)
+  dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$sp, dat)  
+  # dat <- gsub("\\{\\{SVSPP\\}\\}", clean_names$svspp, dat)  
+  # dat <- gsub("\\{\\{INTERACTIVE\\}\\}", make_interactive, dat)
   file_name <- sprintf("ECSA_%s.rmd", clean_names$cc_name)
 
   #Adjust _bookdown.yml accordingly
@@ -139,5 +137,7 @@ create_template <- function(survdat_name,
   }
 
 }
-# create_template(survdat_name = "smooth dogfish", overwrite = T)
-# bookdown::render_book("ECSA_smooth-dogfish.rmd")
+# create_template(survdat_name = "ATLANTIC-MENHADEN",
+#                 stock_code = "atlmen",
+#                   output_dir = "~")
+# bookdown::render_book("ECSA_ATLANTIC-MENHADEN.rmd")
