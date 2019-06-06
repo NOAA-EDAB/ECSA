@@ -45,7 +45,7 @@ create_template <- function(survdat_name,
     dplyr::select(sp) %>% 
     dplyr::filter(sp == tolower(stock_code)) %>% 
     dplyr::distinct(.keep_all = TRUE) %>% 
-    mutate(cc_name = survdat_name)
+    dplyr::mutate(cc_name = survdat_name)
   
   if(length(clean_names) < 1){
     stop(sprintf("%s is not found. Check spelling or add %s as a new stock to '%s'", survdat_name, survdat_name, path.expand("data/stock_list.csv")))
@@ -139,5 +139,6 @@ create_template <- function(survdat_name,
 }
 # create_template(survdat_name = "ATLANTIC-MENHADEN",
 #                 stock_code = "atlmen",
-#                   output_dir = "~")
+#                   output_dir = "~",
+#                 overwrite = T)
 # bookdown::render_book("ECSA_ATLANTIC-MENHADEN.rmd")

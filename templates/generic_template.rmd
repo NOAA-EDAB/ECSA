@@ -25,6 +25,9 @@ library(ggthemes)
 library(cowplot)
 library(stringr)
 
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
+
+
 # Load in survey data, right now it is only for summer flounder
 # load("data/df_survdat.rda")
 # colnames(survdat)
@@ -50,6 +53,7 @@ cc_name <- "{{CC_NAME}}"
 source("R/map_strata.R")
 source("R/get_strata.R")
 source("R/crop_to_strata.R")
+source("R/stars_to_series.R")
 
 strata <- all_stock_area %>% 
   dplyr::filter(sp == stock_code)
@@ -75,85 +79,89 @@ map_strata(stock_code = stock_code, strata = strata, overwrite = FALSE, save_plo
 ```
 
 
+#### A note on data flow:
+
+Data sets in the template `Rmarkdown` file for this document are first passed to the `stars_to_series` function. This function first tries to clip the stars data cube into the shape of the seasonal stock area. If the first guess at the seasonal stock area (passed through the title of the .rdata file) is missing, the function returns environmental information in the available stock area for the opposing season. 
+
+Therefore, if a spring data set is provided, but only a fall stock area is available, then the spring data is returned for the fall stock area. A third seasonal designation exists in the data ("both"). If this is the case, the environmental information is provided for those areas.
+
 ### Bottom Temperature
 
-```{r, echo = F, warning=F, fig.align='center'}
+```{r bot_temp, fig.height=3}
+spring_bottom_temp <- 
+  stars_to_series(r = "bot_temp_spring_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "bottom_temp") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
 
-## Spring bottom temperature: If only one stock area is listed, show that area with spring data
-spring_bot_temp <- try(
-  crop_to_strata(r = "bot_temp_spring_spdf.rdata",
-                 stock_code = stock_code, season_ = "spring") %>% 
-                 as.tbl_cube() 
-  )
+fall_bottom_temp <- 
+  stars_to_series(r = "bot_temp_fall_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "bottom_temp") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
 
-if (class(spring_bot_temp) == "try-error"){
-    spring_bot_temp <- try(
-      crop_to_strata(r = "bot_temp_spring_spdf.rdata",
-                     stock_code = stock_code, season_ = "fall") %>% 
-                     as.tbl_cube() 
-    )
-}
-
-if (class(spring_bot_temp) == "try-error"){
-    spring_bot_temp <- try(
-      crop_to_strata(r = "bot_temp_spring_spdf.rdata",
-                     stock_code = stock_code, season_ = "both") %>% 
-                     as.tbl_cube() 
-    )
-}
-
-names(spring_bot_temp$mets) <- "spring_bot_temp"
-
-mean_spring_bot_temp <- spring_bot_temp %>% 
-  group_by(band) %>% 
-  dplyr::summarise(Temp = mean(spring_bot_temp, na.rm = T)) %>% 
-  as.data.frame() %>% 
-  mutate(Time = as.numeric(str_extract(band, "\\d{4}"))) %>% 
-  dplyr::select(-band)
-
-spring_bt_plot <- 
-  ggplot(data = mean_spring_bot_temp) +
-  geom_line(aes(x = Time, y = Temp))
-
-
-## Fall bottom temperature
-fall_bot_temp <- try(
-  crop_to_strata(r = "bot_temp_fall_spdf.rdata",
-                 stock_code = stock_code, season_ = "fall") %>% 
-                 as.tbl_cube() 
-  )
-
-if (class(fall_bot_temp) == "try-error"){
-    fall_bot_temp <- try(
-      crop_to_strata(r = "bot_temp_fall_spdf.rdata",
-                     stock_code = stock_code, season_ = "spring") %>% 
-                     as.tbl_cube() 
-    )
-}
-
-if (class(fall_bot_temp) == "try-error"){
-    fall_bot_temp <- try(
-      crop_to_strata(r = "bot_temp_fall_spdf.rdata",
-                     stock_code = stock_code, season_ = "both") %>% 
-                     as.tbl_cube() 
-    )
-}
-
-names(fall_bot_temp$mets) <- "fall_bot_temp"
-
-mean_fall_bot_temp <- fall_bot_temp %>% 
-  group_by(band) %>% 
-  dplyr::summarise(Temp = mean(fall_bot_temp, na.rm = T)) %>% 
-  as.data.frame() %>% 
-  mutate(Time = as.numeric(str_extract(band, "\\d{4}"))) %>% 
-  dplyr::select(-band)
-
-fall_bt_plot <- 
-  ggplot(data = mean_fall_bot_temp) +
-  geom_line(aes(x = Time, y = Temp))
-
-fall_bt_plot + spring_bt_plot
-
+spring_bottom_temp + fall_bottom_temp
 ```
 
+### Surface Temperature
+
+```{r surf_temp, fig.height=3}
+spring_surface_temp <- 
+  stars_to_series(r = "surf_temp_spring_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "surface_temp") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+fall_surface_temp <- 
+  stars_to_series(r = "surf_temp_fall_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "surface_temp") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_surface_temp + fall_surface_temp
+```
+
+### Bottom Salinity
+
+```{r bot_sal, fig.height=3}
+spring_bottom_sal <- 
+  stars_to_series(r = "bot_sal_spring_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "bottom_sal") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+fall_bottom_sal <- 
+  stars_to_series(r = "bot_sal_fall_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "bottom_sal") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_bottom_sal + fall_bottom_sal
+```
+
+### Surface Salinity
+
+```{r surf_sal, fig.height=3}
+spring_surface_sal <- 
+  stars_to_series(r = "surf_sal_spring_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "surface_sal") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+fall_surface_sal <- 
+  stars_to_series(r = "surf_sal_fall_spdf.rdata",
+                stock_code = stock_code,
+                measure_name = "surface_sal") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_surface_sal + fall_surface_sal
+```
 _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
