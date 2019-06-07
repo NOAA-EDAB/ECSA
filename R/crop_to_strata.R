@@ -13,7 +13,7 @@ loadRData <- function(fileName){
 
 crop_to_strata <- function(r,stock_code, season_, mask_type = "unit"){
   
-
+  
   s1 <- read.csv('data/stock_data/stock_list.csv', stringsAsFactors = F) %>% 
           dplyr::filter(sp == tolower(stock_code))
   

@@ -20,7 +20,6 @@ library(ggplot2)
 library(DT)
 library(jpeg)
 library(patchwork)
-library(ggiraph)
 library(ggthemes)
 library(cowplot)
 library(stringr)
@@ -61,7 +60,7 @@ strata <- all_stock_area %>%
 ```
 
 
-## Overview 
+# Overview 
 
 ### Introduction
 This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
@@ -84,6 +83,8 @@ map_strata(stock_code = stock_code, strata = strata, overwrite = FALSE, save_plo
 Data sets in the template `Rmarkdown` file for this document are first passed to the `stars_to_series` function. This function first tries to clip the stars data cube into the shape of the seasonal stock area. If the first guess at the seasonal stock area (passed through the title of the .rdata file) is missing, the function returns environmental information in the available stock area for the opposing season. 
 
 Therefore, if a spring data set is provided, but only a fall stock area is available, then the spring data is returned for the fall stock area. A third seasonal designation exists in the data ("both"). If this is the case, the environmental information is provided for those areas.
+
+# Temperature
 
 ### Bottom Temperature
 
@@ -125,6 +126,8 @@ fall_surface_temp <-
 spring_surface_temp + fall_surface_temp
 ```
 
+# Salinity
+
 ### Bottom Salinity
 
 ```{r bot_sal, fig.height=3}
@@ -164,4 +167,66 @@ fall_surface_sal <-
 
 spring_surface_sal + fall_surface_sal
 ```
+
+# Occurrence probability
+
+```{r occ_prob, fig.height=3}
+spring_occ_prob <- 
+  stars_to_series(r = "occurrence_prob_spring.rdata",
+                stock_code = stock_code,
+                measure_name = "occurrence") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+fall_occ_prob <- 
+  stars_to_series(r = "occurrence_prob_fall.rdata",
+                stock_code = stock_code,
+                measure_name = "occurrence") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_occ_prob + fall_occ_prob
+```
+
+# Biomass
+
+```{r biomass, fig.height=3}
+spring_biomass <- 
+  stars_to_series(r = "biomass_spring.rdata",
+                stock_code = stock_code,
+                measure_name = "biomass") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+fall_biomass <- 
+  stars_to_series(r = "biomass_fall.rdata",
+                stock_code = stock_code,
+                measure_name = "biomass") %>% 
+  ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_biomass + fall_biomass
+```
+
+# Chlorophyll
+
+```{r chl, fig.height=3}
+
+fall_chl <- stars_to_series(r = "chlorophyll_conc.rdata",
+                stock_code = stock_code,
+                measure_name = "chl",
+                process_to_season = "fall")$fall %>% 
+    ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_chl <- stars_to_series(r = "chlorophyll_conc.rdata",
+                stock_code = stock_code,
+                measure_name = "biomass",
+                process_to_season = "spring")$spring %>% 
+    ggplot() +
+  geom_line(aes(x = Time, y = Mean))
+
+spring_chl + fall_chl
+```
+
 _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
