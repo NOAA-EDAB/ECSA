@@ -159,7 +159,7 @@ fall_bottom_sal <-
                 measure_name = "bottom_sal")  %>% 
   mutate(season = "Fall")
 
-bottom_sal_plt <- rbind(spring_bottom_sal,
+bottom_sal_p lt <- rbind(spring_bottom_sal,
                 fall_bottom_sal) %>% 
   tidyr::spread(season, Mean) %>% 
   tab_plotly(.,title = "Bottom Salinity", ylab = "Salinity (PSU)")
@@ -266,7 +266,20 @@ chl_plt
 
 # Zooplankton
 
-*Zooplankton indicators coming soon...*
+```{r zoo, fig.height=4}
+spring_zoo <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+                stock_code = stock_code,
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "Spring")
+
+
+fall_zoo <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
+                stock_code = stock_code,
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "Fall")
+```
 
 
 

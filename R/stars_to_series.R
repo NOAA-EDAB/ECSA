@@ -1,4 +1,4 @@
-stars_to_series <- function(r, stock_code, measure_name, process_to_season = NULL){
+stars_to_series <- function(r, stock_code, measure_name, process_to_season = NULL, group_regex = NULL){
   
   if (is.null(process_to_season)){
       #Generic tbl_cube to data.frame conversion
@@ -65,17 +65,23 @@ stars_to_series <- function(r, stock_code, measure_name, process_to_season = NUL
         
         return(list("spring" = df_out_spring,
                     "fall" = df_out_fall))
-    } else {
-  
-        # Otherwise just use the annual data
-        names(cube_in$mets) <- measure_name
+      } else {
+
+        names(cube_in$mets) <- measure_name        
         
         df_out <- cube_in %>% 
           group_by(band) %>% 
-          dplyr::summarise(Mean = mean(get(measure_name), na.rm = T)) %>% 
+          dplyr::summarise(Mean = mean(get(measure_name), na.rm = T)) %>%
           as.data.frame() %>% 
-          mutate(Time = as.numeric(str_extract(band, "\\d{4}"))) %>% 
-          dplyr::select(-band)
+          mutate(Time = as.numeric(str_extract(band, "\\d{4}")))
+        
+          if (!is.null(group_regex)) {
+            df_out <- df_out %>% 
+              mutate(Grouping = stringr::str_extract(band, group_regex)) %>% 
+              dplyr::select(-band)
+          } else {
+            df_out <- dplyr::select(df_out, -band)
+          }
         
         return(df_out)
   }
