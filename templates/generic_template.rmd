@@ -9,6 +9,11 @@ site: "bookdown::bookdown_site"
 output:
   bookdown::gitbook:
     lib_dir: "book_assets"
+    config:
+      toc:
+        collapse: none
+        after: |
+          <li><a href="https://bookdown.org" target="_blank">Published with bookdown</a></li>
 ---
 
 ```{r setup, include = FALSE}
@@ -16,7 +21,7 @@ output:
 # library(ecsa)
 library(dplyr)
 library(ggplot2)
-# library(gridExtra)
+library(plotly)
 library(DT)
 library(jpeg)
 library(patchwork)
@@ -44,7 +49,7 @@ all_stock_area <- read.csv("data/stock_data/stock_list.csv", stringsAsFactors = 
 
 ## Put all mustaches here
 stock_code <- "{{SPECIES_CODE}}"
-# common_name <- "{{COMMON_NAME}}"
+common_name <- "{{COMMON_NAME}}"
 cc_name <- "{{CC_NAME}}"
 # svspp <- "{{SVSPP}}"
 # gg_int <- as.logical("{{INTERACTIVE}}")
@@ -53,6 +58,7 @@ source("R/map_strata.R")
 source("R/get_strata.R")
 source("R/crop_to_strata.R")
 source("R/stars_to_series.R")
+source("R/tab_plotly.R")
 
 strata <- all_stock_area %>% 
   dplyr::filter(sp == stock_code)
@@ -80,153 +86,187 @@ map_strata(stock_code = stock_code, strata = strata, overwrite = FALSE, save_plo
 
 #### A note on data flow:
 
-Data sets in the template `Rmarkdown` file for this document are first passed to the `stars_to_series` function. This function first tries to clip the stars data cube into the shape of the seasonal stock area. If the first guess at the seasonal stock area (passed through the title of the .rdata file) is missing, the function returns environmental information in the available stock area for the opposing season. 
+Data sets in the template `Rmarkdown` file for this document are first passed to the `stars_to_series` function. This function takes stacks of raster layers and crops them into the shape of the seasonal stock area. If the first guess at the seasonal stock area (passed through the title of the `.rdata` file) fails, the function returns environmental information in the available stock area for the opposing season. 
 
-Therefore, if a spring data set is provided, but only a fall stock area is available, then the spring data is returned for the fall stock area. A third seasonal designation exists in the data ("both"). If this is the case, the environmental information is provided for those areas.
+Therefore, if a spring data set is provided, but only a fall stock area is available, then the spring data is returned for the fall stock area. A third seasonal designation exists in the data ("both"). In this case, the environmental information is provided for combined spring and fall stock areas.
+
+_Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 
 # Temperature
 
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the `r common_name` stock areas are shown below.
+
 ### Bottom Temperature
 
-```{r bot_temp, fig.height=3}
+```{r bot_temp, fig.height=4}
 spring_bottom_temp <- 
   stars_to_series(r = "bot_temp_spring_spdf.rdata",
                 stock_code = stock_code,
                 measure_name = "bottom_temp") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Spring")
 
 fall_bottom_temp <- 
   stars_to_series(r = "bot_temp_fall_spdf.rdata",
                 stock_code = stock_code,
                 measure_name = "bottom_temp") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Fall")
 
-spring_bottom_temp + fall_bottom_temp
+bottom_temp_plt<- rbind(spring_bottom_temp,
+                fall_bottom_temp) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Bottom Temperature", ylab = "Temperature (&deg;C)")
+bottom_temp_plt 
 ```
 
 ### Surface Temperature
 
-```{r surf_temp, fig.height=3}
+```{r surf_temp, fig.height=4}
 spring_surface_temp <- 
   stars_to_series(r = "surf_temp_spring_spdf.rdata",
                 stock_code = stock_code,
-                measure_name = "surface_temp") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+                measure_name = "surface_temp")  %>% 
+  mutate(season = "Spring")
 
 fall_surface_temp <- 
   stars_to_series(r = "surf_temp_fall_spdf.rdata",
                 stock_code = stock_code,
-                measure_name = "surface_temp") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+                measure_name = "surface_temp")  %>% 
+  mutate(season = "Fall")
 
-spring_surface_temp + fall_surface_temp
+surface_temp_plt <- rbind(spring_surface_temp,
+                fall_surface_temp) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Surface Temperature", ylab = "Temperature (&deg;C)")
+surface_temp_plt
 ```
 
 # Salinity
 
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the `r common_name` stock areas are shown below.
+
 ### Bottom Salinity
 
-```{r bot_sal, fig.height=3}
+```{r bot_sal, fig.height=4}
 spring_bottom_sal <- 
   stars_to_series(r = "bot_sal_spring_spdf.rdata",
                 stock_code = stock_code,
                 measure_name = "bottom_sal") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Spring")
 
 fall_bottom_sal <- 
   stars_to_series(r = "bot_sal_fall_spdf.rdata",
                 stock_code = stock_code,
-                measure_name = "bottom_sal") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+                measure_name = "bottom_sal")  %>% 
+  mutate(season = "Fall")
 
-spring_bottom_sal + fall_bottom_sal
+bottom_sal_plt <- rbind(spring_bottom_sal,
+                fall_bottom_sal) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Bottom Salinity", ylab = "Salinity (PSU)")
+bottom_sal_plt
 ```
 
 ### Surface Salinity
 
-```{r surf_sal, fig.height=3}
+```{r surf_sal, fig.height=4}
 spring_surface_sal <- 
   stars_to_series(r = "surf_sal_spring_spdf.rdata",
                 stock_code = stock_code,
                 measure_name = "surface_sal") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Spring")
 
 fall_surface_sal <- 
   stars_to_series(r = "surf_sal_fall_spdf.rdata",
                 stock_code = stock_code,
-                measure_name = "surface_sal") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+                measure_name = "surface_sal")  %>% 
+  mutate(season = "Fall")
 
-spring_surface_sal + fall_surface_sal
+surface_sal_plt <- rbind(spring_surface_sal,
+                fall_surface_sal) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Surface Salinity", ylab = "Salinity (PSU)")
+surface_sal_plt
 ```
 
-# Occurrence probability
+# Habitat and abundance
 
-```{r occ_prob, fig.height=3}
+## Occurrence probability
+
+The probability of occurrence was estimated using random forest classification models (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodsocc)). Probabilities were extracted for the spring and fall stock definition areas. 
+
+```{r occ_prob, fig.height=4}
 spring_occ_prob <- 
   stars_to_series(r = "occurrence_prob_spring.rdata",
                 stock_code = stock_code,
                 measure_name = "occurrence") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Spring")
 
 fall_occ_prob <- 
   stars_to_series(r = "occurrence_prob_fall.rdata",
                 stock_code = stock_code,
                 measure_name = "occurrence") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Fall") 
 
-spring_occ_prob + fall_occ_prob
+occ_prob_plt <- rbind(spring_occ_prob,
+                fall_occ_prob) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Occupancy Probability", ylab = "Occupancy probability")
+occ_prob_plt
 ```
 
-# Biomass
+## Biomass
 
-```{r biomass, fig.height=3}
+```{r biomass, fig.height=4}
 spring_biomass <- 
   stars_to_series(r = "biomass_spring.rdata",
                 stock_code = stock_code,
                 measure_name = "biomass") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Spring")
 
 fall_biomass <- 
   stars_to_series(r = "biomass_fall.rdata",
                 stock_code = stock_code,
                 measure_name = "biomass") %>% 
-  ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Fall") %>% 
+  dplyr::distinct()
 
-spring_biomass + fall_biomass
+biomass_plt <- rbind(spring_biomass,
+                fall_biomass) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Biomass", ylab = "Value")
+
+biomass_plt
 ```
 
 # Chlorophyll
 
-```{r chl, fig.height=3}
+The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodschl)). Chlorophyll concentrations in the spring and fall `r common_name` stock areas are shown below.
+
+```{r chl, fig.height=4}
 
 fall_chl <- stars_to_series(r = "chlorophyll_conc.rdata",
                 stock_code = stock_code,
                 measure_name = "chl",
                 process_to_season = "fall")$fall %>% 
-    ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Fall")
 
 spring_chl <- stars_to_series(r = "chlorophyll_conc.rdata",
                 stock_code = stock_code,
                 measure_name = "biomass",
                 process_to_season = "spring")$spring %>% 
-    ggplot() +
-  geom_line(aes(x = Time, y = Mean))
+  mutate(season = "Spring")
 
-spring_chl + fall_chl
+chl_plt <- rbind(spring_chl,
+                fall_chl) %>% 
+  tidyr::spread(season, Mean) %>% 
+  tab_plotly(.,title = "Chlorophyll", ylab = "Chlorophyll (mg m<sup>-3</sup>)")
+
+chl_plt
 ```
 
-_Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
+# Zooplankton
+
+*Zooplankton indicators coming soon...*
+
+
+

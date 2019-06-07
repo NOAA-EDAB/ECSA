@@ -24,6 +24,7 @@
 
 create_template <- function(survdat_name,
                             stock_code,
+                            sci_name,
                             overwrite = FALSE,
                             make_interactive = FALSE,
                             output_dir = NULL,
@@ -45,7 +46,9 @@ create_template <- function(survdat_name,
     dplyr::select(sp) %>% 
     dplyr::filter(sp == tolower(stock_code)) %>% 
     dplyr::distinct(.keep_all = TRUE) %>% 
-    dplyr::mutate(cc_name = survdat_name)
+    dplyr::mutate(cc_name = survdat_name,
+                  common_name = stringr::str_to_title(stringr::str_replace(survdat_name, "-", " ")),
+                  sci_name = sci_name)
   
   if(length(clean_names) < 1){
     stop(sprintf("%s is not found. Check spelling or add %s as a new stock to '%s'", survdat_name, survdat_name, path.expand("data/stock_list.csv")))
@@ -73,8 +76,8 @@ create_template <- function(survdat_name,
   
   #Create .Rmd file to be written to book
   dat <- readLines("templates/generic_template.rmd")
-  # dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
-  # dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
+  dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
+  dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
   dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$sp, dat)  
   # dat <- gsub("\\{\\{SVSPP\\}\\}", clean_names$svspp, dat)  
@@ -139,6 +142,7 @@ create_template <- function(survdat_name,
 }
 # create_template(survdat_name = "ATLANTIC-MENHADEN",
 #                 stock_code = "atlmen",
-#                   output_dir = "~",
+#                 sci_name  = "Brevoortia tyrannus",
+#                   output_dir = "~/bookdown_output", #Creates new folder by default
 #                 overwrite = T)
 # bookdown::render_book("ECSA_ATLANTIC-MENHADEN.rmd")
