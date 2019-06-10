@@ -32,17 +32,6 @@ library(stringr)
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
 
 
-# Load in survey data, right now it is only for summer flounder
-# load("data/df_survdat.rda")
-# colnames(survdat)
-# colnames(df_survdat)
-
-# load("data/Survdat.RData")
-# tt <- survdat
-
-## Read in stock area vectors
-# all_stock_area2 <- read.csv("data/seasonal_stock_strata.csv")
-
 ## Read in stock area vectors
 all_stock_area <- read.csv("data/stock_data/stock_list.csv", stringsAsFactors = FALSE)
 
@@ -59,9 +48,25 @@ source("R/get_strata.R")
 source("R/crop_to_strata.R")
 source("R/stars_to_series.R")
 source("R/tab_plotly.R")
+source("R/tab_plotly_zoo.R")
+
+#Function to rank time series by group mean. Returns top N groups
+rank_by_group <- function(df, group, N, join_with){
+  out <- df %>% 
+    dplyr::group_by(Grouping = get(group)) %>% 
+    dplyr::summarise(M = mean(Mean, na.rm = T)) %>% 
+    top_n(N) %>% 
+    arrange(desc(M)) %>% 
+    mutate(id = 1:N) 
+  return(out)
+}
+
+N <- 5
 
 strata <- all_stock_area %>% 
   dplyr::filter(sp == stock_code)
+
+
 
 ```
 
@@ -159,10 +164,11 @@ fall_bottom_sal <-
                 measure_name = "bottom_sal")  %>% 
   mutate(season = "Fall")
 
-bottom_sal_p lt <- rbind(spring_bottom_sal,
+bottom_sal_plt <- rbind(spring_bottom_sal,
                 fall_bottom_sal) %>% 
   tidyr::spread(season, Mean) %>% 
   tab_plotly(.,title = "Bottom Salinity", ylab = "Salinity (PSU)")
+
 bottom_sal_plt
 ```
 
@@ -266,20 +272,75 @@ chl_plt
 
 # Zooplankton
 
-```{r zoo, fig.height=4}
-spring_zoo <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+```{r zoo_5yr, fig.height=4}
+
+spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
                 stock_code = stock_code,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "Spring")
+  mutate(season = "Spring") %>% 
+  left_join(rank_by_group(., group = "Grouping", N = 5),
+            by = "Grouping") %>% 
+  dplyr::filter(!is.na(id)) %>% 
+  arrange(id) %>% 
+  dplyr::rename(Genera = Grouping) %>% 
+  dplyr::select(-id, -M, -season) %>%
+  tidyr::spread(Genera, Mean)
 
+spring_zoo_5yr_plt <- 
+  tab_plotly_zoo(df = spring_zoo_5yr, 
+               title = "Spring zooplankton abundance",
+               ylab = "Abundance (log num m<sup>-3<sup>)",
+               genera = names(spring_zoo_5yr)[names(spring_zoo_5yr) != "Time"])
 
-fall_zoo <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
+fall_zoo_5yr <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
                 stock_code = stock_code,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "Fall")
+  mutate(season = "Fall") %>% 
+  left_join(rank_by_group(., group = "Grouping", N = 5),
+            by = "Grouping") %>% 
+  dplyr::filter(!is.na(id)) %>% 
+  arrange(id) %>% 
+  dplyr::rename(Genera = Grouping) %>% 
+  dplyr::select(-id, -M, -season) %>%
+  tidyr::spread(Genera, Mean)
+
+fall_zoo_5yr_plt <- 
+  tab_plotly_zoo(df = fall_zoo_5yr, 
+               title = "Spring zooplankton abundance",
+               ylab = "Abundance (log num m<sup>-3<sup>)",
+               genera = names(fall_zoo_5yr)[names(fall_zoo_5yr) != "Time"])
+
+subplot(spring_zoo_5yr_plt, fall_zoo_5yr_plt)
 ```
 
 
+```{r zoo_1yr, fig.height=4}
+spring_zoo_1yr <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
+                stock_code = stock_code,
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "Spring") %>% 
+  left_join(rank_by_group(., group = "Grouping", N = 5),
+            by = "Grouping") %>% 
+  dplyr::filter(!is.na(id)) %>% 
+  arrange(id) %>% 
+  dplyr::rename(Genera = Grouping) %>% 
+  dplyr::select(-id, -M, -season) %>%
+  tidyr::spread(Genera, Mean)
+
+fall_zoo_1yr <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
+                stock_code = stock_code,
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "Fall") %>% 
+  left_join(rank_by_group(., group = "Grouping", N = 5),
+            by = "Grouping") %>% 
+  dplyr::filter(!is.na(id)) %>% 
+  arrange(id) %>% 
+  dplyr::rename(Genera = Grouping) %>% 
+  dplyr::select(-id, -M, -season) %>%
+  tidyr::spread(Genera, Mean)
+```
 

@@ -2,12 +2,13 @@ tab_plotly <- function(df, title, ylab){
   # updatemenus component
   updatemenus <- list(
     list(
-      active = -1,
-      type= 'buttons',
+      type = "buttons",
       direction = "right",
       xanchor = 'center',
       yanchor = "top",
-      pad = list('r'= 0, 't'= -25, 'b' = 0),
+      pad = list('r'= 0, 't'= 10, 'b' = 10),
+      x = 0.5,
+      y = 1.17,
       buttons = list(
         list(
           label = "Fall",
@@ -32,7 +33,7 @@ tab_plotly <- function(df, title, ylab){
     add_lines(x=~Time, y=~Spring, name="Spring",
               line=list(color="#33CFA5")) %>%
     add_lines(x=~Time, y=~Fall, name="Fall",
-              line=list(color="#F06A6A")) %>%
+              line=list(color="#F06A6A"))%>%
     layout(title = title, showlegend=FALSE,
            xaxis=list(title="Time"),
            yaxis=list(title=ylab,
