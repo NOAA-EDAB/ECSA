@@ -7,7 +7,6 @@ tab_plotly <- function(df, title, ylab){
       xanchor = 'center',
       yanchor = "top",
       pad = list('r'= 0, 't'= 10, 'b' = 10),
-      x = 0.5,
       y = 1.17,
       buttons = list(
         list(
