@@ -7,49 +7,50 @@ output: github_document
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  echo = FALSE,
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
 ```
-# ecsa
+# ECSA
 
-The goal of ecsa is to ...
+Ecosystem Context for Stock Advice (ECSA) reports are intended to span a range of potential factors affecting the productivity and distribution of a specific fish stock, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval and adult fish. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+
+ECSA reports have been generated for the following stocks:
+```{r ECSA-reports}
+## Get list of docs
+ecsa_files <- list.files("docs/", pattern = "ECSA_(.*).html")
+
+## Get report name and clean it up
+ecsa_name <- gsub("ECSA_(.*).html", "\\1", ecsa_files)
+ecsa_name <- gsub("-", " ", ecsa_name)
+ecsa_name <- gsub("atlantic", "Atlantic", ecsa_name)
+
+## Create data.frame with hyperlink
+ecsa_table <- data.frame("Report" = sprintf('<a href="https://noaa-edab.github.io/ECSA/%s" target="_blank">%s</a>',
+                         ecsa_files,
+                         ecsa_name))
+
+knitr::kable(ecsa_table)
+```
 
 ## Installation
 
-You can install the released version of ecsa from [CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("ecsa")
+``` {r, eval = FALSE, echo = TRUE}
+install.packages("remotes")
+remotes::install_github("noaa-edab/ecsa")
 ```
 
-And the development version from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("NOAA-EDAB/ECSA")
-```
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-## basic example code
+Code used in ECSA and template to produce contextual ecosystem reports for stock assessment.
+```{r example, eval=FALSE, echo = TRUE}
+create_template(survdat_name = "SMOOTH DOGFISH", overwrite = F, output_dir = getwd())
+```
+```{r dog-pic, out.width='32.8%', fig.show='hold'}
+knitr::include_graphics("./images/ECSA_smooth-dogfish.png")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+*This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.*
