@@ -1,43 +1,23 @@
-tab_plotly <- function(df, title, ylab){
-  # updatemenus component
-  updatemenus <- list(
-    list(
-      type = "buttons",
-      direction = "right",
-      xanchor = 'center',
-      yanchor = "top",
-      pad = list('r'= 0, 't'= 10, 'b' = 10),
-      y = 1.17,
-      buttons = list(
-        list(
-          label = "Fall",
-          method = "update",
-          args = list(list(visible = c(FALSE, TRUE)),
-                      list(title = "Fall"))),
-        list(
-          label = "Spring",
-          method = "update",
-          args = list(list(visible = c(TRUE, FALSE)),
-                      list(title = "Spring"))),
-        list(
-          label = "Both",
-          method = "update",
-          args = list(list(visible = c(TRUE, TRUE)),
-                      list(title = "Spring and fall")))
-      )
-    )
-  )
-  p <- df %>%
-    plot_ly(type = 'scatter', mode = 'lines') %>%
-    add_lines(x=~Time, y=~Spring, name="Spring",
-              line=list(color="#33CFA5")) %>%
-    add_lines(x=~Time, y=~Fall, name="Fall",
-              line=list(color="#F06A6A"))%>%
-    layout(title = title, showlegend=FALSE,
-           xaxis=list(title="Time"),
-           yaxis=list(title=ylab,
-                      size = 6),
-           updatemenus=updatemenus)
+tab_plotly <- function(df, showlegend = T){
+  
+  if (showlegend) {
+    p <- plot_ly(type = 'scatter', mode = 'lines', showlegend = T)
+  } else {
+    p <- plot_ly(type = 'scatter', mode = 'lines', showlegend = F)
+  }
+  
+  plotvars <- names(df)[2:ncol(df)]
+  for (i in 1:length(plotvars)){
+    plot_df <- df %>%
+      rename(data=one_of(plotvars[i])) %>%
+      dplyr::select(Time, data)
+    
+    p <- p %>%
+      add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i]) 
+  }
+  
+
+  
   return(p)
 }
 
