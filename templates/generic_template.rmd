@@ -49,6 +49,7 @@ source("R/crop_to_strata.R")
 source("R/stars_to_series.R")
 source("R/tab_plotly.R")
 source("R/tab_plotly_zoo.R")
+source("R/create_buttons.R")
 
 #Function to rank time series by group mean. Returns top N groups
 rank_by_group <- function(df, group, N, join_with){
@@ -288,11 +289,15 @@ spring_zoo_1yr <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
   dplyr::select(-id, -M, -season) %>%
   tidyr::spread(Genera, Mean)
 
+buttons <- create_buttons(spring_zoo_1yr)
+
 spring_zoo_1yr_plt <- 
   tab_plotly_zoo(df = spring_zoo_1yr, 
                title = "Spring zooplankton abundance",
                ylab = "Abundance (log num m<sup>-3</sup>)",
-               genera = names(spring_zoo_1yr)[names(spring_zoo_1yr) != "Time"])
+               genera = names(spring_zoo_1yr)[names(spring_zoo_1yr) != "Time"],
+               update_buttons = buttons)
+
 spring_zoo_1yr_plt
 ```
 
@@ -302,7 +307,7 @@ fall_zoo_1yr <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
                 stock_code = stock_code,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "Fall") %>% 
+  mutate(season = "fall") %>% 
   left_join(rank_by_group(., group = "Grouping", N = N),
             by = "Grouping") %>% 
   dplyr::filter(!is.na(id)) %>% 
@@ -311,11 +316,15 @@ fall_zoo_1yr <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
   dplyr::select(-id, -M, -season) %>%
   tidyr::spread(Genera, Mean)
 
+buttons <- create_buttons(fall_zoo_1yr)
+
 fall_zoo_1yr_plt <- 
   tab_plotly_zoo(df = fall_zoo_1yr, 
                title = "Fall zooplankton abundance",
                ylab = "Abundance (log num m<sup>-3</sup>)",
-               genera = names(fall_zoo_1yr)[names(fall_zoo_1yr) != "Time"])
+               genera = names(fall_zoo_1yr)[names(fall_zoo_1yr) != "Time"],
+               update_buttons = buttons)
+
 fall_zoo_1yr_plt
 ```
 
@@ -327,7 +336,7 @@ spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
                 stock_code = stock_code,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "Spring") %>% 
+  mutate(season = "spring") %>% 
   left_join(rank_by_group(., group = "Grouping", N = N),
             by = "Grouping") %>% 
   dplyr::filter(!is.na(id)) %>% 
@@ -336,12 +345,14 @@ spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
   dplyr::select(-id, -M, -season) %>%
   tidyr::spread(Genera, Mean)
 
+buttons <- create_buttons(spring_zoo_5yr)
+
 spring_zoo_5yr_plt <- 
   tab_plotly_zoo(df = spring_zoo_5yr, 
                title = "Spring zooplankton abundance",
                ylab = "Abundance (log num m<sup>-3</sup>)",
-               genera = names(spring_zoo_5yr)[names(spring_zoo_5yr) != "Time"])
-
+               genera = names(spring_zoo_5yr)[names(spring_zoo_5yr) != "Time"],
+               update_buttons = buttons)
 
 spring_zoo_5yr_plt
 ```
@@ -351,7 +362,7 @@ fall_zoo_5yr <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
                 stock_code = stock_code,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "Fall") %>% 
+  mutate(season = "fall") %>% 
   left_join(rank_by_group(., group = "Grouping", N = N),
             by = "Grouping") %>% 
   dplyr::filter(!is.na(id)) %>% 
@@ -360,11 +371,15 @@ fall_zoo_5yr <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
   dplyr::select(-id, -M, -season) %>%
   tidyr::spread(Genera, Mean)
 
+buttons <- create_buttons(fall_zoo_5yr)
+
 fall_zoo_5yr_plt <- 
   tab_plotly_zoo(df = fall_zoo_5yr, 
                title = "Fall zooplankton abundance",
                ylab = "Abundance (log num m<sup>-3</sup>)",
-               genera = names(fall_zoo_5yr)[names(fall_zoo_5yr) != "Time"])
+               genera = names(fall_zoo_5yr)[names(fall_zoo_5yr) != "Time"],
+               update_buttons = buttons)
+
 fall_zoo_5yr_plt
 ```
 
