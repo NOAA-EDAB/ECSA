@@ -67,5 +67,5 @@ stock_list <- sdat_clean %>%
   left_join(sdat_names) %>%
   select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strat, stock)
 
-write.csv("data/stock_list.csv", x = stock_list, row.names = FALSE)
+write.csv("data/stock_data/stock_list.csv", x = stock_list, row.names = FALSE)
 
