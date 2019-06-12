@@ -1,4 +1,6 @@
-stars_to_series <- function(r, stock_code, measure_name, process_to_season = NULL, group_regex = NULL){
+stars_to_series <- function(r, stock_name,
+                            common_name,
+                            stock_area, measure_name, process_to_season = NULL, group_regex = NULL){
   
   if (is.null(process_to_season)){
       #Generic tbl_cube to data.frame conversion
@@ -9,7 +11,7 @@ stars_to_series <- function(r, stock_code, measure_name, process_to_season = NUL
   
     cube_in <- try(
         crop_to_strata(r = r,
-                       stock_code = stock_code, season_ = season_in) %>% 
+                       stock_name, stock_area, common_name, season_ = season_in) %>% 
                        as.tbl_cube() 
       )
       if (class(cube_in) == "try-error"){
@@ -22,7 +24,7 @@ stars_to_series <- function(r, stock_code, measure_name, process_to_season = NUL
         
         cube_in <- try(
           crop_to_strata(r = r,
-                         stock_code = stock_code, season_ = season_default) %>% 
+                         stock_name, stock_area, common_name, season_ = season_default) %>% 
                          as.tbl_cube()
         )
         

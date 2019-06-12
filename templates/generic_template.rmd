@@ -2,7 +2,7 @@
 title:
     | 
     | Ecosystem Context for Stock Assessments:
-    | {{COMMON_NAME}}
+    | {{STOCK_AREA}}{{COMMON_NAME}}
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 always_allow_html: yes
 site: "bookdown::bookdown_site"
@@ -29,30 +29,43 @@ library(ggthemes)
 library(cowplot)
 library(AICcmodavg)
 library(stringr)
+# remotes::install_github("noaa-edab/ecotrend")
 library(ecotrend)
 library(magrittr)
+library(here)
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
 
 
 ## Read in stock area vectors
-all_stock_area <- read.csv("data/stock_data/stock_list.csv", stringsAsFactors = FALSE)
-
+all_stock_area <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
+                                 col_types = cols(
+                                   common_name = col_character(),
+                                   sci_name = col_character(),
+                                   cc_name = col_character(),
+                                   stock_name = col_character(),
+                                   species_code = col_character(),
+                                   svspp = col_double(),
+                                   season = col_character(),
+                                   strat = col_double()
+                                 ))
 
 ## Put all mustaches here
-stock_code <- "{{SPECIES_CODE}}"
 common_name <- "{{COMMON_NAME}}"
+stock_code <- "{{SPECIES_CODE}}"
+stock_name <- "{{STOCK_NAME}}"
 cc_name <- "{{CC_NAME}}"
+stock_area <- "{{STOCK_AREA}}"
 # svspp <- "{{SVSPP}}"
 # gg_int <- as.logical("{{INTERACTIVE}}")
 
-source("R/map_strata.R")
-source("R/get_strata.R")
-source("R/crop_to_strata.R")
-source("R/stars_to_series.R")
-source("R/tab_plotly.R")
-source("R/create_buttons.R")
-source("R/STARS_v18.R")
+source(here::here("R/map_strata.R"))
+source(here::here("R/get_strata.R"))
+source(here::here("R/crop_to_strata.R"))
+source(here::here("R/stars_to_series.R"))
+source(here::here("R/tab_plotly.R"))
+source(here::here("R/create_buttons.R"))
+source(here::here("R/STARS_v18.R"))
 
 #Function to rank time series by group mean. Returns top N groups
 rank_by_group <- function(df, group, N, join_with){
@@ -68,8 +81,8 @@ rank_by_group <- function(df, group, N, join_with){
 N <- 5
 alpha <- 0.05
 
-strata <- all_stock_area %>% 
-  dplyr::filter(sp == stock_code)
+strata <- all_stock_area %>%   
+  dplyr::filter(stock_name == !!stock_name)
 
 
 
@@ -79,7 +92,7 @@ strata <- all_stock_area %>%
 # Overview 
 
 ### Introduction
-This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+This report provides contextual ecosystem information for {{STOCK_AREA}}{{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 #### Summary
 
@@ -90,7 +103,7 @@ This report provides contextual ecosystem information for {{COMMON_NAME}} (*{{SC
 ### Strata definition
 ```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 
-map_strata(stock_code = stock_code, strata = strata, overwrite = FALSE, save_plot = FALSE)
+map_strata(stock_name = stock_name, common_name = common_name, stock_area = stock_area, strata = strata, overwrite = FALSE, save_plot = FALSE)
 ```
 
 
@@ -111,7 +124,7 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 ```{r bot_temp_process}
 spring_bottom_temp <- 
   stars_to_series(r = "bot_temp_spring_spdf.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "bottom_temp") %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
@@ -143,7 +156,7 @@ spring_min <- min(spring_bottom_temp$Time)
 
 fall_bottom_temp <- 
   stars_to_series(r = "bot_temp_fall_spdf.rdata",
-                stock_code = stock_code,
+               stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "bottom_temp") %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
@@ -212,7 +225,7 @@ spring_bottom_temp_plt
 ```{r surf_temp_process}
 spring_surface_temp <- 
   stars_to_series(r = "surf_temp_spring_spdf.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "surface_temp") %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
@@ -244,7 +257,7 @@ spring_min <- min(spring_surface_temp$Time)
 
 fall_surface_temp <- 
   stars_to_series(r = "surf_temp_fall_spdf.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "surface_temp") %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
@@ -317,7 +330,7 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 ```{r bot_sal_process}
 spring_bottom_sal <- 
   stars_to_series(r = "bot_sal_spring_spdf.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "bottom_sal") %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
@@ -349,7 +362,7 @@ spring_min <- min(spring_bottom_sal$Time)
 
 fall_bottom_sal <- 
   stars_to_series(r = "bot_sal_fall_spdf.rdata",
-                stock_code = stock_code,
+               stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "bottom_sal") %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
@@ -417,7 +430,7 @@ spring_bottom_sal_plt
 ```{r surf_sal_process}
 spring_surface_sal <- 
   stars_to_series(r = "surf_sal_spring_spdf.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "surface_sal") %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
@@ -449,7 +462,7 @@ spring_min <- min(spring_surface_sal$Time)
 
 fall_surface_sal <- 
   stars_to_series(r = "surf_sal_fall_spdf.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "surface_sal") %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
@@ -521,7 +534,7 @@ The probability of occurrence was estimated using random forest classification m
 ```{r occ_prob, fig.height=4}
 spring_occ_prob <- 
   stars_to_series(r = "occurrence_prob_spring.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "occurrence") %>% 
   dplyr::select(Spring = Mean,
                 Time)
@@ -550,7 +563,7 @@ occ_prob_plt
 ```{r biomass_processing}
 spring_biomass <- 
   stars_to_series(r = "biomass_spring.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "biomass") %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
@@ -582,7 +595,7 @@ spring_min <- min(spring_biomass$Time)
 
 fall_biomass <- 
   stars_to_series(r = "biomass_fall.rdata",
-                stock_code = stock_code,
+              stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "biomass") %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
@@ -655,7 +668,7 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 ```{r chl_processing}
 spring_chl <- 
 stars_to_series(r = "chlorophyll_conc.rdata",
-                stock_code = stock_code,
+              stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "biomass",
                 process_to_season = "spring")$spring %>% 
   mutate(season = "Spring") %>% 
@@ -689,7 +702,7 @@ spring_min <- min(spring_chl$Time)
 
 fall_chl <- 
 stars_to_series(r = "chlorophyll_conc.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "biomass",
                 process_to_season = "fall")$fall %>% 
   mutate(season = "fall") %>% 
@@ -760,7 +773,7 @@ spring_chl_plt
 
 ```{r zoo_1yr_spring, fig.height=4}
 spring_zoo_1yr <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "spring") %>% 
@@ -787,7 +800,7 @@ spring_zoo_1yr_plt
 
 ```{r zoo_1yr_fall, fig.height=4}
 fall_zoo_1yr <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
-                stock_code = stock_code,
+               stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "fall") %>% 
@@ -815,7 +828,7 @@ fall_zoo_1yr_plt
 
 ```{r zoo_5yr_spring, fig.height=4}
 spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
-                stock_code = stock_code,
+                stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "spring") %>% 
@@ -842,7 +855,7 @@ spring_zoo_5yr_plt
 
 ```{r zoo_5yr_fall, fig.height=4}
 fall_zoo_5yr <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
-                stock_code = stock_code,
+               stock_name = stock_name, common_name = common_name, stock_area = stock_area,
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "fall") %>% 
