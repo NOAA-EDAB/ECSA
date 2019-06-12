@@ -28,8 +28,7 @@
 #' map_strata(common_name = "summer flounder", spring_strata = spring_strata,
 #' fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
 #' 
-map_strata <- function(stock_code, strata, season_ = NULL,
-                       overwrite = FALSE, save_plot, get_sf = F) {
+map_strata <- function(common_name, spring_strata, fall_strata, overwrite = FALSE, save_plot) {
   
   ## General mapping parameters
   xmin = -77
@@ -58,24 +57,17 @@ map_strata <- function(stock_code, strata, season_ = NULL,
                                         returnclass = "sf") %>% 
     sf::st_transform(crs = crs)
   
-  
-  strata_spring <- strata %>% filter(season == "spring") %>% pull(strata)
-  strata_fall <- strata %>% filter(season == "fall") %>% pull(strata)
-  strata_both <- strata %>% filter(season == "both") %>% pull(strata)
+  ## 
   
   strata_grid <- sf::st_read("data/strata_shapefiles/BTS_Strata.shp",
                              quiet = TRUE) %>% 
     dplyr::mutate(SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
-                                            STRATA %in% strata_both ~ "spring and fall",
                                             STRATA %in% strata_spring ~ "spring",
                                             STRATA %in% strata_fall ~ "fall",
                                             TRUE ~ NA_character_)) %>% 
     filter(!is.na(SEASON)) %>% 
-    dplyr::mutate(SEASON = factor(SEASON, levels = c("spring", "fall", "spring and fall")))
-  
-  if (!is.null(season_)){
-    strata_grid <- strata_grid %>% filter(SEASON %in% season_)
-  }
+    dplyr::mutate(SEASON = tolower(SEASON),
+                  SEASON = factor(SEASON, levels = c("spring", "fall", "spring and fall")))
   
   
   p1 <- ggplot2::ggplot() +
@@ -85,19 +77,13 @@ map_strata <- function(stock_code, strata, season_ = NULL,
     viridis::scale_fill_viridis(discrete = TRUE) +
     ggplot2::coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
     ggthemes::theme_map() +
-    ggplot2::labs(title = sprintf("%s strata", stock_code),
+    ggplot2::labs(title = sprintf("%s strata", common_name),
                   fill = "Season") +
     ggplot2::theme(legend.position = "bottom",
                    legend.key.width = ggplot2::unit(2, "cm"))
   
   if(save_plot) {
-    ggplot2::ggsave(p1, sprintf("%s_strata-map.png", stock_code), type = "cairo")
+    ggplot2::ggsave(p1, sprintf("%s_strata-map.png", common_name), type = "cairo")
   }
-  
-  if (!get_sf){
-    return(p1)
-  } else {
-    return(strata_grid)
-  }
-  
+  return(p1)
 } 
