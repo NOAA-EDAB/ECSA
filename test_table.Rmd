@@ -1,0 +1,67 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(DT)
+library(rhandsontable)
+library(nlme)
+library(plotly)
+library(DT)
+library(jpeg)
+library(patchwork)
+library(ggthemes)
+library(cowplot)
+library(AICcmodavg)
+library(stringr)
+library(ecotrend)
+library(magrittr)
+library(raster)
+library(stars)
+library(dplyr)
+library(gt)
+library(kableExtra)
+library(xaringan)
+
+source("R/map_strata.R")
+source("R/get_strata.R")
+source("R/crop_to_strata.R")
+source("R/stars_to_series.R")
+source("R/tab_plotly.R")
+source("R/create_buttons.R")
+source("R/STARS_v18.R")
+source("R/template_control.R")
+source("R/gls_summary.R")
+```
+
+<style type="text/css">
+.twoC {width: 100%}
+.clearer {clear: both}
+.twoC .table {max-width: 50%; float: right}
+.twoC img {max-width: 50%; float: left}
+</style>
+
+<div class="twoC">
+
+```{r, results = 'asis',echo=FALSE}
+df <- data.frame(Time = 1:100,
+                 Series = rnorm(100))
+mod <- ecotrend::glsMs(df, formula = Series ~ Time)
+
+gls_summary(mod) %>% 
+  kable() %>% 
+  kable_styling(full_width = F)
+```
+
+
+```{r, echo=FALSE}
+
+tab_plotly(df) %>% 
+  layout(yaxis = list(title = "Hello"))
+```
+
+</div>
+<div class="clearer"></div>
