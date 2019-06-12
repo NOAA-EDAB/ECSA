@@ -5,22 +5,26 @@ loadRData <- function(fileName){
 }
 
 
-crop_to_strata <- function(r,stock_code, season_, mask_type = "unit"){
+crop_to_strata <- function(r, stock_name, stock_area, common_name, season_, mask_type = "unit"){
   
   
   s1 <- read.csv('data/stock_data/stock_list.csv', stringsAsFactors = F) %>% 
-          dplyr::filter(sp == tolower(stock_code))
+    dplyr::filter(stock_name == !!stock_name)
   
   if (nrow(s1) == 0) stop("No strata in query. Check common name spelling.")
   
-  s <- s1 %>% dplyr::filter(season %in% season_)
+  s <- s1 %>% 
+    dplyr::filter(season %in% season_) %>% 
+    dplyr::select(strata, season)
   
   if (nrow(s) == 0) {
     stop(paste("No strata in query. Available season selections include:",unique(s1$season)))
   }
   
   # Load strata
-  strata <- map_strata(stock_code = tolower(stock_code), strata = s, season = season_, save_plot = F,
+  strata <- map_strata(stock_name = stock_name,
+                       stock_area = stock_area,
+                       common_name = common_name, strata = s, season = season_, save_plot = F,
                        get_sf = T) %>% 
     as("sf") %>% 
     st_transform(st_crs("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0"))

@@ -32,7 +32,7 @@ sdat_clean <- sdat %>%
          index = 1:n(),
          range = purrr::map(index, function(x) low[x]:hi[x])) %>%
   unnest(range) %>%
-  mutate(strat = sprintf("%s%02d0", strat, range))
+  mutate(strata = sprintf("%s%02d0", strat, range))
 
 
 sdat_names <- sdat_clean %>%
@@ -53,7 +53,7 @@ sdat_names <- sdat_clean %>%
                                        stock != "unit" ~ sprintf("%s_%s", 
                                                                  cc_name, 
                                                                  stock))) %>%
-  select(common_name, sci_name, cc_name, stock_name, species_code, svspp) %>%
+  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, stock) %>%
   distinct(.keep_all = TRUE)
 
 
@@ -62,10 +62,11 @@ stock_list <- sdat_clean %>%
                             season == "spring" ~ "spring",
                             season == "fall" ~ "fall",
                             TRUE ~ NA_character_),
-         stock = tolower(stock)) %>%
+         stock = tolower(stock),
+         stock = gsub("/", "-", stock)) %>%
   distinct(.keep_all = TRUE) %>%
-  left_join(sdat_names) %>%
-  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strat, stock)
+  left_join(sdat_names, by = c("svspp", "stock")) %>%
+  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strata)
 
 write.csv("data/stock_data/stock_list.csv", x = stock_list, row.names = FALSE)
 
