@@ -1,9 +1,3 @@
-library(raster)
-library(stars)
-library(dplyr)
-source("R/map_strata.R")
-source("R/get_strata.R")
-
 
 loadRData <- function(fileName){
   load(fileName)

@@ -27,10 +27,10 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL){
     
     if (length(plotvars) <= 3) {
       p <- p %>%
-        add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i], line = list(color = color)) 
+        add_lines(data=plot_df, x=~Time, y=~round(data,3), name=plotvars[i], line = list(color = color)) 
     } else {
       p <- p %>%
-        add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i]) 
+        add_lines(data=plot_df, x=~Time, y=~round(data,3), name=plotvars[i]) 
     }
     
   }

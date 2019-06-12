@@ -31,6 +31,10 @@ library(AICcmodavg)
 library(stringr)
 library(ecotrend)
 library(magrittr)
+library(raster)
+library(stars)
+library(dplyr)
+
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
 
