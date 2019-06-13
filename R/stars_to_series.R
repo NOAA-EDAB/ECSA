@@ -2,12 +2,16 @@ stars_to_series <- function(r, stock_name,
                             common_name,
                             stock_area, measure_name, process_to_season = NULL, group_regex = NULL){
   
+  
+  #This takes the season of the data set out of the file name and passes it to crop_to_strata(). It
+  
   if (is.null(process_to_season)){
       #Generic tbl_cube to data.frame conversion
       season_in <- stringr::str_extract(r, "fall|spring")
   } else {
       season_in <- process_to_season
   }
+  
   
     cube_in <- try(
         crop_to_strata(r = r,

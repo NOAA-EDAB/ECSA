@@ -37,14 +37,14 @@ create_template <- function(stock_name,
   ## Select the stock and format stock area and common name
   clean_names <- readr::read_csv("data/stock_data/stock_list.csv",
                                  col_types = readr::cols(
-                                   common_name = col_character(),
-                                   sci_name = col_character(),
-                                   cc_name = col_character(),
-                                   stock_name = col_character(),
-                                   species_code = col_character(),
-                                   svspp = col_double(),
-                                   season = col_character(),
-                                   strata = col_double()
+                                   common_name = readr::col_character(),
+                                   sci_name = readr::col_character(),
+                                   cc_name = readr::col_character(),
+                                   stock_name = readr::col_character(),
+                                   species_code = readr::col_character(),
+                                   svspp = readr::col_double(),
+                                   season = readr::col_character(),
+                                   strata = readr::col_double()
                                  )) %>%
     dplyr::filter(stock_name == !!stock_name) %>%
     dplyr::mutate(stock_area = dplyr::case_when(grepl("_sne-ma$", stock_name) ~ "southern New England/mid-Atlantic ",

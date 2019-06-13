@@ -42,15 +42,15 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
 
 ## Read in stock area vectors
 all_stock_area <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
-                                 col_types = cols(
-                                   common_name = col_character(),
-                                   sci_name = col_character(),
-                                   cc_name = col_character(),
-                                   stock_name = col_character(),
-                                   species_code = col_character(),
-                                   svspp = col_double(),
-                                   season = col_character(),
-                                   strat = col_double()
+                                 col_types = readr::cols(
+                                   common_name = readr::col_character(),
+                                   sci_name = readr::col_character(),
+                                   cc_name = readr::col_character(),
+                                   stock_name = readr::col_character(),
+                                   species_code = readr::col_character(),
+                                   svspp = readr::col_double(),
+                                   season = readr::col_character(),
+                                   strata = readr::col_double()
                                  ))
 
 ## Put all mustaches here
@@ -69,6 +69,7 @@ source(here::here("R/stars_to_series.R"))
 source(here::here("R/tab_plotly.R"))
 source(here::here("R/create_buttons.R"))
 source(here::here("R/STARS_v18.R"))
+source(here::here("R/gls_summary.R"))
 
 #Function to rank time series by group mean. Returns top N groups
 rank_by_group <- function(df, group, N, join_with){
@@ -106,7 +107,12 @@ This report provides contextual ecosystem information for {{STOCK_AREA}}{{COMMON
 ### Strata definition
 ```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 
-map_strata(stock_name = stock_name, common_name = common_name, stock_area = stock_area, strata = strata, overwrite = FALSE, save_plot = FALSE)
+map_strata(stock_name = stock_name,
+           common_name = common_name,
+           stock_area = stock_area,
+           strata = strata,
+           overwrite = FALSE,
+           save_plot = FALSE)
 ```
 
 

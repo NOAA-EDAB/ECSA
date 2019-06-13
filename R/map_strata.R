@@ -74,6 +74,10 @@ map_strata <- function(stock_name, common_name, stock_area, strata, season_ = NU
     filter(!is.na(SEASON)) %>% 
     dplyr::mutate(SEASON = factor(SEASON, levels = c("spring", "fall", "spring and fall")))
   
+  if (season_ == "both"){
+    season_ = "spring and fall"
+  }
+  
   if (!is.null(season_)){
     strata_grid <- strata_grid %>% filter(SEASON %in% season_)
   }
