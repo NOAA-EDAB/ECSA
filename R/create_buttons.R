@@ -1,17 +1,24 @@
-# Add column names to a plotly figure as buttons by writing them into the correct list structure
+#' Add column names to a plotly figure as buttons by writing them into the correct list structure
+#'
+#'
+#' @param df
+#' 
+#' @return 
+
+
+
 
 # This function needs to be passed to plotly::layout as follows:
-
 # df <- data.frame(var = rep(c("A","B","C","D"), each = 20),
-#                  value = rnorm(80),
-#                  time = rep(c(1:20),4)) %>%
+#                   value = rnorm(80),
+#                   time = rep(c(1:20),4)) %>%
 #   tidyr::spread(var, value)
 # 
 # p <- plot_ly(type = 'scatter', mode = 'lines')
-# plotvars <- names(df)[2:ncol(df)]
+# plotvars <- names(df)  [2: ncol(df)]
 # for (i in 1:length(plotvars)){
 #   temp <- df %>%
-#     rename(data=one_of(plotvars[i])) %>%
+#     rename(data=one_of(plotvars [i] )) %>%
 #     select(time, data)
 #   
 #   p <- p %>%

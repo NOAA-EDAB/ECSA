@@ -3,7 +3,6 @@
 #' @param df 
 #'
 #' @return dataframe of probabilities with upper and lower CI
-#' @export
 #'
 #' @examples
 #' 
@@ -12,12 +11,12 @@
 #' 
 calc_p <- function(df) {
   m <- 
-    glm(formula = pres ~ 1,
+    stats::glm(formula = pres ~ 1,
         data = df, 
         family = binomial)
   
   preds <-
-    predict(object = m,
+    stats::predict(object = m,
             type = "link", 
             se.fit = TRUE,
             newdata = df[1,])

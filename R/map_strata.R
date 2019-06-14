@@ -7,7 +7,8 @@
 #' @param save_plot 
 #'
 #' @return a ggplot2 object
-#' @export
+#' 
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #' spring_strata <- c(1010L, 1020L, 1030L, 1040L, 1050L, 1060L, 1070L, 1080L, 1090L, 

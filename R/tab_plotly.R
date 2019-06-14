@@ -1,9 +1,24 @@
+#' What
+#' 
+#' Describe
+#' 
+#' @param df
+#' @param showlegend
+#' @param series.name
+#' 
+#' @return 
+#'
+#' @importFrom magrittr "%>%"
+#'
+
 tab_plotly <- function(df, showlegend = T, series.name = NULL){
   
+  `%>%` <- magrittr::`%>%`
+  
   if (showlegend) {
-    p <- plot_ly(type = 'scatter', mode = 'lines', showlegend = T)
+    p <- plotly::plot_ly(type = 'scatter', mode = 'lines', showlegend = T)
   } else {
-    p <- plot_ly(type = 'scatter', mode = 'lines', showlegend = F)
+    p <- plotly::plot_ly(type = 'scatter', mode = 'lines', showlegend = F)
   }
   
   plotvars <- names(df)[2:ncol(df)]
@@ -22,15 +37,15 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL){
     } 
     
     plot_df <- df %>%
-      rename(data=one_of(plotvars[i])) %>%
+      dplyr::rename(data=one_of(plotvars[i])) %>%  ##make sure rename is from dplyr
       dplyr::select(Time, data)
     
     if (length(plotvars) <= 3) {
       p <- p %>%
-        add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i], line = list(color = color)) 
+        plotly::add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i], line = list(color = color)) 
     } else {
       p <- p %>%
-        add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i]) 
+        plotly::add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i]) 
     }
     
   }
