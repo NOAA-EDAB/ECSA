@@ -67,7 +67,7 @@ stock_list <- sdat_clean %>%
   distinct(.keep_all = TRUE) %>%
   left_join(sdat_names, by = c("svspp", "stock")) %>%
   dplyr::select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strata) %>%
-  dplyr::rename(stock_area = season)
+  dplyr::rename(stock_season = season)
 
 #Adding menhaden strata
 menhaden <- read.csv(here::here("data-raw/menhaden_strata_raw.csv"), stringsAsFactors = F) %>% 
@@ -82,7 +82,7 @@ menhaden <- read.csv(here::here("data-raw/menhaden_strata_raw.csv"), stringsAsFa
                 svspp = 36,
                 cc_name = "atlantic-menhaden") %>% 
   dplyr::rename(species_code = sp,
-                stock_area = season)
+                stock_season = season)
 
 stock_list %<>% bind_rows(menhaden)
 

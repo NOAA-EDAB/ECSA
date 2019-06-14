@@ -1,7 +1,7 @@
 stars_to_series <- function(r, 
                             stock_name,
                             common_name,
-                            stock_area, 
+                            stock_season, 
                             measure_name, 
                             data_season,
                             process_to_season = NULL,
@@ -9,36 +9,36 @@ stars_to_series <- function(r,
   
   `%>%` <- magrittr::`%>%`
   
-  if (any(stock_area != "both")){
+  if (any(stock_season != "both")){
     if (all(stringr::str_detect(r, "fall") &
             data_season == "fall" & 
-            any(stock_area %in% "fall"))){
-      stock_area <- "fall"
+            any(stock_season %in% "fall"))){
+      stock_season <- "fall"
     } else if (all(stringr::str_detect(r, "spring") & 
                    data_season == "spring" & 
-                   any(stock_area %in% "spring"))){
-      stock_area <- "spring"
+                   any(stock_season %in% "spring"))){
+      stock_season <- "spring"
     } else if (all(!stringr::str_detect(r, "spring") & 
                    data_season == "spring" & 
-                   any(stock_area %in% "spring"))){
-      stock_area <- "spring"
+                   any(stock_season %in% "spring"))){
+      stock_season <- "spring"
     } else if (all(!stringr::str_detect(r, "fall") & 
                    data_season == "fall" & 
-                   any(stock_area %in% "fall"))){
-      stock_area <- "fall"
+                   any(stock_season %in% "fall"))){
+      stock_season <- "fall"
     }
   }
   
-  message(paste("Data choice:", r, "\nStock area:",stock_area))
+  message(paste("Data choice:", r, "\nStock area:",stock_season))
     
   cube_in <- try(
         crop_to_strata(r = r,
                        stock_name = stock_name,
-                       stock_area = stock_area) %>%
+                       stock_season = stock_season) %>%
           as.tbl_cube()
         )
       if (class(cube_in) == "try-error"){
-        message("Double check stock_area")
+        message("Double check stock_season")
       }
 
       # If fall and spring are not previously defined, we need to aggregate them here. 

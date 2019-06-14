@@ -40,7 +40,7 @@ knitr::opts_chunk$set(echo = F, message = F ,warning = F, fig.align = 'center')
 
 ## Read in stock area vectors
 
-all_stock_area <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
+all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
                                  col_types = readr::cols(
                                    common_name = readr::col_character(),
                                    sci_name = readr::col_character(),
@@ -48,7 +48,7 @@ all_stock_area <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
                                    stock_name = readr::col_character(),
                                    species_code = readr::col_character(),
                                    svspp = readr::col_double(),
-                                   stock_area = readr::col_character(),
+                                   stock_season = readr::col_character(),
                                    strata = readr::col_double()
                                  ))
 
@@ -85,10 +85,10 @@ rank_by_group <- function(df, group, N, join_with){
 N <- 5
 alpha <- 0.05
 
-strata <- all_stock_area %>%   
+strata <- all_stock_season %>%   
   dplyr::filter(stock_name == !!stock_name)
 
-stock_area <- strata %>% pull(stock_area) %>% unique()
+stock_season <- strata %>% pull(stock_season) %>% unique()
 
 ```
 
@@ -108,7 +108,7 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 ```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
-           stock_area = stock_area,
+           stock_season = stock_season,
            strata = strata,
            overwrite = FALSE,
            save_plot = FALSE)
@@ -134,7 +134,7 @@ spring_bottom_temp <-
   stars_to_series(r = "bot_temp_spring_spdf.rdata",
                 stock_name = stock_name, 
                 common_name = common_name,
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "bottom_temp") %>% 
   mutate(season = "Spring") %>% 
@@ -169,7 +169,7 @@ fall_bottom_temp <-
   stars_to_series(r = "bot_temp_fall_spdf.rdata",
                stock_name = stock_name,
                common_name = common_name,
-               stock_area = stock_area,
+               stock_season = stock_season,
                data_season = "fall",
                 measure_name = "bottom_temp") %>% 
   mutate(season = "fall") %>% 
@@ -243,7 +243,7 @@ spring_surface_temp <-
   stars_to_series(r = "surf_temp_spring_spdf.rdata",
                 stock_name = stock_name,
                 common_name = common_name,
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "surface_temp") %>% 
   mutate(season = "Spring") %>% 
@@ -278,7 +278,7 @@ fall_surface_temp <-
   stars_to_series(r = "surf_temp_fall_spdf.rdata",
                 stock_name = stock_name,
                 common_name = common_name,
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "surface_temp") %>% 
   mutate(season = "fall") %>% 
@@ -356,7 +356,7 @@ spring_bottom_sal <-
   stars_to_series(r = "bot_sal_spring_spdf.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "bottom_sal") %>% 
   mutate(season = "Spring") %>% 
@@ -391,7 +391,7 @@ fall_bottom_sal <-
   stars_to_series(r = "bot_sal_fall_spdf.rdata",
                stock_name = stock_name, 
                common_name = common_name, 
-               stock_area = stock_area,
+               stock_season = stock_season,
                data_season = "fall",
                 measure_name = "bottom_sal") %>% 
   mutate(season = "fall") %>% 
@@ -464,7 +464,7 @@ spring_surface_sal <-
   stars_to_series(r = "surf_sal_spring_spdf.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "surface_sal") %>% 
   mutate(season = "Spring") %>% 
@@ -499,7 +499,7 @@ fall_surface_sal <-
   stars_to_series(r = "surf_sal_fall_spdf.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "surface_sal") %>% 
   mutate(season = "fall") %>% 
@@ -576,7 +576,7 @@ spring_occ_prob <-
   stars_to_series(r = "occurrence_prob_spring.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "occurrence") %>% 
   dplyr::select(Spring = Mean,
@@ -586,7 +586,7 @@ fall_occ_prob <-
   stars_to_series(r = "occurrence_prob_fall.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "occurrence") %>% 
   dplyr::select(Fall = Mean,
@@ -612,7 +612,7 @@ spring_biomass <-
   stars_to_series(r = "biomass_spring.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "biomass") %>% 
   mutate(season = "Spring") %>% 
@@ -647,7 +647,7 @@ fall_biomass <-
   stars_to_series(r = "biomass_fall.rdata",
               stock_name = stock_name, 
               common_name = common_name, 
-              stock_area = stock_area,
+              stock_season = stock_season,
               data_season = "fall",
                 measure_name = "biomass") %>% 
   mutate(season = "fall") %>% 
@@ -725,7 +725,7 @@ spring_chl <-
 stars_to_series(r = "chlorophyll_conc.rdata",
               stock_name = stock_name, 
               common_name = common_name, 
-              stock_area = stock_area,
+              stock_season = stock_season,
               data_season = "spring",
                 measure_name = "biomass",
                 process_to_season = "spring")$spring %>% 
@@ -762,7 +762,7 @@ fall_chl <-
 stars_to_series(r = "chlorophyll_conc.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "biomass",
                 process_to_season = "fall")$fall %>% 
@@ -838,7 +838,7 @@ spring_chl_plt
 spring_zoo_1yr <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
@@ -869,7 +869,7 @@ spring_zoo_1yr_plt
 fall_zoo_1yr <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
                stock_name = stock_name, 
                common_name = common_name, 
-               stock_area = stock_area,
+               stock_season = stock_season,
                data_season = "fall",
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
@@ -901,7 +901,7 @@ fall_zoo_1yr_plt
 spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
@@ -932,7 +932,7 @@ spring_zoo_5yr_plt
 fall_zoo_5yr <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
-                stock_area = stock_area,
+                stock_season = stock_season,
                 measure_name = "zoo",
                 data_season = "fall",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 

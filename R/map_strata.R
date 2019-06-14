@@ -28,7 +28,7 @@
 #' map_strata(common_name = "summer flounder", spring_strata = spring_strata,
 #' fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
 #' 
-map_strata <- function(stock_name, common_name, stock_area, strata,
+map_strata <- function(stock_name, common_name, stock_season, strata,
                        overwrite = FALSE, save_plot, get_sf = F) {
   
   `%>%` <- magrittr::`%>%`
@@ -61,13 +61,13 @@ map_strata <- function(stock_name, common_name, stock_area, strata,
     sf::st_transform(crs = crs)
   
   
-  strata_spring <- strata %>% dplyr::filter(stock_area == "spring") %>% dplyr::pull(strata)
-  strata_fall <- strata %>% dplyr::filter(stock_area == "fall") %>% dplyr::pull(strata)
+  strata_spring <- strata %>% dplyr::filter(stock_season == "spring") %>% dplyr::pull(strata)
+  strata_fall <- strata %>% dplyr::filter(stock_season == "fall") %>% dplyr::pull(strata)
   
-  if (any(stock_area == "both")){
+  if (any(stock_season == "both")){
     strata_both <- strata %>%
-      dplyr::filter(stock_area == "both") %>%
-      dplyr::mutate(stock_area = "spring and fall") %>% 
+      dplyr::filter(stock_season == "both") %>%
+      dplyr::mutate(stock_season = "spring and fall") %>% 
       dplyr::pull(strata)
   } else {
     strata_both <- base::intersect(strata_spring, strata_fall)

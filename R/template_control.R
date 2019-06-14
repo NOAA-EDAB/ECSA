@@ -43,7 +43,7 @@ create_template <- function(stock_name,
                                    stock_name = readr::col_character(),
                                    species_code = readr::col_character(),
                                    svspp = readr::col_double(),
-                                   stock_area = readr::col_character(),
+                                   stock_season = readr::col_character(),
                                    strata = readr::col_double()
                                  )) %>%
     dplyr::filter(stock_name == !!stock_name) %>%
@@ -64,12 +64,12 @@ create_template <- function(stock_name,
                   common_name = gsub("^acadian", "Acadian", common_name)) %>% 
     dplyr::select(common_name,
            stock_name,
-           stock_area,
+           stock_season,
            stock_subarea,
            sci_name,
            cc_name,
            svspp) %>% 
-    dplyr::select(-stock_area) %>% 
+    dplyr::select(-stock_season) %>% 
     dplyr::distinct(.keep_all = TRUE)
     
   if(length(clean_names) < 1){

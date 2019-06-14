@@ -5,7 +5,7 @@ loadRData <- function(fileName){
 }
 
 
-crop_to_strata <- function(r, stock_name, stock_area, common_name, season_, mask_type = "unit"){
+crop_to_strata <- function(r, stock_name, stock_season, common_name, season_, mask_type = "unit"){
   
   `%>%` <- magrittr::`%>%`
   
@@ -16,23 +16,23 @@ crop_to_strata <- function(r, stock_name, stock_area, common_name, season_, mask
   if (nrow(s1) == 0) stop("No strata in query. Check common name spelling.")
   
   strata <- s1 %>% 
-    dplyr::filter(stock_area %in% stock_area) %>% 
-    dplyr::select(strata, stock_area)
+    dplyr::filter(stock_season %in% stock_season) %>% 
+    dplyr::select(strata, stock_season)
   
   if (nrow(strata) == 0) {
-    stop(paste("No strata in query. Available stock area selections include:",unique(s1$stock_area)))
+    stop(paste("No strata in query. Available stock area selections include:",unique(s1$stock_season)))
   }
   
   # Load strata
   strata <- map_strata(stock_name = stock_name,
-                       stock_area = stock_area,
+                       stock_season = stock_season,
                        common_name = common_name,
                        strata = strata,
                        save_plot = F,
                        get_sf = T) %>%  
     as("sf") %>% 
     st_transform(st_crs("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) %>% 
-    dplyr::select_at(.,vars(geometry, stock_area))
+    dplyr::select_at(.,vars(geometry, stock_season))
   
   
   # Load raster and convert to stars
