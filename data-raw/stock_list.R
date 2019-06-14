@@ -3,7 +3,7 @@ library(readr)
 library(tidyr)
 
 ## stock strata list from Jessica Blaylock
-sdat <- readr::read_csv("data-raw/stocks-strata_10042018.csv",
+sdat <- readr::read_csv(here::here("data-raw/stocks-strata_10042018.csv"),
                  col_types = cols(
                    group = col_character(),
                    SVSPP = col_double(),
@@ -14,7 +14,7 @@ sdat <- readr::read_csv("data-raw/stocks-strata_10042018.csv",
                  ))
 
 sdat_clean <- sdat %>%
-  select(svspp = SVSPP, species = Species, stock = Stock, season = `Season(s)`, strata_set = `Strata set`) %>%
+  dplyr::select(svspp = SVSPP, species = Species, stock = Stock, season = `Season(s)`, strata_set = `Strata set`) %>%
   na.omit() %>%
   separate_rows(strata_set, sep = ";") %>%
   mutate(season = tolower(season),
@@ -53,7 +53,7 @@ sdat_names <- sdat_clean %>%
                                        stock != "unit" ~ sprintf("%s_%s", 
                                                                  cc_name, 
                                                                  stock))) %>%
-  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, stock) %>%
+  dplyr::select(common_name, sci_name, cc_name, stock_name, species_code, svspp, stock) %>%
   distinct(.keep_all = TRUE)
 
 
@@ -66,8 +66,25 @@ stock_list <- sdat_clean %>%
          stock = gsub("/", "-", stock)) %>%
   distinct(.keep_all = TRUE) %>%
   left_join(sdat_names, by = c("svspp", "stock")) %>%
-  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strata) %>%
+  dplyr::select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strata) %>%
   dplyr::rename(stock_area = season)
 
-write.csv("data/stock_data/stock_list.csv", x = stock_list, row.names = FALSE)
+#Adding menhaden strata
+menhaden <- read.csv(here::here("data-raw/menhaden_strata_raw.csv"), stringsAsFactors = F) %>% 
+  dplyr::filter(sp == "atlmen") %>% 
+  dplyr::mutate(common_name = "atlantic menhaden",
+                sci_name = "Brevoortia tyrannus",
+                cc_name = "atlantic-menhaden",
+                strata = as.character(strata)) %>% 
+  # dplyr::mutate(stock_name = paste(cc_name, stock_area, sep = "_")) %>% 
+  tidyr::unite(.,"stock_name", cc_name,stock_area, sep = "_") %>% 
+  dplyr::mutate(stock_name = stringr::str_remove(stock_name, "_unit"),
+                svspp = 36,
+                cc_name = "atlantic-menhaden") %>% 
+  dplyr::rename(species_code = sp,
+                stock_area = season)
+
+stock_list %<>% bind_rows(menhaden)
+
+write.csv(here::here("data/stock_data/stock_list.csv"), x = stock_list, row.names = FALSE)
 
