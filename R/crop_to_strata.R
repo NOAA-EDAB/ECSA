@@ -1,9 +1,30 @@
+#' 
+#'
+#'
+#'
+#'
+#'
+
 
 loadRData <- function(fileName){
   load(fileName)
   get(ls()[ls() != "fileName"])
 }
 
+#'
+#'
+#'@param r 
+#'@param stock_name
+#'@param stock_season
+#'@param common_name
+#'@param season_
+#'@param mask_type
+#'
+#'@return 
+#'
+#'
+#'@importFrom magrittr "%>%"
+#'
 
 crop_to_strata <- function(r, stock_name, stock_season, common_name, season_, mask_type = "unit"){
   
@@ -30,8 +51,8 @@ crop_to_strata <- function(r, stock_name, stock_season, common_name, season_, ma
                        strata = strata,
                        save_plot = F,
                        get_sf = T) %>%  
-    as("sf") %>% 
-    st_transform(st_crs("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) %>% 
+    methods::as("sf") %>% 
+    sf::st_transform(st_crs("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) %>% 
     dplyr::select_at(.,vars(geometry, stock_season))
   
   
