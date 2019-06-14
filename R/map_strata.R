@@ -31,6 +31,7 @@
 map_strata <- function(stock_name, common_name, stock_area, strata,
                        overwrite = FALSE, save_plot, get_sf = F) {
   
+  `%>%` <- magrittr::`%>%`
   
   ## General mapping parameters
   xmin = -77
@@ -60,11 +61,14 @@ map_strata <- function(stock_name, common_name, stock_area, strata,
     sf::st_transform(crs = crs)
   
   
-  strata_spring <- strata %>% filter(stock_area == "spring") %>% pull(strata)
-  strata_fall <- strata %>% filter(stock_area == "fall") %>% pull(strata)
+  strata_spring <- strata %>% dplyr::filter(stock_area == "spring") %>% dplyr::pull(strata)
+  strata_fall <- strata %>% dplyr::filter(stock_area == "fall") %>% dplyr::pull(strata)
   
   if (any(stock_area == "both")){
-    strata_both <- strata %>% filter(stock_area == "both") %>% mutate(stock_area = "spring and fall") %>% pull(strata)
+    strata_both <- strata %>%
+      dplyr::filter(stock_area == "both") %>%
+      dplyr::mutate(stock_area = "spring and fall") %>% 
+      dplyr::pull(strata)
   } else {
     strata_both <- base::intersect(strata_spring, strata_fall)
   }
@@ -82,12 +86,14 @@ map_strata <- function(stock_name, common_name, stock_area, strata,
     dplyr::select(SEASON, both, fall, spring, geometry)
   
   #For export
-  strata_grid <- strata_int %>% dplyr::select(-SEASON) %>% 
-    filter_at(vars(both, fall, spring), any_vars(!is.na(.)))
+  strata_grid <- strata_int %>% 
+    dplyr::select(-SEASON) %>% 
+    dplyr::filter_at(vars(both, fall, spring), any_vars(!is.na(.)))
   
   if (!get_sf){
   #For plotting
-  strata_plot <- strata_int %>% dplyr::select(SEASON, geometry) 
+  strata_plot <- strata_int %>% 
+    dplyr::select(SEASON, geometry) 
   
   p1 <- ggplot2::ggplot() +
     ggplot2::geom_sf(data = strata_plot, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +

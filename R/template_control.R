@@ -1,4 +1,3 @@
-#' Create a ECSA template
 #'
 #' A function to create an ECSA bookdown template for a species of interest. 
 #'
@@ -70,6 +69,7 @@ create_template <- function(stock_name,
            sci_name,
            cc_name,
            svspp) %>% 
+    dplyr::select(-stock_area) %>% 
     dplyr::distinct(.keep_all = TRUE)
     
   if(length(clean_names) < 1){
@@ -79,6 +79,7 @@ create_template <- function(stock_name,
   #Create .Rmd file to be written to book
   dat <- readLines(here::here("templates","generic_template.rmd"))
   dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
+  dat <- gsub("\\{\\{STOCK_NAME\\}\\}", clean_names$stock_name, dat)
   dat <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, dat)
   dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
@@ -87,7 +88,8 @@ create_template <- function(stock_name,
   # cat(dat,sep = "\n" )
   file_name <- sprintf("ECSA_%s.rmd", clean_names$stock_name)
   folder_name <- sprintf("docs/%s", clean_names$stock_name)
-
+  output_dir <- sprintf("%s_book", clean_names$stock_name)
+  
   if(!dir.exists(folder_name)) {
     dir.create(folder_name)
   }
@@ -112,7 +114,7 @@ create_template <- function(stock_name,
   bookyml <- stringr::str_replace(bookyml,
                                   'output_dir: .*',
                                   sprintf('output_dir: %s',
-                                          folder_name))
+                                          output_dir))
   # }
   
   #Set filename of final HTML document (by default this is the title of the template)
@@ -124,8 +126,7 @@ create_template <- function(stock_name,
   # } else {
     bookyml <- stringr::str_replace(bookyml,
                                     'book_filename: ".*"',
-                                    sprintf('book_filename: "ECSA_%s"',
-                                            clean_names$stock_name,
+                                    sprintf('book_filename: "ECSA_%s_working_draft"',
                                             clean_names$stock_name))
   # }
   

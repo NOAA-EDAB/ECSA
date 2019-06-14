@@ -28,9 +28,6 @@ library(patchwork)
 library(ggthemes)
 library(AICcmodavg)
 library(stringr)
-
-
-# remotes::install_github("noaa-edab/ecotrend")
 library(ecotrend)
 library(magrittr)
 library(raster)
@@ -39,10 +36,10 @@ library(dplyr)
 library(here)
 library(gt)
 
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
-
+knitr::opts_chunk$set(echo = F, message = F ,warning = F, fig.align = 'center')
 
 ## Read in stock area vectors
+
 all_stock_area <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
                                  col_types = readr::cols(
                                    common_name = readr::col_character(),
@@ -62,7 +59,7 @@ stock_name <- "{{STOCK_NAME}}"
 cc_name <- "{{CC_NAME}}"
 stock_subarea <- "{{STOCK_SUBAREA}}"
 # svspp <- "{{SVSPP}}"
-# gg_int <- as.logical("{{INTERACTIVE}}")
+
 
 source(here::here("R/map_strata.R"))
 source(here::here("R/get_strata.R"))
@@ -72,7 +69,6 @@ source(here::here("R/tab_plotly.R"))
 source(here::here("R/create_buttons.R"))
 source(here::here("R/STARS_v18.R"))
 source(here::here("R/gls_summary.R"))
-
 
 
 #Function to rank time series by group mean. Returns top N groups
@@ -93,6 +89,7 @@ strata <- all_stock_area %>%
   dplyr::filter(stock_name == !!stock_name)
 
 stock_area <- strata %>% pull(stock_area) %>% unique()
+
 ```
 
 
@@ -108,7 +105,7 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 * Add summary point 
 
 ### Strata definition
-```{r strata-map, eval = TRUE, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_area = stock_area,
@@ -173,7 +170,7 @@ fall_bottom_temp <-
                stock_name = stock_name,
                common_name = common_name,
                stock_area = stock_area,
-               data_season = "spring",
+               data_season = "fall",
                 measure_name = "bottom_temp") %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 

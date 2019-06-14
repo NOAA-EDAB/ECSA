@@ -7,8 +7,9 @@ loadRData <- function(fileName){
 
 crop_to_strata <- function(r, stock_name, stock_area, common_name, season_, mask_type = "unit"){
   
+  `%>%` <- magrittr::`%>%`
   
-  s1 <- read.csv('data/stock_data/stock_list.csv',
+  s1 <- read.csv(here::here('data','stock_data','stock_list.csv'),
                  stringsAsFactors = F) %>% 
     dplyr::filter(stock_name == !!stock_name)
   
@@ -35,7 +36,7 @@ crop_to_strata <- function(r, stock_name, stock_area, common_name, season_, mask
   
   
   # Load raster and convert to stars
-  r <- loadRData(file.path("data-raw",r)) 
+  r <- loadRData(here::here("data-raw",r)) 
   raster::crs(r) <- "+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0"
   r <- stars::st_as_stars(r)
   
