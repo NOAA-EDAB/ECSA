@@ -14,35 +14,29 @@ crop_to_strata <- function(r, stock_name, stock_area, common_name, season_, mask
   
   if (nrow(s1) == 0) stop("No strata in query. Check common name spelling.")
   
-  if (unique(s1$season) == "both"){
-    s <- s1 %>% 
-      dplyr::filter(season %in% "both") %>% 
-      dplyr::select(strata, season)
-  } else {
-    s <- s1 %>% 
-      dplyr::filter(season %in% season_) %>% 
-      dplyr::select(strata, season)
-  }
+  strata <- s1 %>% 
+    dplyr::filter(stock_area %in% stock_area) %>% 
+    dplyr::select(strata, stock_area)
   
-
-  if (nrow(s) == 0) {
-    stop(paste("No strata in query. Available season selections include:",unique(s1$season)))
+  if (nrow(strata) == 0) {
+    stop(paste("No strata in query. Available stock area selections include:",unique(s1$stock_area)))
   }
   
   # Load strata
   strata <- map_strata(stock_name = stock_name,
                        stock_area = stock_area,
                        common_name = common_name,
-                       strata = s,
-                       season = season_,
+                       strata = strata,
                        save_plot = F,
-                       get_sf = T) %>% 
+                       get_sf = T) %>%  
     as("sf") %>% 
-    st_transform(st_crs("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0"))
+    st_transform(st_crs("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) %>% 
+    dplyr::select_at(.,vars(geometry, stock_area))
+  
   
   # Load raster and convert to stars
   r <- loadRData(file.path("data-raw",r)) 
-  crs(r) <- "+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0"
+  raster::crs(r) <- "+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0"
   r <- stars::st_as_stars(r)
   
   # Crop input raster to match strata

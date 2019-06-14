@@ -34,8 +34,9 @@ create_template <- function(stock_name,
   `%>%` <- magrittr::`%>%`
   library(readr)
   
+  setwd(here::here())
   ## Select the stock and format stock area and common name
-  clean_names <- readr::read_csv("data/stock_data/stock_list.csv",
+  clean_names <- readr::read_csv(here::here("data","stock_data/stock_list.csv"),
                                  col_types = readr::cols(
                                    common_name = readr::col_character(),
                                    sci_name = readr::col_character(),
@@ -43,11 +44,11 @@ create_template <- function(stock_name,
                                    stock_name = readr::col_character(),
                                    species_code = readr::col_character(),
                                    svspp = readr::col_double(),
-                                   season = readr::col_character(),
+                                   stock_area = readr::col_character(),
                                    strata = readr::col_double()
                                  )) %>%
     dplyr::filter(stock_name == !!stock_name) %>%
-    dplyr::mutate(stock_area = dplyr::case_when(grepl("_sne-ma$", stock_name) ~ "southern New England/mid-Atlantic ",
+    dplyr::mutate(stock_subarea = dplyr::case_when(grepl("_sne-ma$", stock_name) ~ "southern New England/mid-Atlantic ",
                                                  grepl("_cc$", stock_name) ~ "Cape Cod ",
                                                 grepl("_sne$", stock_name) ~ "southern New England ",
                                                 grepl("_gom-ngb$", stock_name) ~ "Gulf of Maine/northern Georges Bank ",
@@ -65,6 +66,7 @@ create_template <- function(stock_name,
     dplyr::select(common_name,
            stock_name,
            stock_area,
+           stock_subarea,
            sci_name,
            cc_name,
            svspp) %>% 
@@ -75,9 +77,9 @@ create_template <- function(stock_name,
   }
 
   #Create .Rmd file to be written to book
-  dat <- readLines("templates/generic_template.rmd")
+  dat <- readLines(here::here("templates","generic_template.rmd"))
   dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
-  dat <- gsub("\\{\\{STOCK_AREA\\}\\}", clean_names$stock_area, dat)
+  dat <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, dat)
   dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
   dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
   dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$svspp, dat)  
@@ -92,7 +94,7 @@ create_template <- function(stock_name,
 
   #Adjust _bookdown.yml accordingly
   bookyml <- suppressWarnings(
-    readLines("templates/_bookdown_template.yml")
+    readLines(here::here("templates","_bookdown_template.yml"))
   )
   bookyml <- stringr::str_replace(bookyml,
                                   "\\[.*\\]",
@@ -108,8 +110,8 @@ create_template <- function(stock_name,
   #                                           output_dir))
   # } else {
   bookyml <- stringr::str_replace(bookyml,
-                                  'output_dir: ".*"',
-                                  sprintf('output_dir: "%s"',
+                                  'output_dir: .*',
+                                  sprintf('output_dir: %s',
                                           folder_name))
   # }
   
@@ -123,6 +125,7 @@ create_template <- function(stock_name,
     bookyml <- stringr::str_replace(bookyml,
                                     'book_filename: ".*"',
                                     sprintf('book_filename: "ECSA_%s"',
+                                            clean_names$stock_name,
                                             clean_names$stock_name))
   # }
   
@@ -159,6 +162,9 @@ create_template <- function(stock_name,
                          clean_names$stock_name))) {
     
   }
+  
+  setwd(here::here(sprintf("docs/%s",
+                           clean_names$stock_name)))
   
 }
 # create_template(survdat_name = "ATLANTIC-MENHADEN",

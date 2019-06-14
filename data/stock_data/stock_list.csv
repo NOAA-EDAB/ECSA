@@ -1,4 +1,4 @@
-"common_name","sci_name","cc_name","stock_name","species_code","svspp","season","strata"
+"common_name","sci_name","cc_name","stock_name","species_code","svspp","stock_area","strata"
 "atlantic hagfish","Myxine glutinosa","atlantic-hagfish","atlantic-hagfish","atlhag",1,"both","1030"
 "atlantic hagfish","Myxine glutinosa","atlantic-hagfish","atlantic-hagfish","atlhag",1,"both","1040"
 "atlantic hagfish","Myxine glutinosa","atlantic-hagfish","atlantic-hagfish","atlhag",1,"both","1070"

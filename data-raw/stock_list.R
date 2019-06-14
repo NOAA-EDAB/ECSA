@@ -66,7 +66,8 @@ stock_list <- sdat_clean %>%
          stock = gsub("/", "-", stock)) %>%
   distinct(.keep_all = TRUE) %>%
   left_join(sdat_names, by = c("svspp", "stock")) %>%
-  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strata)
+  select(common_name, sci_name, cc_name, stock_name, species_code, svspp, season, strata) %>%
+  dplyr::rename(stock_area = season)
 
 write.csv("data/stock_data/stock_list.csv", x = stock_list, row.names = FALSE)
 

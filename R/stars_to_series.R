@@ -1,43 +1,32 @@
-stars_to_series <- function(r, stock_name,
+stars_to_series <- function(r, 
+                            stock_name,
                             common_name,
-                            stock_area, measure_name, process_to_season = NULL, group_regex = NULL){
+                            stock_area, 
+                            measure_name, 
+                            data_season,
+                            process_to_season = NULL,
+                            group_regex = NULL){
   
-  
-  #This takes the season of the data set out of the file name and passes it to crop_to_strata(). It
-  
-  if (is.null(process_to_season)){
-      #Generic tbl_cube to data.frame conversion
-      season_in <- stringr::str_extract(r, "fall|spring")
-  } else {
-      season_in <- process_to_season
+  if (stock_area != "both"){
+    if (stringr::str_detect(r, "fall") & data_season == "fall" & stock_area %in% "fall"){
+      stock_area <- "fall"
+    } else if (stringr::str_detect(r, "spring") & data_season == "spring" & stock_area %in% "spring"){
+      stock_area <- "spring"
+    }
   }
   
-  
-    cube_in <- try(
+  message(paste("Data choice:", r, "\nStock area:",stock_area))
+    
+  cube_in <- try(
         crop_to_strata(r = r,
-                       stock_name, stock_area, common_name, season_ = season_in) %>% 
-                       as.tbl_cube() 
-      )
-      if (class(cube_in) == "try-error"){
-        
-        season_default <- ifelse(season_in =="fall",
-               "spring",
-               ifelse(season_in == "spring",
-                      "fall",
-                      "both"))
-        
-        cube_in <- try(
-          crop_to_strata(r = r,
-                         stock_name, stock_area, common_name, season_ = season_default) %>% 
-                         as.tbl_cube()
+                       stock_name = stock_name,
+                       stock_area = stock_area) %>%
+          as.tbl_cube()
         )
-        
-        message(paste("\n",stringr::str_to_title(season_in),"data clipped to",
-                      season_default,"stock areas"))
-        
+      if (class(cube_in) == "try-error"){
+        message("Double check stock_area")
       }
 
-  
       # If fall and spring are not previously defined, we need to aggregate them here. 
       # Process_to_season can be "fall","spring", or "both".
       

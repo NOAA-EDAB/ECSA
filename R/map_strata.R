@@ -28,7 +28,7 @@
 #' map_strata(common_name = "summer flounder", spring_strata = spring_strata,
 #' fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
 #' 
-map_strata <- function(stock_name, common_name, stock_area, strata, season_ = NULL,
+map_strata <- function(stock_name, common_name, stock_area, strata,
                        overwrite = FALSE, save_plot, get_sf = F) {
   
   
@@ -43,11 +43,11 @@ map_strata <- function(stock_name, common_name, stock_area, strata, season_ = NU
   crs <-  "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
   
   ## Download data layers
-  
+  print("HERE HERE")
   ## 1) Strata  
   # source("R/get_strata.R")
   get_strata(overwrite = overwrite)
-  
+  print("HERE FIRST")
   ## 2) North America layer
   ne_countries <- rnaturalearth::ne_countries(scale = 10,
                                               continent = "North America",
@@ -60,37 +60,44 @@ map_strata <- function(stock_name, common_name, stock_area, strata, season_ = NU
     sf::st_transform(crs = crs)
   
   
-  strata_spring <- strata %>% filter(season == "spring") %>% pull(strata)
-  strata_fall <- strata %>% filter(season == "fall") %>% pull(strata)
-  strata_both <- strata %>% filter(season == "both") %>% pull(strata)
+  strata_spring <- strata %>% filter(stock_area == "spring") %>% pull(strata)
+  strata_fall <- strata %>% filter(stock_area == "fall") %>% pull(strata)
   
-  strata_grid <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
+  if (any(stock_area == "both")){
+    strata_both <- strata %>% filter(stock_area == "both") %>% mutate(stock_area = "spring and fall") %>% pull(strata)
+  } else {
+    strata_both <- base::intersect(strata_spring, strata_fall)
+  }
+  
+  print("HERE")
+  strata_int <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
                              quiet = TRUE) %>% 
-    dplyr::mutate(SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
+    dplyr::mutate(both = dplyr::case_when(STRATA %in% strata_both ~ "spring and fall", TRUE ~ NA_character_),
+                  spring = dplyr::case_when(STRATA %in% strata_spring ~ "spring", TRUE ~ NA_character_),
+                  fall = dplyr::case_when(STRATA %in% strata_fall ~ "fall" ,TRUE ~ NA_character_),
+                  SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
                                             STRATA %in% strata_both ~ "spring and fall",
                                             STRATA %in% strata_spring ~ "spring",
                                             STRATA %in% strata_fall ~ "fall",
                                             TRUE ~ NA_character_)) %>% 
-    filter(!is.na(SEASON)) %>% 
-    dplyr::mutate(SEASON = factor(SEASON, levels = c("spring", "fall", "spring and fall")))
+    dplyr::select(SEASON, both, fall, spring, geometry)
   
-  if (season_ == "both"){
-    season_ = "spring and fall"
-  }
+  #For export
+  strata_grid <- strata_int %>% dplyr::select(-SEASON) %>% 
+    filter_at(vars(both, fall, spring), any_vars(!is.na(.)))
   
-  if (!is.null(season_)){
-    strata_grid <- strata_grid %>% filter(SEASON %in% season_)
-  }
-  
+  if (!get_sf){
+  #For plotting
+  strata_plot <- strata_int %>% dplyr::select(SEASON, geometry) 
   
   p1 <- ggplot2::ggplot() +
-    ggplot2::geom_sf(data = strata_grid, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +
+    ggplot2::geom_sf(data = strata_plot, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +
     ggplot2::geom_sf(data = ne_countries, color = "grey60", size = 0.25) +
     ggplot2::geom_sf(data = ne_states, color = "grey60", size = 0.05) +
     viridis::scale_fill_viridis(discrete = TRUE) +
     ggplot2::coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
     ggthemes::theme_map() +
-    ggplot2::labs(title = sprintf("%s%s", stock_area, common_name),
+    ggplot2::labs(title = sprintf("%s", common_name),
                   fill = "Season") +
     ggplot2::theme(legend.position = "bottom",
                    legend.key.width = ggplot2::unit(2, "cm"))
@@ -98,8 +105,6 @@ map_strata <- function(stock_name, common_name, stock_area, strata, season_ = NU
   if(save_plot) {
     ggplot2::ggsave(p1, sprintf("%s_strata-map.png", stock_name), type = "cairo")
   }
-  
-  if (!get_sf){
     return(p1)
   } else {
     return(strata_grid)
