@@ -43,11 +43,11 @@ map_strata <- function(stock_name, common_name, stock_area, strata,
   crs <-  "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
   
   ## Download data layers
-  print("HERE HERE")
+ 
   ## 1) Strata  
   # source("R/get_strata.R")
   get_strata(overwrite = overwrite)
-  print("HERE FIRST")
+
   ## 2) North America layer
   ne_countries <- rnaturalearth::ne_countries(scale = 10,
                                               continent = "North America",
@@ -68,8 +68,7 @@ map_strata <- function(stock_name, common_name, stock_area, strata,
   } else {
     strata_both <- base::intersect(strata_spring, strata_fall)
   }
-  
-  print("HERE")
+
   strata_int <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
                              quiet = TRUE) %>% 
     dplyr::mutate(both = dplyr::case_when(STRATA %in% strata_both ~ "spring and fall", TRUE ~ NA_character_),
