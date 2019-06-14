@@ -213,7 +213,8 @@ if (fall_min > spring_min) {
 fall_bottom_temp_plt <- 
   tab_plotly(fall_bottom_temp, series.name = "Temperature") %>% 
   layout(title = "Fall",
-         yaxis = list(title = "Temperature (&deg;C)"),
+         yaxis = list(title = "Temperature (&deg;C)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(fall_bottom_temp$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -226,7 +227,8 @@ fall_bottom_temp_plt
 spring_bottom_temp_plt <- 
   tab_plotly(spring_bottom_temp, series.name = "Temperature") %>% 
   layout(title = "Spring",
-         yaxis = list(title = "Temperature (&deg;C)"),
+         yaxis = list(title = "Temperature (&deg;C)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(spring_bottom_temp$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -320,7 +322,8 @@ if (fall_min > spring_min) {
 fall_surface_temp_plt <- 
   tab_plotly(fall_surface_temp, series.name = "Temperature") %>% 
   layout(title = "Fall",
-         yaxis = list(title = "Temperature (&deg;C)"),
+         yaxis = list(title = "Temperature (&deg;C)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(fall_surface_temp$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -333,7 +336,8 @@ fall_surface_temp_plt
 spring_surface_temp_plt <- 
   tab_plotly(spring_surface_temp, series.name = "Temperature") %>% 
   layout(title = "Spring",
-         yaxis = list(title = "Temperature (&deg;C)"),
+         yaxis = list(title = "Temperature (&deg;C)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(spring_surface_temp$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -430,7 +434,8 @@ if (fall_min > spring_min) {
 fall_bottom_sal_plt <- 
   tab_plotly(fall_bottom_sal, series.name = "Salinity") %>% 
   layout(title = "Fall",
-         yaxis = list(title = "Salinity (PSU)"),
+         yaxis = list(title = "Salinity (PSU)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(fall_bottom_sal$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -443,7 +448,8 @@ fall_bottom_sal_plt
 spring_bottom_sal_plt <- 
   tab_plotly(spring_bottom_sal, series.name = "Salinity") %>% 
   layout(title = "Spring",
-         yaxis = list(title = "Salinity (PSU)"),
+         yaxis = list(title = "Salinity (PSU)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(spring_bottom_sal$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -536,7 +542,8 @@ if (fall_min > spring_min) {
 fall_surface_sal_plt <- 
   tab_plotly(fall_surface_sal, series.name = "Salinity") %>% 
   layout(title = "Fall",
-         yaxis = list(title = "Salinity (PSU)"),
+         yaxis = list(title = "Salinity (PSU)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(fall_surface_sal$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -549,7 +556,8 @@ fall_surface_sal_plt
 spring_surface_sal_plt <- 
   tab_plotly(spring_surface_sal, series.name = "Salinity") %>% 
   layout(title = "Spring",
-         yaxis = list(title = "Salinity (PSU)"),
+         yaxis = list(title = "Salinity (PSU)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(spring_surface_sal$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -591,7 +599,8 @@ occ_prob <- spring_occ_prob %>%
 occ_prob_plt <- occ_prob %>% 
   tab_plotly(.) %>% 
   layout(title = "Occupancy Probability", 
-         yaxis = list(title = "Occupancy probability"))
+         yaxis = list(title = "Occupancy probability",
+                      hoverformat = '.3f'))
 
 occ_prob_plt
 ```
@@ -682,7 +691,8 @@ if (fall_min > spring_min) {
 fall_biomass_plt <- 
   tab_plotly(fall_biomass, series.name = "Biomass") %>% 
   layout(title = "Fall",
-         yaxis = list(title = "Value"),
+         yaxis = list(title = "Value",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(fall_biomass$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -695,7 +705,8 @@ fall_biomass_plt
 spring_biomass_plt <-  
   tab_plotly(spring_biomass, series.name = "Biomass") %>% 
   layout(title = "Spring",
-         yaxis = list(title = "Value"),
+         yaxis = list(title = "Value",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(spring_biomass$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -797,7 +808,8 @@ if (fall_min > spring_min) {
 fall_chl_plt <- 
   tab_plotly(fall_chl, series.name = "CHL") %>% 
   layout(title = "Fall",
-         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)"),
+         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(fall_chl$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -809,7 +821,8 @@ fall_chl_plt
 spring_chl_plt <- 
   tab_plotly(spring_chl, series.name = "CHL") %>% 
   layout(title = "Spring",
-         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)"),
+         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
          xaxis = list(range = c(plot_min, max(spring_chl$Time)),
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
@@ -843,7 +856,8 @@ buttons <- create_buttons(spring_zoo_1yr)
 spring_zoo_1yr_plt <-
 tab_plotly(spring_zoo_1yr) %>% 
   layout(title = "Spring zooplankton abundance",
-         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)"),
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
          showlegend = F, 
          updatemenus = buttons)
 
@@ -873,7 +887,8 @@ buttons <- create_buttons(fall_zoo_1yr)
 fall_zoo_1yr_plt <-
 tab_plotly(fall_zoo_1yr) %>% 
   layout(title = "Fall zooplankton abundance",
-         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)"),
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
          showlegend = F, 
          updatemenus = buttons)
 
@@ -904,7 +919,8 @@ buttons <- create_buttons(spring_zoo_5yr)
 spring_zoo_5yr_plt <-
 tab_plotly(spring_zoo_5yr) %>% 
   layout(title = "Spring zooplankton abundance",
-         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)"),
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
          showlegend = F, 
          updatemenus = buttons)
 
@@ -934,7 +950,8 @@ buttons <- create_buttons(fall_zoo_5yr)
 fall_zoo_5yr_plt <-
 tab_plotly(fall_zoo_1yr) %>% 
   layout(title = "Fall zooplankton abundance",
-         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)"),
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
          showlegend = F,
          updatemenus = buttons)
 
