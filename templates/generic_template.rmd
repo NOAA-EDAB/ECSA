@@ -3,7 +3,8 @@ title:
     | 
     | Ecosystem Context for Stock Assessments:
     | {{STOCK_SUBAREA}}{{COMMON_NAME}}
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+#date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: "Ecosystem Dynamics and Assessment Branch"
 always_allow_html: yes
 site: "bookdown::bookdown_site"
 output:
@@ -11,7 +12,7 @@ output:
     lib_dir: "book_assets"
     config:
       toc:
-        collapse: TRUE
+        collapse: yes
         after: |
           <li><a href="https://bookdown.org" target="_blank">Published with bookdown</a></li>
 ---
