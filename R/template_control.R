@@ -152,11 +152,15 @@ create_template <- function(stock_name,
   close(book_connection)
   message(sprintf("\n%s/_bookdown.yml successfully created.",
                   folder_name))
-  
+
+
+  # render the species specific markdown file into book
   if (render_book){
-    bookdown::render_book(sprintf("%s/%s",
-                                  folder_name,
-                                  file_name))
+    pathToDir <- here::here(sprintf("%s", folder_name))
+    pathToRmd <- here::here(sprintf("%s/%s", folder_name,file_name))
+    #bookdown::render_book(sprintf("%s/%s",folder_name,file_name))
+    rmarkdown::render(pathToRmd)
+    browseURL(paste0(pathToDir,"/overview.html"))
   }
   if(file.exists(sprintf("%s/ECSA_%s.html", 
                          folder_name,
@@ -164,9 +168,9 @@ create_template <- function(stock_name,
     
   }
   
-  setwd(here::here(sprintf("docs/%s",
-                           clean_names$stock_name)))
-  
+
+  #setwd(pathToRmd) # is this needed?
+
 }
 # create_template(survdat_name = "ATLANTIC-MENHADEN",
 #                 stock_code = "atlmen",
