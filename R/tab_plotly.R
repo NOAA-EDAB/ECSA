@@ -11,7 +11,7 @@
 #' @importFrom magrittr "%>%"
 #'
 
-tab_plotly <- function(df, showlegend = T, series.name = NULL){
+tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F){
   
   `%>%` <- magrittr::`%>%`
   
@@ -22,6 +22,7 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL){
   }
   
   plotvars <- names(df)[2:ncol(df)]
+  
   for (i in 1:length(plotvars)){
     
     if (plotvars[i] == "Regime.Mean" ) {
@@ -36,22 +37,50 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL){
       color <- "#1f78b4"
     } 
     
-    plot_df <- df %>%
-      dplyr::rename(data=one_of(plotvars[i])) %>%  ##make sure rename is from dplyr
-      dplyr::select(Time, data)
+    if (!add_smoother){
+      
+      plot_df <- df %>%
+        dplyr::rename(data=one_of(plotvars[i])) %>%  ##make sure rename is from dplyr
+        dplyr::select(Time, data)
+      
+    } else {
+      
+      smoothcol <- unlist(stringr::str_extract(plotvars,
+                                               paste0(plotvars[i], "smooth")))
+      smoothcol <- smoothcol[!is.na(smoothcol)]
+      
+      plot_df <- df %>%
+        dplyr::select(Time,
+                      data = which(colnames(.) == plotvars[i]),
+                      smooth = which(str_detect(colnames(.), smoothcol)))
+    }
+    
+    
     
     if (length(plotvars) <= 3) {
       p <- p %>%
-        plotly::add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i], line = list(color = color)) 
-    } else {
-      p <- p %>%
-        plotly::add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i]) 
+        plotly::add_lines(data=plot_df, x=~Time, y=~data, name=plotvars[i],
+                          line = list(color = color)) 
+    } 
+      
+    if (add_smoother) {
+        p <- p %>%
+         plotly::add_trace(data=plot_df, x=~Time,
+                            y=~data, 
+                            name=plotvars[i], 
+                            mode = 'markers',
+                            showlegend = F) %>% 
+          plotly::add_trace(data=plot_df,
+                            x = ~Time,
+                            y=~smooth,
+                            mode = 'lines',
+                            name=plotvars[i],
+                            showlegend = F)
+      }
+
+      
     }
     
-  }
-  
-
   
   return(p)
 }
-

@@ -53,9 +53,13 @@ all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv")
                                    stock_season = readr::col_character(),
                                    strata = readr::col_double()
                                  ))
-
+#swept area estimates
 spring_sae <- readr::read_csv(here::here("data-raw/spring_sae_tb_sum.csv"))
 fall_sae <- readr::read_csv(here::here("data-raw/fall_sae_tb_sum.csv"))
+
+#zooplankton lookup table
+zoo_lookup <- read.csv(here::here("data-raw/zooplankton_lookup.csv"), stringsAsFactors = F)
+
 
 ## Put all mustaches here
 common_name <- "{{COMMON_NAME}}"
@@ -613,6 +617,12 @@ occ_prob_plt <- occ_prob %>%
 occ_prob_plt
 ```
 
+
+```{r hab_area, fig.height=4}
+
+```
+
+
 ## Biomass
 
 ```{r biomass_processing}
@@ -931,8 +941,8 @@ spring_chl_plt
 
 ## Annual 
 
-```{r zoo_1yr_spring, fig.height=4}
-spring_zoo_1yr <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
+```{r zoo_1yr_spring, fig.height=5}
+spring_zoo_1yr_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
@@ -940,62 +950,150 @@ spring_zoo_1yr <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "spring") %>% 
-  left_join(rank_by_group(., group = "Grouping", N = N),
-            by = "Grouping") %>% 
-  dplyr::filter(!is.na(id)) %>% 
-  arrange(id) %>% 
-  dplyr::rename(Genera = Grouping) %>% 
-  dplyr::select(-id, -M, -season) %>%
-  tidyr::spread(Genera, Mean)
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "y") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
 
-buttons <- create_buttons(spring_zoo_1yr)
 
+spring_zoo_5yr_cope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "spring",
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "spring") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "y") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  dplyr::mutate(full_name = paste0(full_name, "smooth")) %>% 
+  tidyr::spread(full_name, Mean)
+
+spring_cope <- left_join(spring_zoo_1yr_cope,
+                         spring_zoo_5yr_cope,
+                         by = "Time")
+
+buttons <- create_buttons(spring_cope)
+
+
+for (i )
+
+buttons[[1]]$args[[1]]$visible <- c(F, T,T,rep(F,30))
+buttons[[2]]$args[[1]]$visible <- c(F, F,F,T,T,rep(F,28))
+buttons[[3]]$args[[1]]$visible <- c(F, F,F,F,F,T,T,rep(F,26))
+
+# 
 spring_zoo_1yr_plt <-
-tab_plotly(spring_zoo_1yr) %>% 
-  layout(title = "Spring zooplankton abundance",
+  tab_plotly(spring_cope, add_smoother = T, showlegend = F) %>% 
+  layout(title = "Spring copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f'),
-         showlegend = F, 
-         updatemenus = buttons)
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[4]],buttons[[5]],buttons[[6]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[7]],buttons[[8]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
 
+
+colnames(spring_cope)[2]
 spring_zoo_1yr_plt
 ```
 
 
-```{r zoo_1yr_fall, fig.height=4}
-fall_zoo_1yr <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
-               stock_name = stock_name, 
-               common_name = common_name, 
-               stock_season = stock_season,
-               data_season = "fall",
+```{r zoo_1yr_fall, fig.height=5}
+fall_zoo_1yr_cope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "fall",
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "fall") %>% 
-  left_join(rank_by_group(., group = "Grouping", N = N),
-            by = "Grouping") %>% 
-  dplyr::filter(!is.na(id)) %>% 
-  arrange(id) %>% 
-  dplyr::rename(Genera = Grouping) %>% 
-  dplyr::select(-id, -M, -season) %>%
-  tidyr::spread(Genera, Mean)
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "y") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
 
-buttons <- create_buttons(fall_zoo_1yr)
-
+buttons <- create_buttons(fall_zoo_1yr_cope)
+# 
 fall_zoo_1yr_plt <-
-tab_plotly(fall_zoo_1yr) %>% 
-  layout(title = "Fall zooplankton abundance",
+  tab_plotly(fall_zoo_1yr_cope, add_smoother = T) %>% 
+  layout(title = "Fall copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f'),
-         showlegend = F, 
-         updatemenus = buttons)
+         showlegend = F,
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[4]],buttons[[5]],buttons[[6]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[7]],buttons[[8]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
 
 fall_zoo_1yr_plt
 ```
 
-## 5 year rolling mean
-
-```{r zoo_5yr_spring, fig.height=4}
-spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+```{r zoo_1yr_spring_noncope, fig.height=5}
+spring_zoo_1yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
@@ -1003,59 +1101,369 @@ spring_zoo_5yr <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
                 measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "spring") %>% 
-  left_join(rank_by_group(., group = "Grouping", N = N),
-            by = "Grouping") %>% 
-  dplyr::filter(!is.na(id)) %>% 
-  arrange(id) %>% 
-  dplyr::rename(Genera = Grouping) %>% 
-  dplyr::select(-id, -M, -season) %>%
-  tidyr::spread(Genera, Mean)
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "n") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
 
-buttons <- create_buttons(spring_zoo_5yr)
-
-spring_zoo_5yr_plt <-
-tab_plotly(spring_zoo_5yr) %>% 
-  layout(title = "Spring zooplankton abundance",
+buttons <- create_buttons(spring_zoo_1yr_noncope)
+# 
+spring_zoo_1yr_noncope_plt <-
+  tab_plotly(spring_zoo_1yr_noncope) %>% 
+  layout(title = "Spring non-copepod zoo. abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f'),
-         showlegend = F, 
-         updatemenus = buttons)
+         showlegend = F,
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]],buttons[[4]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[5]],buttons[[6]],buttons[[7]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[8]],buttons[[9]],buttons[[10]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
+
+spring_zoo_1yr_noncope_plt
+```
+
+```{r zoo_1yr_fall_noncope, fig.height=5}
+fall_zoo_1yr_noncope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "fall",
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "fall") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "n") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
+
+buttons <- create_buttons(fall_zoo_1yr_noncope)
+# 
+fall_zoo_1yr_noncope_plt <-
+  tab_plotly(fall_zoo_1yr_noncope) %>% 
+  layout(title = "Fall non-copepod zoo. abundance",
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
+         showlegend = F,
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]],buttons[[4]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[5]],buttons[[6]],buttons[[7]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[8]],buttons[[9]],buttons[[10]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
+
+fall_zoo_1yr_noncope_plt
+```
+
+
+
+
+
+## 5 year rolling mean
+
+```{r zoo_5yr_spring, fig.height=5}
+spring_zoo_5yr_cope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "spring",
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "spring") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "y") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
+
+buttons <- create_buttons(spring_zoo_5yr_cope)
+# 
+spring_zoo_5yr_plt <-
+  tab_plotly(spring_zoo_5yr_cope) %>% 
+  layout(title = "Spring copepod abundance",
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
+         showlegend = F,
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[4]],buttons[[5]],buttons[[6]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[7]],buttons[[8]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
 
 spring_zoo_5yr_plt
 ```
 
 
-```{r zoo_5yr_fall, fig.height=4}
-fall_zoo_5yr <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
+```{r zoo_5yr_fall, fig.height=5}
+fall_zoo_5yr_cope <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
-                measure_name = "zoo",
                 data_season = "fall",
+                measure_name = "zoo",
                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "fall") %>% 
-  left_join(rank_by_group(., group = "Grouping", N = N),
-            by = "Grouping") %>% 
-  dplyr::filter(!is.na(id)) %>% 
-  arrange(id) %>% 
-  dplyr::rename(Genera = Grouping) %>% 
-  dplyr::select(-id, -M, -season) %>%
-  tidyr::spread(Genera, Mean)
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "y") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
 
-buttons <- create_buttons(fall_zoo_5yr)
-
+buttons <- create_buttons(fall_zoo_5yr_cope)
+# 
 fall_zoo_5yr_plt <-
-tab_plotly(fall_zoo_1yr) %>% 
-  layout(title = "Fall zooplankton abundance",
+  tab_plotly(fall_zoo_5yr_cope) %>% 
+  layout(title = "Fall copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f'),
          showlegend = F,
-         updatemenus = buttons)
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[4]],buttons[[5]],buttons[[6]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[7]],buttons[[8]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
 
 fall_zoo_5yr_plt
 ```
 
+```{r zoo_5yr_spring_noncope, fig.height=5}
+spring_zoo_5yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "spring",
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "spring") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "n") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
 
+buttons <- create_buttons(spring_zoo_5yr_noncope)
+# 
+spring_zoo_5yr_noncope_plt <-
+  tab_plotly(spring_zoo_5yr_noncope) %>% 
+  layout(title = "Spring non-copepod zoo. abundance",
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
+         showlegend = F,
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]],buttons[[4]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[5]],buttons[[6]],buttons[[7]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[8]],buttons[[9]],buttons[[10]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
+
+spring_zoo_5yr_noncope_plt
+```
+
+```{r zoo_5yr_fall_noncope, fig.height=5}
+fall_zoo_5yr_noncope <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "fall",
+                measure_name = "zoo",
+                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "fall") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "n") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
+
+buttons <- create_buttons(fall_zoo_5yr_noncope)
+# 
+fall_zoo_5yr_noncope_plt <-
+  tab_plotly(fall_zoo_5yr_noncope) %>% 
+  layout(title = "Fall non-copepod zoo. abundance",
+         yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
+         showlegend = F,
+         updatemenus = 
+        
+        list(
+           list(
+            buttons = list(buttons[[1]],buttons[[2]],buttons[[3]],buttons[[4]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.2
+                      ),
+          list(
+           buttons = list(buttons[[5]],buttons[[6]],buttons[[7]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.3
+                      ),
+          list(
+           buttons = list(buttons[[8]],buttons[[9]],buttons[[10]]),
+                      type = "buttons",
+                      direction = "right",
+                      xanchor = "center",
+                      yanchor = "top",
+                      pad = list("r"= 0, "t"= 10, "b" = 10),
+                      x = 0.5,
+                      y = -0.4
+                      )
+                     )
+                    )
+
+fall_zoo_5yr_noncope_plt
+```
 
 
 # Methods {#methods}

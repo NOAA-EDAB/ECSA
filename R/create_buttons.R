@@ -34,30 +34,10 @@
 create_buttons <- function(df){
   
   plotvars <- names(df)[2:ncol(df)]
-  
-  
-  base_params <- 'list(
-    list(
-      type = "buttons",
-      direction = "right",
-      xanchor = "center",
-      yanchor = "top",
-      pad = list("r"= 0, "t"= 10, "b" = 10),
-      x = 0.5,
-      y = -0.2,
-      buttons = list(
-  %slist(
-                label = "All",
-                method = "update",
-                args = list(list(visible = c(T, T, T, T)),
-                list(title = "All"))
-          )
-        )
-      )
-    )'
+  plotvars_nosmooth <- plotvars[!str_detect(plotvars, "smooth")]
 
   menu <- ""
-  for (i in 1:length(plotvars)){
+  for (i in 1:length(plotvars_nosmooth)){
     #Create logical statement for which series to view on click
     col_id <- grep(plotvars[i], colnames(df))
     vis_logical <- c(F, rep(NA, length(plotvars)))
@@ -65,23 +45,36 @@ create_buttons <- function(df){
     vis_logical[is.na(vis_logical)] <- F
     vis_logical <- paste0("c(",stringr::str_flatten(vis_logical, ","),")")
     
+    name_ <- plotvars_nosmooth[i]
+    print(name_)
     menu_item <- sprintf('
       list(
         label = "%s",
         method = "update",
         args = list(list(visible = %s),
-                    list(title = "%s")))',plotvars[i],
+                    list(title = "%s")))',name_,
                          vis_logical,
-                         plotvars[i])
+                         name_)
     
-    
-    menu <- stringr::str_glue(stringr::str_glue(menu,menu_item),",")
-    
+    if (plotvars_nosmooth[i] == dplyr::first(plotvars_nosmooth)){
+      
+      menu <- stringr::str_glue(stringr::str_glue("list(",menu,menu_item),",")
+      
+    } else if (plotvars_nosmooth[i] != dplyr::last(plotvars_nosmooth)) {
+      
+      menu <- stringr::str_glue(stringr::str_glue(menu,menu_item),",") 
+      
+    } else {
+      
+      menu <- stringr::str_glue(stringr::str_glue(menu,menu_item),")") 
+    }
     
   }
   
-  out <- eval(parse(text = sprintf(base_params, menu)))
+  out <- eval(parse(text =  menu))
   
   return(out)
 }
+
+buttons <- create_buttons(spring_cope )
 
