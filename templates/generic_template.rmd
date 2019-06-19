@@ -35,6 +35,7 @@ library(raster)
 library(stars)
 library(dplyr)
 library(here)
+library(zoo)
 library(gt)
 
 knitr::opts_chunk$set(echo = F, message = F ,warning = F, fig.align = 'center')
@@ -53,8 +54,8 @@ all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv")
                                    strata = readr::col_double()
                                  ))
 
-spring_sae <- readr::read_csv(here::here("data/stock_data/spring_sae_tb_sum.csv"))
-fall_sae <- readr::read_csv(here::here("data/stock_data/fall_sae_tb_sum.csv"))
+spring_sae <- readr::read_csv(here::here("data-raw/spring_sae_tb_sum.csv"))
+fall_sae <- readr::read_csv(here::here("data-raw/fall_sae_tb_sum.csv"))
 
 ## Put all mustaches here
 common_name <- "{{COMMON_NAME}}"
@@ -73,6 +74,7 @@ source(here::here("R/tab_plotly.R"))
 source(here::here("R/create_buttons.R"))
 source(here::here("R/STARS_v18.R"))
 source(here::here("R/gls_summary.R"))
+source(here::here("R/plot_sae.R"))
 
 
 #Function to rank time series by group mean. Returns top N groups
@@ -729,81 +731,84 @@ treatments <- spring_sae %>%
   pull(treatment) %>% 
   unique()
 
-spring_sae_biomass <- 
-  spring_sae %>%
-  dplyr::filter(svspp == svspp_) %>% 
-  dplyr::select(-svspp) %>%
-  tidyr::unite(., "stock_treatment",stocks, treatment, biomass, sep = "_") %>%
-  tidyr::gather(.,Var, Value, -year,-stock_treatment) %>% 
-  tidyr::separate(., stock_treatment, into = c("area","treatment","biomass"), sep = "_") %>% 
-  dplyr::rename(Time = year) %>% 
-  dplyr::filter(biomass == "yes") %>% 
-  mutate(treatment = as.factor(treatment))
+# Change parameters of moving average. `fill = "extend"` will do linear interpolation over gaps in moving average. Change length of window with the k parameter
+fill = "extend"
+k <- 2
 
-spring_sae_bio_nzero <- spring_sae_biomass %>% 
-  dplyr::filter(stringr::str_detect(Var, "ztotal"))
+spring_biomass_sae <- 
+  plot_sae(data_season = "spring",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "yes",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         legend_title = "")
 
-spring_sae_bio_nzero_log <- spring_sae_biomass %>% 
-  dplyr::filter(stringr::str_detect(Var, "zlog"))
 
-spring_sae_bio <- spring_sae_biomass %>% 
-  dplyr::filter(Var == "total")
+spring_numbers_sae <- 
+  plot_sae(data_season = "spring",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "no",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         include_legend = F)
 
-spring_sae_bio_log <- spring_sae_biomass %>% 
-  dplyr::filter(Var == "log10total")
+fall_biomass_sae <- 
+  plot_sae(data_season = "fall",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "yes",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         legend_title = "")
 
-spring_sae_bio_nzero_plt <- 
-  ggplot(spring_sae_bio_nzero) +
-  geom_line(aes(x = Time, y = Value, color = treatment)) +
-  facet_grid(area ~ .) +
-  guides(color = guide_legend(title = ""))
 
-spring_sae_bio_nzero_log_plt <- 
-  ggplot(spring_sae_bio_nzero_log) +
-  geom_line(aes(x = Time, y = Value, color = treatment)) +
-  facet_grid(area ~ .) +
-  guides(color = guide_legend(title = ""))
+fall_numbers_sae <- 
+  plot_sae(data_season = "fall",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "no",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         include_legend = F)
 
-spring_sae_bio_plt <- 
-  ggplot(spring_sae_bio) +
-  geom_line(aes(x = Time, y = Value, color = treatment)) +
-  facet_grid(area ~ .)+
-  guides(color = guide_legend(title = ""))
+```
 
-spring_sae_bio_log_plt <- 
-  ggplot(spring_sae_bio_log) +
-  geom_line(aes(x = Time, y = Value, color = treatment)) +
-  facet_grid(area ~ .)+
-  guides(color = guide_legend(title = ""))
+```{r spring_sae_plt, fig.height = 6}
+spring_sae_plt <- subplot(
+          spring_biomass_sae,
+          spring_numbers_sae,
+          shareX = F, 
+          nrows = 2,
+          margin = 0.05,
+          titleY = TRUE) %>% 
+   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
+                  x=1.02, xanchor="left",
+                  y=0.8, yanchor="bottom",  
+                  legendtitle=TRUE, showarrow=FALSE ) %>%
+  layout( legend=list(y=0.8, yanchor="top" ) )
+spring_sae_plt
+```
 
-# spring_sae_bio_plt + spring_sae_bio_log_plt +
-# spring_sae_bio_nzero_plt + spring_sae_bio_nzero_log_plt +
-#   plot_layout(ncol = 2)
-  
-
-# spring_plots <- lapply(X = c(spring_sae_bio_plt,
-#                    spring_sae_bio_log_plt,
-#                    spring_sae_bio_nzero_plt,
-#                    spring_sae_bio_nzero_log_plt),
-#                    FUN = function(x){
-#                      plotly::ggplotly()
-#                    })
-plt <- subplot(ggplotly(spring_sae_bio_log_plt),
-        ggplotly(spring_sae_bio_plt),
-        ggplotly(spring_sae_bio_nzero_log_plt),
-        ggplotly(spring_sae_bio_nzero_plt),
-        shareX = F, nrows = 2,margin = 0.05) %>% 
-  layout(title = "")
-
-nlines <- 12 * length(treatments)
-
-for (i in 1:nlines){
-  if (i > (nlines/4)){
-    plt$x$data[[i]]$showlegend <- F
-  }  
-}
-
-plt
+```{r fall_sae_plt, fig.height = 6}
+fall_sae_plt <- subplot(
+          fall_biomass_sae,
+          fall_numbers_sae,
+          shareX = F, 
+          nrows = 2,
+          margin = 0.05,
+          titleY = TRUE) %>% 
+   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
+                  x=1.02, xanchor="left",
+                  y=0.8, yanchor="bottom",   
+                  legendtitle=TRUE, showarrow=FALSE ) %>%
+  layout( legend=list(y=0.8, yanchor="top" ) )
+fall_sae_plt
 ```
 
 
