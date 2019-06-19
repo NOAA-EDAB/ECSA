@@ -1,3 +1,23 @@
+#' What
+#' 
+#' Describe
+#'
+#' @param r
+#' @param stock_name
+#' @param common_name
+#' @param stock_season
+#' @param measure_name
+#' @param data_season
+#' @param process_to_season
+#' @param group_regex
+#'
+#' @return  ???
+#'
+#' @importFrom magrittr "%>%"
+#'
+#'
+
+
 stars_to_series <- function(r, 
                             stock_name,
                             common_name,
@@ -35,7 +55,7 @@ stars_to_series <- function(r,
         crop_to_strata(r = r,
                        stock_name = stock_name,
                        stock_season = stock_season) %>%
-          as.tbl_cube()
+              dplyr::as.tbl_cube()
         )
       if (class(cube_in) == "try-error"){
         message("Double check stock_season")
@@ -47,7 +67,7 @@ stars_to_series <- function(r,
       if (!is.null(process_to_season)){
         
         # Process spring data (March, April, May)
-        cube_in_spring <- cube_in %>% filter(stringr::str_detect(band, "(03\\.01)|(04\\.01)|(05\\.01)"))
+        cube_in_spring <- cube_in %>% dplyr::filter(stringr::str_detect(band, "(03\\.01)|(04\\.01)|(05\\.01)"))
         names(cube_in_spring$mets) <- measure_name
         
         df_out_spring <- cube_in_spring %>% 
@@ -60,7 +80,7 @@ stars_to_series <- function(r,
           dplyr::summarise(Mean = mean(Monthly_mean, na.rm = T))
         
         # Process fall data (September, October, November)
-        cube_in_fall <- cube_in %>% filter(stringr::str_detect(band, "(09\\.01)|(10\\.01)|(11\\.01)"))
+        cube_in_fall <- cube_in %>% dplyr::filter(stringr::str_detect(band, "(09\\.01)|(10\\.01)|(11\\.01)"))
         names(cube_in_fall$mets) <- measure_name
         
         df_out_fall <- cube_in_fall %>% 

@@ -3,7 +3,8 @@ title:
     | 
     | Ecosystem Context for Stock Assessments:
     | {{STOCK_SUBAREA}}{{COMMON_NAME}}
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+#date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: "Ecosystem Dynamics and Assessment Branch"
 always_allow_html: yes
 site: "bookdown::bookdown_site"
 output:
@@ -11,7 +12,7 @@ output:
     lib_dir: "book_assets"
     config:
       toc:
-        collapse: none
+        collapse: yes
         after: |
           <li><a href="https://bookdown.org" target="_blank">Published with bookdown</a></li>
 ---
@@ -1261,7 +1262,39 @@ Sea surface temperature estimated in this study were compared to the [OISST data
 knitr::include_graphics("data/images/ECSA_oi_compare.png")
 ```
 
+# Document automation
 
-## References
+To facilitate speedy document creation many steps have been automated. Species specific information are passed as arguments to a default rmarkdown template (the backbone of this document). This template is then rendered into a book using the package `bookdown`. Prior to rendering the data are pre-processed and output as `.RData` files for use in the automation steps. The specific steps are as follows:
+
+__Manunal preprocessing__
+
+1. _model outputs_ are created in the form of annual raster files (`.RData`) for chlorophyll, zooplankton, temperature, salinity, ocurrance probability (species specific), and biomass (species specific).
+1. These sets of annual raster files are collapsed into a single stack (`.RData`) using the script `collapse_to_stack.R`. The resulting stacked raster files are exported with this package.
+
+__Automation__
+
+1. `create_template.R` is run to create the species specific `.Rmd` document with the following arguments (for additional arguments, refer to `?create_template`). For {{COMMON_NAME}}:
+``` {r, cre_tmp, echo=T, eval =F}
+create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here::here("docs"))
+```
+2. The species specific `Rmd` file is then rendered. During this step:
+
+*  The stacked raster files are clipped to the appropriate seasonal stock area (See Figure \@ref(fig:strata-map) ) using `stars_to_series.R`.
+
+* A linear trend is fitted (using the package `ecotrend`) to the environmental variables (temperature and salinity), chlorophyll, and species biomass. The resulting fit is __ONLY__ plotted if found to be significant at the 5% level. 
+
+* A regime mean is also fit (using `STARS_v18.R`) and displayed on all plots.
+
+* Zooplankton:
+
+* Occupancy probability:
+
+
+3. This document (the one you are viewing) will then automatically open in a web browser and all associated files can be found in the `docs\{{STOCK_NAME}}` folder in your current working directory.
+4. These steps are repeated for additional species.
+
+
+
+# References
 
 

@@ -1,4 +1,17 @@
-# STARS_algorithm
+#' STARS_algorithm
+#' 
+#' Describe
+#' 
+#' @param mat.in
+#' @param window.L
+#' @param sub.sample.size
+#' @param huber.wt.val
+#' @param alpha.level
+#' 
+#' @return 
+#' 
+#' 
+
 STARS = function(mat.in = c(),
                  #these for blooms
                  window.L = 5,       # 5 for blooms  | 10 for bts change pt
@@ -25,7 +38,7 @@ STARS = function(mat.in = c(),
     if (any(duplicated(d.vect))) {
       fix.ind <- which(duplicated(d.vect))
       length.ind <- length(fix.ind)
-      rand.dev <- sample(x = c(-1,1), size = length.ind, replace = T)*runif(length.ind,min = 0.001,max = 0.002)
+      rand.dev <- base::sample(x = c(-1,1), size = length.ind, replace = T)*stats::runif(length.ind,min = 0.001,max = 0.002)
       d.vect[fix.ind] <- d.vect[fix.ind] + rand.dev  }
 
     start.ind <- seq(1,c(length(d.vect) - sample.length + 1))
@@ -36,6 +49,8 @@ STARS = function(mat.in = c(),
         AR.est[k] <- suppressWarnings(ar.ols(d.vect[ind],order.max = 1)$ar[[1]]) }}
     AR.est <- median(AR.est,na.rm = T)
     return(AR.est)  }
+  
+  
   AR.est <- AR.estimate.function(d.vect = data.vect, sample.length = sub.sample.size)
 
   # Calculate average variance of TS
@@ -47,6 +62,7 @@ STARS = function(mat.in = c(),
       VAR.est[j] <- var(d.vect[seq(start.ind[j],length.out = length.val)],na.rm = T)  }
     VAR.est <- mean(VAR.est)
     return(VAR.est)  }
+  
   VAR.est <- determine.VAR()
 
   # Huber wt function
@@ -84,7 +100,7 @@ STARS = function(mat.in = c(),
   reg.number.vect <- rep(NA,length(data.vect))
   RSI.vect <- rep(NA,length(data.vect))
 
-  regime.mean.vect[1:window.L] <- weighted.mean(data.vect[1:window.L],
+  regime.mean.vect[1:window.L] <- stats::weighted.mean(data.vect[1:window.L],
                                                 huber.wt.mean(data.vect[1:window.L],
                                                               huber.wt = huber.wt.val,
                                                               VAR.est))
@@ -109,7 +125,7 @@ STARS = function(mat.in = c(),
                                which(reg.number.vect == reg.number.vect[ind.pot.reg])),decreasing = T)
 
       if (length(which(is.na(regime.mean.vect[prv.regime.ind]))) != 0) {
-        regime.mean.vect[prv.regime.ind] <- weighted.mean(data.vect[prv.regime.ind],
+        regime.mean.vect[prv.regime.ind] <- stats::weighted.mean(data.vect[prv.regime.ind],
                                                           huber.wt.mean(data.vect[prv.regime.ind],
                                                                         huber.wt = huber.wt.val,
                                                                         VAR.est))   }
@@ -139,7 +155,7 @@ STARS = function(mat.in = c(),
                                   huber.wt.val,
                                   VAR.est)
 
-        reg.1.mean <- weighted.mean(data.vect[pot.reg.ind], reg.1.wt)
+        reg.1.mean <- stats::weighted.mean(data.vect[pot.reg.ind], reg.1.wt)
         regime.mean.vect[pot.reg.ind] <- reg.1.mean
 
         if (length(RSI.vals) == 1) {
@@ -153,7 +169,7 @@ STARS = function(mat.in = c(),
 
         # Recalculate old regime mean
         old.reg.ind <- which(reg.number.vect == reg.number.vect[ind.pot.reg - 1])
-        regime.mean.vect[old.reg.ind] <- weighted.mean(data.vect[old.reg.ind],
+        regime.mean.vect[old.reg.ind] <- stats::weighted.mean(data.vect[old.reg.ind],
                                                        huber.wt.mean(data.vect[old.reg.ind],
                                                                      huber.wt = huber.wt.val,
                                                                      VAR.est))  }
@@ -163,7 +179,7 @@ STARS = function(mat.in = c(),
                                  which(reg.number.vect == reg.number.vect[ind.pot.reg])),decreasing = T)
 
         if (length(which(is.na(regime.mean.vect[prv.regime.ind]))) != 0) {
-          regime.mean.vect[prv.regime.ind] <- weighted.mean(data.vect[prv.regime.ind],
+          regime.mean.vect[prv.regime.ind] <- stats::weighted.mean(data.vect[prv.regime.ind],
                                                             huber.wt.mean(data.vect[prv.regime.ind],
                                                                           huber.wt = huber.wt.val,
                                                                           VAR.est))   }
