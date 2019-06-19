@@ -52,6 +52,9 @@ all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv")
                                    strata = readr::col_double()
                                  ))
 
+spring_sae <- readr::read_csv(here::here("data/stock_data/spring_sae_tb_sum.csv"))
+fall_sae <- readr::read_csv(here::here("data/stock_data/fall_sae_tb_sum.csv"))
+
 ## Put all mustaches here
 common_name <- "{{COMMON_NAME}}"
 stock_code <- "{{SPECIES_CODE}}"
@@ -87,6 +90,8 @@ alpha <- 0.05
 
 strata <- all_stock_season %>%   
   dplyr::filter(stock_name == !!stock_name)
+
+svspp_ <- strata %>% pull(svspp) %>% unique()
 
 stock_season <- strata %>% pull(stock_season) %>% unique()
 
@@ -712,6 +717,92 @@ spring_biomass_plt <-
          showlegend = T, legend = list(orientation = 'h'))
 
 spring_biomass_plt
+```
+
+## Swept Habitat Area Abundance Estimates
+
+```{r sae_processing}
+
+treatments <- spring_sae %>%
+  dplyr::filter(svspp == svspp_) %>% 
+  pull(treatment) %>% 
+  unique()
+
+spring_sae_biomass <- 
+  spring_sae %>%
+  dplyr::filter(svspp == svspp_) %>% 
+  dplyr::select(-svspp) %>%
+  tidyr::unite(., "stock_treatment",stocks, treatment, biomass, sep = "_") %>%
+  tidyr::gather(.,Var, Value, -year,-stock_treatment) %>% 
+  tidyr::separate(., stock_treatment, into = c("area","treatment","biomass"), sep = "_") %>% 
+  dplyr::rename(Time = year) %>% 
+  dplyr::filter(biomass == "yes") %>% 
+  mutate(treatment = as.factor(treatment))
+
+spring_sae_bio_nzero <- spring_sae_biomass %>% 
+  dplyr::filter(stringr::str_detect(Var, "ztotal"))
+
+spring_sae_bio_nzero_log <- spring_sae_biomass %>% 
+  dplyr::filter(stringr::str_detect(Var, "zlog"))
+
+spring_sae_bio <- spring_sae_biomass %>% 
+  dplyr::filter(Var == "total")
+
+spring_sae_bio_log <- spring_sae_biomass %>% 
+  dplyr::filter(Var == "log10total")
+
+spring_sae_bio_nzero_plt <- 
+  ggplot(spring_sae_bio_nzero) +
+  geom_line(aes(x = Time, y = Value, color = treatment)) +
+  facet_grid(area ~ .) +
+  guides(color = guide_legend(title = ""))
+
+spring_sae_bio_nzero_log_plt <- 
+  ggplot(spring_sae_bio_nzero_log) +
+  geom_line(aes(x = Time, y = Value, color = treatment)) +
+  facet_grid(area ~ .) +
+  guides(color = guide_legend(title = ""))
+
+spring_sae_bio_plt <- 
+  ggplot(spring_sae_bio) +
+  geom_line(aes(x = Time, y = Value, color = treatment)) +
+  facet_grid(area ~ .)+
+  guides(color = guide_legend(title = ""))
+
+spring_sae_bio_log_plt <- 
+  ggplot(spring_sae_bio_log) +
+  geom_line(aes(x = Time, y = Value, color = treatment)) +
+  facet_grid(area ~ .)+
+  guides(color = guide_legend(title = ""))
+
+# spring_sae_bio_plt + spring_sae_bio_log_plt +
+# spring_sae_bio_nzero_plt + spring_sae_bio_nzero_log_plt +
+#   plot_layout(ncol = 2)
+  
+
+# spring_plots <- lapply(X = c(spring_sae_bio_plt,
+#                    spring_sae_bio_log_plt,
+#                    spring_sae_bio_nzero_plt,
+#                    spring_sae_bio_nzero_log_plt),
+#                    FUN = function(x){
+#                      plotly::ggplotly()
+#                    })
+plt <- subplot(ggplotly(spring_sae_bio_log_plt),
+        ggplotly(spring_sae_bio_plt),
+        ggplotly(spring_sae_bio_nzero_log_plt),
+        ggplotly(spring_sae_bio_nzero_plt),
+        shareX = F, nrows = 2,margin = 0.05) %>% 
+  layout(title = "")
+
+nlines <- 12 * length(treatments)
+
+for (i in 1:nlines){
+  if (i > (nlines/4)){
+    plt$x$data[[i]]$showlegend <- F
+  }  
+}
+
+plt
 ```
 
 
