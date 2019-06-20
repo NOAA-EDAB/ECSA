@@ -6,6 +6,8 @@ title:
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: "Ecosystem Dynamics and Assessment Branch"
 always_allow_html: yes
+bibliography: "atlantic-menhaden_bib.bib"
+link-citations: true
 site: "bookdown::bookdown_site"
 output:
   bookdown::gitbook:
@@ -121,18 +123,18 @@ ches_bay_rec <- read.csv(
 ```
 
 
-# Overview 
+# Introduction
 
-### Introduction
 This report provides contextual ecosystem information for Atlantic menhaden (*Brevoortia tyrannus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the Atlantic menhaden stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of Atlantic menhaden, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval Atlantic menhaden. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
-#### Summary
+### Summary {-#summary}
 
 * Add summary point 
 * Add summary point 
 * Add summary point 
 
-### Strata definition
+### Strata definition {-#strata-definition}
+
 ```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for Atlantic menhaden (*Brevoortia tyrannus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 # all_strata <- map_strata(stock_name = stock_name,
 #            common_name = common_name,
@@ -216,7 +218,7 @@ _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the `r common_name` stock areas are shown below.
 
-## Bottom Temperature
+## Bottom Temperature {-#bottom-temperature}
 
 ```{r bot_temp_process}
 spring_bottom_temp <- 
@@ -226,11 +228,14 @@ spring_bottom_temp <-
                 stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "bottom_temp") %>% 
+  dplyr::filter(Time >= 1968) %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
                 data = .,
                 diagnostic = T,
                 fit_model  = T) 
+
+spring_mod <- spring_bottom_temp$model
 
 STARS_in <- spring_bottom_temp$fit %>% 
   dplyr::select(-fit) %>% 
@@ -261,12 +266,16 @@ fall_bottom_temp <-
                stock_season = stock_season,
                data_season = "fall",
                 measure_name = "bottom_temp") %>% 
+  dplyr::filter(Time >= 1968) %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
   ecotrend::glsMs(Mean ~ Time,
                 data = .,
                 diagnostic = T,
                 fit_model  = T) 
+
+fall_mod <- fall_bottom_temp$model
+
 
 STARS_in <- fall_bottom_temp$fit %>% 
   dplyr::select(-fit) %>% 
@@ -309,6 +318,15 @@ spring_bottom_temp_plt <-
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
 
+
+summ_ <- gls_summary(mod = spring_mod)
+trend <- summ_$Value[1]
+lci <- summ_$Value[2]
+uci <- summ_$Value[3]
+
+
+print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
+
 spring_bottom_temp_plt
 ```
 
@@ -322,12 +340,21 @@ fall_bottom_temp_plt <-
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
 
+
+summ_ <- gls_summary(mod = fall_mod)
+trend <- summ_$Value[1]
+lci <- summ_$Value[2]
+uci <- summ_$Value[3]
+
+
+print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
+
 fall_bottom_temp_plt
 ```
 
 
 
-## Surface Temperature
+## Surface Temperature {-#surface-temperature}
 
 ```{r surf_temp_process}
 spring_surface_temp <- 
@@ -337,11 +364,15 @@ spring_surface_temp <-
                 stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "surface_temp") %>% 
+  dplyr::filter(Time >= 1968) %>% 
   mutate(season = "Spring") %>% 
   ecotrend::glsMs(Mean ~ Time,
                 data = .,
                 diagnostic = T,
                 fit_model  = T) 
+
+spring_mod <- spring_surface_temp$model
+
 
 STARS_in <- spring_surface_temp$fit %>% 
   dplyr::select(-fit) %>% 
@@ -372,12 +403,16 @@ fall_surface_temp <-
                 stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "surface_temp") %>% 
+  dplyr::filter(Time >= 1968) %>% 
   mutate(season = "fall") %>% 
   dplyr::distinct() %>% 
   ecotrend::glsMs(Mean ~ Time,
                 data = .,
                 diagnostic = T,
                 fit_model  = T) 
+
+fall_mod <- fall_surface_temp$model
+
 
 STARS_in <- fall_surface_temp$fit %>% 
   dplyr::select(-fit) %>% 
@@ -419,6 +454,14 @@ spring_surface_temp_plt <-
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
 
+summ_ <- gls_summary(mod = spring_mod)
+trend <- summ_$Value[1]
+lci <- summ_$Value[2]
+uci <- summ_$Value[3]
+
+
+print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
+
 spring_surface_temp_plt
 ```
 
@@ -432,15 +475,24 @@ fall_surface_temp_plt <-
                       title = ""),
          showlegend = T, legend = list(orientation = 'h'))
 
+
+summ_ <- gls_summary(mod = fall_mod)
+trend <- summ_$Value[1]
+lci <- summ_$Value[2]
+uci <- summ_$Value[3]
+
+
+print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
+
 fall_surface_temp_plt
 ```
 
 
 # Salinity
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the `r common_name` stock areas are shown below.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see methods). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the Atlantic menhaden stock areas are shown below.
 
-## Bottom Salinity
+## Bottom Salinity {-#bottom-salinity}
 
 ```{r bot_sal_process}
 spring_bottom_sal <- 
@@ -549,7 +601,11 @@ fall_bottom_sal_plt
 ```
 
 
-## Surface Salinity
+There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000. This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series. The first around 1999 and a second change around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mill2013].
+
+
+
+## Surface Salinity {-#surface-salinity}
 
 ```{r surf_sal_process}
 spring_surface_sal <- 
@@ -657,287 +713,13 @@ fall_surface_sal_plt
 ```
 
 
-# Habitat and abundance
-
-## Occurrence probability
-
-The probability of occurrence was estimated using random forest classification models (see methods). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. 
-
-The area of the Northeast Shelf with an estimated occurrence probability for menhaden of 0.5 was determined for the stock area and the ecosystem. The quantity of spring habitat shows little trend for either the stock area or the ecosystem.
-
-```{r occ_prob, fig.height=4}
-spring_occ_prob <- 
-  stars_to_series(r = "occurrence_prob_spring.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "spring",
-                measure_name = "occurrence") %>% 
-  dplyr::select(Spring = Mean,
-                Time)
-
-fall_occ_prob <- 
-  stars_to_series(r = "occurrence_prob_fall.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "fall",
-                measure_name = "occurrence") %>% 
-  dplyr::select(Fall = Mean,
-                Time)
-
-occ_prob <- spring_occ_prob %>% 
-  left_join(.,fall_occ_prob, by  = "Time") %>% 
-  dplyr::select(Time, Spring, Fall)
-
-occ_prob_plt <- occ_prob %>% 
-  tab_plotly(.) %>% 
-  layout(title = "Occupancy Probability", 
-         yaxis = list(title = "Occupancy probability",
-                      hoverformat = '.3f'))
-
-occ_prob_plt
-```
-
-## Habitat footprint
-
-### Stock area
-
-```{r stock_hab_area, fig.height=4}
-hab_area_sa <- hab_area %>% 
-  dplyr::select(Time = Year, Spring = spr_sa, Fall = fall_sa ) %>% 
-  tab_plotly(.) %>% 
-  layout(title = "Stock habitat area", 
-         yaxis = list(title = "Habitat area (km <sup>2</sup>)",
-                      hoverformat = '.3f'))
-hab_area_sa
-```
-
-### Ecosystem
-
-```{r ecosys_hab_area, fig.height=4}
-hab_area_eco <- hab_area %>% 
-  dplyr::select(Time = Year, Spring = spr_eco, Fall = fal_eco) %>% 
-  tab_plotly(.) %>% 
-  layout(title = "Ecosystem habitat area", 
-         yaxis = list(title = "Habitat area (km <sup>2</sup>)",
-                      hoverformat = '.3f'))
-hab_area_eco
-```
-
-However, the habitat size in the fall has changed with distinct periods of high and low habitat area and there is the suggestion of an increasing trend in habitat over time. The fall stock area habitat peaked in 1983, was lowest in the late 1990sm and has been increasing since 2000. The habitat has increased in size by about is approximately 50,000 km2 to 80,000 km2, noting a decrease in 2017. The fall habitat has increased approximately 15% within the stock area and approximately 20% over the ecosystem.
-
-## Biomass
-
-Estimates of the numbers and biomass minimum population size of menhaden stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see methods for details). The procedure provides eight populations size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
-
-Of the eight treatment options, the four that included outlier testing and elimination were found to produce many missing values; hence, the abundance and biomass estimates were based on the four other treatments (NNN, NYN, YNN, and YYN). The spring minimum population size in numbers suggests the stock continues the trend of high abundance that began with the 2005 recruitment. When disaggregated by northern and southern subareas, it appear the southern subunit approximates the unit abundance for most of the time series. 
-
-In recent years, the southern subareas appears to have declined whereas the northern subarea is closer to the unit population size. Similar trends in the relative role of the subareas can be seen the minimum biomass estimates as well; the southern subarea approximates the unit early in the time series and in recent years the northern subarea estimate the unit. Collectively, both the abundance and biomass data suggest a shift in spring population distribution, with more of the population now distribution in the northern subareas. The time series trends in both abundance and biomass appear to be positive, however, the recent biomass peak level are higher than the peak biomass in the 1980. This is not the case when comparing the recent and 1980s peaks in abundance.
-
-```{r biomass_processing}
-spring_biomass <- 
-  stars_to_series(r = "biomass_spring.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "spring",
-                measure_name = "biomass") %>% 
-  mutate(season = "Spring") %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-STARS_in <- spring_biomass$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_biomass$`selection summary`$pval[1] < 0.05){
-  spring_biomass <- spring_biomass$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-} else {
-    spring_biomass <- spring_biomass$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-}
-
-spring_biomass %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-spring_min <- min(spring_biomass$Time)
-
-fall_biomass <- 
-  stars_to_series(r = "biomass_fall.rdata",
-              stock_name = stock_name, 
-              common_name = common_name, 
-              stock_season = stock_season,
-              data_season = "fall",
-                measure_name = "biomass") %>% 
-  mutate(season = "fall") %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-STARS_in <- fall_biomass$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_biomass$`selection summary`$pval[1] < 0.05){
-  fall_biomass <- fall_biomass$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-} else {
-    fall_biomass <- fall_biomass$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-}
-
-fall_biomass %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-fall_min <- min(fall_biomass$Time)
-
-if (fall_min > spring_min) {
-  plot_min <- spring_min
-} else {
-  plot_min <- fall_min
-}
-```
-
-
-```{r spring_biomass_plt, fig.height=3}
-spring_biomass_plt <-  
-  tab_plotly(spring_biomass, series.name = "Biomass") %>% 
-  layout(title = "Spring",
-         yaxis = list(title = "Biomass (kg)",
-                      hoverformat = '.3f'),
-         xaxis = list(range = c(plot_min, max(spring_biomass$Time)),
-                      title = ""),
-         showlegend = T, legend = list(orientation = 'h'))
-
-spring_biomass_plt
-```
-
-```{r fall_biomass_plt, fig.height=3}
-fall_biomass_plt <- 
-  tab_plotly(fall_biomass, series.name = "Biomass") %>% 
-  layout(title = "Fall",
-         yaxis = list(title = "Biomass (kg)",
-                      hoverformat = '.3f'),
-         xaxis = list(range = c(plot_min, max(fall_biomass$Time)),
-                      title = ""),
-         showlegend = T, legend = list(orientation = 'h'))
-
-fall_biomass_plt
-```
-
-
-## Swept Habitat Area Abundance Estimates
-
-```{r sae_processing}
-
-
-# Change parameters of moving average. `fill = "extend"` will do linear interpolation over gaps in moving average. Change length of window with the k parameter
-fill = "extend"
-k <- 2
-
-spring_biomass_sae <- 
-  plot_sae(data_season = "spring",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "yes",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         legend_title = "")
-
-
-spring_numbers_sae <- 
-  plot_sae(data_season = "spring",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "no",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         include_legend = F)
-
-fall_biomass_sae <- 
-  plot_sae(data_season = "fall",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "yes",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         legend_title = "")
-
-
-fall_numbers_sae <- 
-  plot_sae(data_season = "fall",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "no",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         include_legend = F)
-
-```
-
-### Spring numbers and biomass
-
-```{r spring_sae_plt, fig.height = 6}
-spring_sae_plt <- subplot(
-          spring_biomass_sae,
-          spring_numbers_sae,
-          shareX = F, 
-          nrows = 2,
-          margin = 0.05,
-          titleY = TRUE) %>% 
-   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
-                  x=1.02, xanchor="left",
-                  y=0.8, yanchor="bottom",  
-                  legendtitle=TRUE, showarrow=FALSE ) %>%
-  layout( legend=list(y=0.8, yanchor="top" ) )
-spring_sae_plt
-```
-
-### Fall numbers and biomass
-
-```{r fall_sae_plt, fig.height = 6}
-fall_sae_plt <- subplot(
-          fall_biomass_sae,
-          fall_numbers_sae,
-          shareX = F, 
-          nrows = 2,
-          margin = 0.05,
-          titleY = TRUE) %>% 
-   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
-                  x=1.02, xanchor="left",
-                  y=0.8, yanchor="bottom",   
-                  legendtitle=TRUE, showarrow=FALSE ) %>%
-  layout( legend=list(y=0.8, yanchor="top" ) )
-fall_sae_plt
-```
-
-The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
+The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013. The fall surface salinity time series was without trend or any change points. These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
 
 # Chlorophyll
 
-## Stock area
+## Stock area {-#stock-area}
 
-The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodschl)). Chlorophyll concentrations in the spring and fall `r common_name` stock areas are shown below.
+The concentration of chlorophyll is an indicator of lower trophic level productivity and may be of particular importance to menhaden considering both juvenile and adults directly utilize phytoplankton as a food resource. Chlorophyll concentration was extracted for the spring and fall stock areas using a merged sensor data set. The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data were a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm @maritorena2010 obtained from the Hermes GlobColour [website](hermes.acri.fr/index.php). There is no apparent trend in spring chlorophyll concentration; however, there is a significant trend in fall chlorophyll associated with a regime change in levels in 2013. In recent years, fall chlorophyll has been at the lowest levels in this time series.
 
 
 ```{r chl_processing}
@@ -1049,11 +831,11 @@ fall_chl_plt <-
 fall_chl_plt
 ```
 
-## Chesapeake Bay recruitment index
+## Chesapeake Bay recruitment index {-#chesapeake-bay-recruitment-index}
 
-Recruitment is a complex process in marine fishes, and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf. The successful individuals egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variably in Houde et al. (2016), which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass. 
+Recruitment is a complex process in marine fishes and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf, the successful egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variably in @houde2016, which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass
 
-A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentration for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from a merged chlorophyll concentration dataset. The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data were a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm (Maritorena et al., 2010) obtained from the Hermes GlobColour website (hermes.acri.fr/index.php).
+A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentration for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from the merged dataset described above.
 
 ```{r ches_bay_rec}
 ches_bay_rec_plt <- ches_bay_rec %>%
@@ -1068,11 +850,16 @@ ches_bay_rec_plt
 ```
 
 
-Based on the most recent menhaden assessment, the chlorophyll time series overlaps the recruitment series for the years 1998-2016, noting that the two largest year classes during that period appear to have occurred in 2005 and 2010 (based on age-0 numbers). The correlation between April polyhaline chlorophyll concentration and recruitment was 0.43 (p=.066). The polyhaline chlorophyll time series was at its highest value in 2005 and among its highest vales in 2010; the 2011 chlorophyll concentration was also among the highest values, but it not associated with a strong recruitment. Time series from other portions the estuary were not correlated with the recruitment signal. Finally, it is worth noting that the 2019 chlorophyll concentration was the third highest in the time series. If the remote sensing series is capturing a part of the recruitment signal, 2019 may be a large year class and the index may provide some forecast skill for recruitment events.
+Based on the most recent menhaden assessment, the chlorophyll time series overlaps the recruitments series for the years 1998-2016, noting that the two largest year classes during that period appear to have occurred in 2005 and 2010 (based on age-0 numbers). The correlation between April polyhaline chlorophyll concentration and recruitment was 0.43 (P = .066). The polyhaline chlorophyll time series was at its highest value in 2005 and among its highest values in 2010; the 2011 chlorophyll concentration was also among the highest values, but it not associated with a strong recruitment. Time series from other portions the estuary were not correlated with the recruitment signal. Finally, it is worth noting that the 2019 chlorophyll concentration was the third highest in the time series. If the remote sensing series is capturing a part of the recruitment signal, 2019 may be a large year class and the index may provide some forecast skill for recruitment events.
 
 # Zooplankton
 
-## Copepod abundance
+Menhaden consume zooplankton during all their life history stages, but have a dependency on zooplankton as larval fish and a preference for zooplankton as adults [@friedland2011]. @june1971 characterize larval menhaden feeding in context to metamorphosis, partitioning their sampling between marine and estuarine waters. In marine water, the diet consisted predominantly of copepods and mainly the genera *Centropages* and *Acartia*. In estuarine waters, the copepod genera *Acartia* and *Temora* played larger roles along with other zooplankton species. These samples were collected over two years. @lozano2011 analyzed the feeding of larval menhaden over three seasons and found they utilized copepods, cladocerans, barnacle nauplii, bivalve larvae, ostracods, decapods, polychaetes, tunicate larvae, metatrochophores, and digested material. 
+
+The most commonly encountered copepod genera were *Centropages*, *Acartia*, *Temora*, *Caligus*, and *Labidocera*. Though identifications were not made to species, it is likely *Centropages typicus*, *Acartia tonsa*, and *Temora longicornis* were the most important prey species. Numerically, the most important prey were copepods, which accounted for approximately 46-70% of the prey, followed by barnacle nauplii and cladocerans, which ranged from 10-30% of the diet. After the metamorphosis from larval particle feeding to filter feeding, the nature of their gill raker feeding apparatus would suggest they would feed on any size zooplankton and not be limited by any minimum size like some herring species [@friedland2006]. So generally, whatever taxa are abundant would likely be a useful prey resource for both larval or adult fish.
+
+## Copepod abundance {-#copepod-abundance}
+
 
 ```{r zoo_cope_spring, fig.height=5}
 spring_zoo_1yr_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
@@ -1251,7 +1038,7 @@ fall_cope_plt <-
 fall_cope_plt
 ```
 
-## Non-copepod zooplankton abundance
+## Non-copepod zooplankton abundance {-#non-copepod-zooplankton-abundance}
 
 ```{r zoo_spring_noncope, fig.height=5}
 spring_zoo_1yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
@@ -1428,6 +1215,283 @@ fall_noncope_plt
 ```
 
 
+# Habitat and abundance
+
+## Occurrence probability {-#occurrence-probability}
+
+The probability of occurrence was estimated using random forest classification models (see [methods](#methods)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. The most dramatic change in occupancy probability occurred in the spring. In the beginning of the time series, occupancy probability was less than 0.08 and has increase to well over 0.1 in recent decades. This suggest greater utilization of the continental shelf by menhaden during the spring period. Fall occupancy has remained relatively constant of the time series range between 0.12-0.13. 
+
+```{r occ_prob, fig.height=4}
+spring_occ_prob <- 
+  stars_to_series(r = "occurrence_prob_spring.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "spring",
+                measure_name = "occurrence") %>% 
+  dplyr::select(Spring = Mean,
+                Time)
+
+fall_occ_prob <- 
+  stars_to_series(r = "occurrence_prob_fall.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "fall",
+                measure_name = "occurrence") %>% 
+  dplyr::select(Fall = Mean,
+                Time)
+
+occ_prob <- spring_occ_prob %>% 
+  left_join(.,fall_occ_prob, by  = "Time") %>% 
+  dplyr::select(Time, Spring, Fall)
+
+occ_prob_plt <- occ_prob %>% 
+  tab_plotly(.) %>% 
+  layout(title = "Occupancy Probability", 
+         yaxis = list(title = "Occupancy probability",
+                      hoverformat = '.3f'))
+
+occ_prob_plt
+```
+
+## Habitat footprint {-#habitat-footprint}
+
+The area of the Northeast Shelf with an estimated occurrence probability for menhaden of 0.25 was determined for the stock area and the ecosystem. The area of habitat with the stock area generally ranged from 2,000-4,000 km<sup>2</sup> with a notable peak in habitat associated with 2012 spring conditions. With the exception of 2012, spring habitat appear to have been represent by a larger area during the 1980s. Fall habitat has increase in recent years and was also at high levels in the early 1980s. The fall habitat area for menhaden over the ecosystem is larger than the areas restricted to the stock definition. Fall habitat approached 5,000 km<sup>2</sup> reflecting a greater use of the ecosystem during the warmer part of the year. The spring habitat over the ecosystem were similar to the stock area dimensions.
+
+### Stock area  {-#stock-area}
+
+```{r stock_hab_area, fig.height=4}
+hab_area_sa <- hab_area %>% 
+  dplyr::select(Time = Year, Spring = spr_sa, Fall = fall_sa ) %>% 
+  tab_plotly(.) %>% 
+  layout(title = "Stock habitat area", 
+         yaxis = list(title = "Habitat area (km <sup>2</sup>)",
+                      hoverformat = '.3f'))
+hab_area_sa
+```
+
+### Ecosystem {-#ecosystem}
+
+```{r ecosys_hab_area, fig.height=4}
+hab_area_eco <- hab_area %>% 
+  dplyr::select(Time = Year, Spring = spr_eco, Fall = fal_eco) %>% 
+  tab_plotly(.) %>% 
+  layout(title = "Ecosystem habitat area", 
+         yaxis = list(title = "Habitat area (km <sup>2</sup>)",
+                      hoverformat = '.3f'))
+hab_area_eco
+```
+
+However, the habitat size in the fall has changed with distinct periods of high and low habitat area and there is the suggestion of an increasing trend in habitat over time. The fall stock area habitat peaked in 1983, was lowest in the late 1990sm and has been increasing since 2000. The habitat has increased in size by about is approximately 50,000 km <sup>2</sup> to 80,000 km <sup>2</sup>, noting a decrease in 2017. The fall habitat has increased approximately 15% within the stock area and approximately 20% over the ecosystem.
+
+## Biomass {-#biomass}
+
+Estimates of the numbers and biomass minimum population size of menhaden stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see methods for details). The procedure provides eight populations size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
+
+Of the eight treatment options, the four that included outlier testing and elimination were found to produce many missing values; hence, the abundance and biomass estimates were based on the four other treatments (NNN, NYN, YNN, and YYN). The spring minimum population size in numbers suggests the stock continues the trend of high abundance that began with the 2005 recruitment. When disaggregated by northern and southern subareas, it appear the southern subunit approximates the unit abundance for most of the time series. 
+
+In recent years, the southern subareas appears to have declined whereas the northern subarea is closer to the unit population size. Similar trends in the relative role of the subareas can be seen the minimum biomass estimates as well; the southern subarea approximates the unit early in the time series and in recent years the northern subarea estimate the unit. Collectively, both the abundance and biomass data suggest a shift in spring population distribution, with more of the population now distribution in the northern subareas. The time series trends in both abundance and biomass appear to be positive, however, the recent biomass peak level are higher than the peak biomass in the 1980. This is not the case when comparing the recent and 1980s peaks in abundance. The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
+
+
+```{r biomass_processing, eval = F}
+spring_biomass <- 
+  stars_to_series(r = "biomass_spring.rdata",
+                stock_name = stock_name, 
+                common_name = common_name, 
+                stock_season = stock_season,
+                data_season = "spring",
+                measure_name = "biomass") %>% 
+  mutate(season = "Spring") %>% 
+  ecotrend::glsMs(Mean ~ Time,
+                data = .,
+                diagnostic = T,
+                fit_model  = T) 
+
+STARS_in <- spring_biomass$fit %>% 
+  dplyr::select(-fit) %>% 
+  as.matrix()
+
+if (spring_biomass$`selection summary`$pval[1] < 0.05){
+  spring_biomass <- spring_biomass$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series,
+                Trend = fit)
+} else {
+    spring_biomass <- spring_biomass$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series)
+}
+
+spring_biomass %<>%
+  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(which(sapply(.,var)!=0))
+
+spring_min <- min(spring_biomass$Time)
+
+fall_biomass <- 
+  stars_to_series(r = "biomass_fall.rdata",
+              stock_name = stock_name, 
+              common_name = common_name, 
+              stock_season = stock_season,
+              data_season = "fall",
+                measure_name = "biomass") %>% 
+  mutate(season = "fall") %>% 
+  dplyr::distinct() %>% 
+  ecotrend::glsMs(Mean ~ Time,
+                data = .,
+                diagnostic = T,
+                fit_model  = T) 
+
+STARS_in <- fall_biomass$fit %>% 
+  dplyr::select(-fit) %>% 
+  as.matrix()
+
+if (fall_biomass$`selection summary`$pval[1] < 0.05){
+  fall_biomass <- fall_biomass$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series,
+                Trend = fit)
+} else {
+    fall_biomass <- fall_biomass$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series)
+}
+
+fall_biomass %<>%
+  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(which(sapply(.,var)!=0))
+
+fall_min <- min(fall_biomass$Time)
+
+if (fall_min > spring_min) {
+  plot_min <- spring_min
+} else {
+  plot_min <- fall_min
+}
+```
+
+
+```{r spring_biomass_plt, fig.height=3, eval = F}
+spring_biomass_plt <-  
+  tab_plotly(spring_biomass, series.name = "Biomass") %>% 
+  layout(title = "Spring",
+         yaxis = list(title = "Biomass (kg)",
+                      hoverformat = '.3f'),
+         xaxis = list(range = c(plot_min, max(spring_biomass$Time)),
+                      title = ""),
+         showlegend = T, legend = list(orientation = 'h'))
+
+spring_biomass_plt
+```
+
+```{r fall_biomass_plt, fig.height=3, eval = F}
+fall_biomass_plt <- 
+  tab_plotly(fall_biomass, series.name = "Biomass") %>% 
+  layout(title = "Fall",
+         yaxis = list(title = "Biomass (kg)",
+                      hoverformat = '.3f'),
+         xaxis = list(range = c(plot_min, max(fall_biomass$Time)),
+                      title = ""),
+         showlegend = T, legend = list(orientation = 'h'))
+
+fall_biomass_plt
+```
+
+
+## Swept Habitat Area Abundance Estimates {-#swept-habitat-area-abundance-estimates}
+
+```{r sae_processing}
+
+
+# Change parameters of moving average. `fill = "extend"` will do linear interpolation over gaps in moving average. Change length of window with the k parameter
+fill = "extend"
+k <- 2
+
+spring_biomass_sae <- 
+  plot_sae(data_season = "spring",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "yes",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         legend_title = "")
+
+
+spring_numbers_sae <- 
+  plot_sae(data_season = "spring",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "no",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         include_legend = F)
+
+fall_biomass_sae <- 
+  plot_sae(data_season = "fall",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "yes",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         legend_title = "")
+
+
+fall_numbers_sae <- 
+  plot_sae(data_season = "fall",
+         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
+         biomass_ = "no",
+         include_zeros = F,
+         svspp_ = svspp_,
+         k = k,
+         fill = fill,
+         include_legend = F)
+
+```
+
+### Spring numbers and biomass {-#spring-numbers-and-biomass}
+
+```{r spring_sae_plt, fig.height = 6}
+spring_sae_plt <- subplot(
+          spring_biomass_sae,
+          spring_numbers_sae,
+          shareX = F, 
+          nrows = 2,
+          margin = 0.05,
+          titleY = TRUE) %>% 
+   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
+                  x=1.02, xanchor="left",
+                  y=0.8, yanchor="bottom",  
+                  legendtitle=TRUE, showarrow=FALSE ) %>%
+  layout( legend=list(y=0.8, yanchor="top" ) )
+spring_sae_plt
+```
+
+### Fall numbers and biomass {-#fall-numbers-and-biomass}
+
+```{r fall_sae_plt, fig.height = 6}
+fall_sae_plt <- subplot(
+          fall_biomass_sae,
+          fall_numbers_sae,
+          shareX = F, 
+          nrows = 2,
+          margin = 0.05,
+          titleY = TRUE) %>% 
+   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
+                  x=1.02, xanchor="left",
+                  y=0.8, yanchor="bottom",   
+                  legendtitle=TRUE, showarrow=FALSE ) %>%
+  layout( legend=list(y=0.8, yanchor="top" ) )
+fall_sae_plt
+```
+
+The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
+
 
 
 # Methods {#methods}
@@ -1506,7 +1570,7 @@ Three types of visualizations were created from the output of the tree models. T
 
 ### Minimum swept area abundance based on habitat informed dynamic re-stratification 
 
-Estimates of the numbers and biomass minimum population size of stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat. The habitat area was restricted to the portion of the shelf associated with the stock based on the roster of bottom trawl strata consider to comprise the stock area. To raise an annual estimate, the habitat was partitioned into ten intervals based on the probability of occurrence from the species distribution model. The partitions were based on equal intervals of occurrence probability; hence, the size of each habitat strata could vary. The trawl catch per unit effort values were assigned to the appropriate habitat strata based on the habitat score where the trawl was made. Once the requisite trawl hauls associated with a habitat strata were identified, a mean catch per unit effort was determined and raised to a total minimum population estimate for that stratum assuming a constant trawl path area of 0.024 km2. The total population was the sum of the estimates for the ten strata.
+Estimates of the numbers and biomass minimum population size of stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat. The habitat area was restricted to the portion of the shelf associated with the stock based on the roster of bottom trawl strata consider to comprise the stock area. To raise an annual estimate, the habitat was partitioned into ten intervals based on the probability of occurrence from the species distribution model. The partitions were based on equal intervals of occurrence probability; hence, the size of each habitat strata could vary. The trawl catch per unit effort values were assigned to the appropriate habitat strata based on the habitat score where the trawl was made. Once the requisite trawl hauls associated with a habitat strata were identified, a mean catch per unit effort was determined and raised to a total minimum population estimate for that stratum assuming a constant trawl path area of 0.024 km <sup>2</sup>. The total population was the sum of the estimates for the ten strata.
 
 $Total\;numbers\;or\;biomass =\sum_{i=1}^{10} (strata\;area/trawl\;path\;area) * mean\;CPUE$
 
@@ -1650,39 +1714,6 @@ Sea surface temperature estimated in this study were compared to the [OISST data
 knitr::include_graphics("data/images/ECSA_oi_compare.png")
 ```
 
-# Document automation
 
-To facilitate speedy document creation many steps have been automated. Species specific information are passed as arguments to a default rmarkdown template (the backbone of this document). This template is then rendered into a book using the package `bookdown`. Prior to rendering the data are pre-processed and output as `.RData` files for use in the automation steps. The specific steps are as follows:
-
-__Manunal preprocessing__
-
-1. _model outputs_ are created in the form of annual raster files (`.RData`) for chlorophyll, zooplankton, temperature, salinity, ocurrance probability (species specific), and biomass (species specific).
-1. These sets of annual raster files are collapsed into a single stack (`.RData`) using the script `collapse_to_stack.R`. The resulting stacked raster files are exported with this package.
-
-__Automation__
-
-1. `create_template.R` is run to create the species specific `.Rmd` document with the following arguments (for additional arguments, refer to `?create_template`). For Atlantic menhaden:
-``` {r, cre_tmp, echo=T, eval =F}
-create_template(stock_name = atlantic-menhaden, render_book=TRUE, output_dir = here::here("docs"))
-```
-2. The species specific `Rmd` file is then rendered. During this step:
-
-*  The stacked raster files are clipped to the appropriate seasonal stock area (See Figure \@ref(fig:strata-map) ) using `stars_to_series.R`.
-
-* A linear trend is fitted (using the package `ecotrend`) to the environmental variables (temperature and salinity), chlorophyll, and species biomass. The resulting fit is __ONLY__ plotted if found to be significant at the 5% level. 
-
-* A regime mean is also fit (using `STARS_v18.R`) and displayed on all plots.
-
-* Zooplankton:
-
-* Occupancy probability:
-
-
-3. This document (the one you are viewing) will then automatically open in a web browser and all associated files can be found in the `docs\atlantic-menhaden` folder in your current working directory.
-4. These steps are repeated for additional species.
-
-
-
-# References
-
+`r if (knitr::is_html_output()) '# References {-}'`
 
