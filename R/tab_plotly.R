@@ -46,7 +46,7 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F)
     } else {
       
       smoothcol <- unlist(stringr::str_extract(plotvars,
-                                               paste0(plotvars[i], "smooth")))
+                                               paste0(plotvars[i], " smooth")))
       smoothcol <- smoothcol[!is.na(smoothcol)]
       
       plot_df <- df %>%

@@ -46,7 +46,6 @@ create_buttons <- function(df){
     vis_logical <- paste0("c(",stringr::str_flatten(vis_logical, ","),")")
     
     name_ <- plotvars_nosmooth[i]
-    print(name_)
     menu_item <- sprintf('
       list(
         label = "%s",
@@ -75,6 +74,3 @@ create_buttons <- function(df){
   
   return(out)
 }
-
-buttons <- create_buttons(spring_cope )
-

@@ -2,7 +2,7 @@
 title:
     | 
     | Ecosystem Context for Stock Assessments:
-    | {{STOCK_SUBAREA}}{{COMMON_NAME}}
+    | Atlantic menhaden
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: "Ecosystem Dynamics and Assessment Branch"
 always_allow_html: yes
@@ -62,11 +62,11 @@ fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"), stringsAsFactor
 zoo_lookup <- read.csv(here::here("data-raw/zooplankton_lookup.csv"), stringsAsFactors = F)
 
 ## Put all mustaches here
-common_name <- "{{COMMON_NAME}}"
-stock_code <- "{{SPECIES_CODE}}"
-stock_name <- "{{STOCK_NAME}}"
-cc_name <- "{{CC_NAME}}"
-stock_subarea <- "{{STOCK_SUBAREA}}"
+common_name <- "Atlantic menhaden"
+stock_code <- "36"
+stock_name <- "atlantic-menhaden"
+cc_name <- "atlantic-menhaden"
+stock_subarea <- ""
 # svspp <- "{{SVSPP}}"
 
 
@@ -107,13 +107,24 @@ treatments <- spring_sae %>%
   dplyr::filter(svspp == svspp_) %>% 
   pull(treatment) %>% 
   unique()
+
+#Get menhaden habitat area estimates
+hab_area <- read.csv(
+  here::here("docs/atlantic-menhaden/atlantic-menhaden_data/spr fall .25 occ hab.csv"),
+  stringsAsFactors = F)
+
+#Chesapeake Bay recruitment index
+ches_bay_rec <- read.csv(
+  here::here("docs/atlantic-menhaden/atlantic-menhaden_data/CHL polyhaline april.csv"),
+  stringsAsFactors = F)
+
 ```
 
 
 # Overview 
 
 ### Introduction
-This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+This report provides contextual ecosystem information for Atlantic menhaden (*Brevoortia tyrannus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the Atlantic menhaden stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of Atlantic menhaden, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval Atlantic menhaden. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 #### Summary
 
@@ -122,13 +133,80 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 * Add summary point 
 
 ### Strata definition
-```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
-map_strata(stock_name = stock_name,
-           common_name = common_name,
-           stock_season = stock_season,
-           strata = strata,
-           overwrite = FALSE,
-           save_plot = FALSE)
+```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for Atlantic menhaden (*Brevoortia tyrannus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+# all_strata <- map_strata(stock_name = stock_name,
+#            common_name = common_name,
+#            stock_season = stock_season,
+#            strata = strata,
+#            overwrite = FALSE,
+#            save_plot = FALSE)
+
+## General mapping parameters
+xmin = -77
+xmax = -65
+ymin = 35
+ymax = 45
+
+xlims <- c(xmin, xmax)
+ylims <- c(ymin, ymax)
+crs <-  "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
+
+## Download data layers
+
+## 2) North America layer
+ne_countries <- rnaturalearth::ne_countries(scale = 10,
+                                            continent = "North America",
+                                            returnclass = "sf") %>% 
+  sf::st_transform(crs = crs)
+
+## 3) State layer
+ne_states <- rnaturalearth::ne_states(country = "united states of america",
+                                      returnclass = "sf") %>% 
+  sf::st_transform(crs = crs)
+
+
+n_s_strata <- all_stock_season %>% dplyr::filter(svspp == svspp_,
+                                   stringr::str_detect(stock_name, "north|south")) %>% 
+  tidyr::separate(., stock_name, into = c("stock_name1","custom"), sep = "_")
+
+n_strata <- n_s_strata %>% filter(custom == "north") %>% pull(strata)
+s_strata <- n_s_strata %>% filter(custom == "south") %>% pull(strata)
+strata_spring <- n_s_strata %>% filter(stock_season == "fall") %>% pull(strata)
+strata_fall <- n_s_strata %>% filter(stock_season == "spring") %>% pull(strata)
+
+
+strata_int <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
+                             quiet = TRUE) %>% 
+    dplyr::mutate(SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring,
+                                                                        strata_fall) ~ "spring and fall",
+                                            STRATA %in% strata_spring ~ "spring",
+                                            STRATA %in% strata_fall ~ "fall",
+                                            TRUE ~ "BTS Strata"),
+                  N_S = dplyr::case_when(STRATA %in% n_strata ~ "north",
+                                            STRATA %in% s_strata ~ "south",
+                                            TRUE ~ "BTS Strata")) %>% 
+    dplyr::select(SEASON, N_S, geometry)
+
+ggplot2::ggplot() +
+    ggplot2::geom_sf(data = strata_int, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +
+    ggplot2::geom_sf(data = strata_int, ggplot2::aes(color = N_S), size = 0.2, alpha = 0.1, show.legend = "line") +
+    ggplot2::geom_sf(data = ne_countries, color = "grey60", size = 0.25) +
+    ggplot2::geom_sf(data = ne_states, color = "grey60", size = 0.05) +
+    scale_fill_manual(values = c("spring and fall" = "#b2df8a",
+                                 "spring" = "#1f78b4",
+                                 "BTS Strata" = "#9ec9e04d"))+
+    scale_color_manual(values = c("BTS Strata" = "grey",
+                                  "north" = "#fc8d62",
+                                  "south" = "#7570b3")) +
+    guides(color = guide_legend(title = "North/South\n Delineation",
+                                override.aes = list(size = 1,
+                                                    alpha = 1)),
+           fill = guide_legend(title = "Seasonal Stock\n Strata")) +
+    ggplot2::coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
+    ggplot2::labs(title = sprintf("%s", common_name),
+                  fill = "Season") +
+    ggplot2::theme(legend.key.width = ggplot2::unit(2, "cm"))
+
 ```
 
 
@@ -583,7 +661,9 @@ fall_surface_sal_plt
 
 ## Occurrence probability
 
-The probability of occurrence was estimated using random forest classification models (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodsocc)). Probabilities were extracted for the spring and fall stock definition areas. 
+The probability of occurrence was estimated using random forest classification models (see methods). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. 
+
+The area of the Northeast Shelf with an estimated occurrence probability for menhaden of 0.5 was determined for the stock area and the ecosystem. The quantity of spring habitat shows little trend for either the stock area or the ecosystem.
 
 ```{r occ_prob, fig.height=4}
 spring_occ_prob <- 
@@ -619,13 +699,41 @@ occ_prob_plt <- occ_prob %>%
 occ_prob_plt
 ```
 
+## Habitat footprint
 
-```{r hab_area, fig.height=4}
+### Stock area
 
+```{r stock_hab_area, fig.height=4}
+hab_area_sa <- hab_area %>% 
+  dplyr::select(Time = Year, Spring = spr_sa, Fall = fall_sa ) %>% 
+  tab_plotly(.) %>% 
+  layout(title = "Stock habitat area", 
+         yaxis = list(title = "Habitat area (km <sup>2</sup>)",
+                      hoverformat = '.3f'))
+hab_area_sa
 ```
 
+### Ecosystem
+
+```{r ecosys_hab_area, fig.height=4}
+hab_area_eco <- hab_area %>% 
+  dplyr::select(Time = Year, Spring = spr_eco, Fall = fal_eco) %>% 
+  tab_plotly(.) %>% 
+  layout(title = "Ecosystem habitat area", 
+         yaxis = list(title = "Habitat area (km <sup>2</sup>)",
+                      hoverformat = '.3f'))
+hab_area_eco
+```
+
+However, the habitat size in the fall has changed with distinct periods of high and low habitat area and there is the suggestion of an increasing trend in habitat over time. The fall stock area habitat peaked in 1983, was lowest in the late 1990sm and has been increasing since 2000. The habitat has increased in size by about is approximately 50,000 km2 to 80,000 km2, noting a decrease in 2017. The fall habitat has increased approximately 15% within the stock area and approximately 20% over the ecosystem.
 
 ## Biomass
+
+Estimates of the numbers and biomass minimum population size of menhaden stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see methods for details). The procedure provides eight populations size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
+
+Of the eight treatment options, the four that included outlier testing and elimination were found to produce many missing values; hence, the abundance and biomass estimates were based on the four other treatments (NNN, NYN, YNN, and YYN). The spring minimum population size in numbers suggests the stock continues the trend of high abundance that began with the 2005 recruitment. When disaggregated by northern and southern subareas, it appear the southern subunit approximates the unit abundance for most of the time series. 
+
+In recent years, the southern subareas appears to have declined whereas the northern subarea is closer to the unit population size. Similar trends in the relative role of the subareas can be seen the minimum biomass estimates as well; the southern subarea approximates the unit early in the time series and in recent years the northern subarea estimate the unit. Collectively, both the abundance and biomass data suggest a shift in spring population distribution, with more of the population now distribution in the northern subareas. The time series trends in both abundance and biomass appear to be positive, however, the recent biomass peak level are higher than the peak biomass in the 1980. This is not the case when comparing the recent and 1980s peaks in abundance.
 
 ```{r biomass_processing}
 spring_biomass <- 
@@ -787,6 +895,8 @@ fall_numbers_sae <-
 
 ```
 
+### Spring numbers and biomass
+
 ```{r spring_sae_plt, fig.height = 6}
 spring_sae_plt <- subplot(
           spring_biomass_sae,
@@ -802,6 +912,8 @@ spring_sae_plt <- subplot(
   layout( legend=list(y=0.8, yanchor="top" ) )
 spring_sae_plt
 ```
+
+### Fall numbers and biomass
 
 ```{r fall_sae_plt, fig.height = 6}
 fall_sae_plt <- subplot(
@@ -819,8 +931,11 @@ fall_sae_plt <- subplot(
 fall_sae_plt
 ```
 
+The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
 
 # Chlorophyll
+
+## Stock area
 
 The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodschl)). Chlorophyll concentrations in the spring and fall `r common_name` stock areas are shown below.
 
@@ -934,6 +1049,26 @@ fall_chl_plt <-
 fall_chl_plt
 ```
 
+## Chesapeake Bay recruitment index
+
+Recruitment is a complex process in marine fishes, and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf. The successful individuals egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variably in Houde et al. (2016), which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass. 
+
+A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentration for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from a merged chlorophyll concentration dataset. The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data were a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm (Maritorena et al., 2010) obtained from the Hermes GlobColour website (hermes.acri.fr/index.php).
+
+```{r ches_bay_rec}
+ches_bay_rec_plt <- ches_bay_rec %>%
+        dplyr::select(Time = Year, Series = CHL) %>% 
+        tab_plotly(., series.name = "CHL") %>% 
+        layout(title = "Chesapeake Bay CHL",
+         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
+                      hoverformat = '.3f'),
+         showlegend = T, legend = list(orientation = 'h'))
+
+ches_bay_rec_plt
+```
+
+
+Based on the most recent menhaden assessment, the chlorophyll time series overlaps the recruitment series for the years 1998-2016, noting that the two largest year classes during that period appear to have occurred in 2005 and 2010 (based on age-0 numbers). The correlation between April polyhaline chlorophyll concentration and recruitment was 0.43 (p=.066). The polyhaline chlorophyll time series was at its highest value in 2005 and among its highest vales in 2010; the 2011 chlorophyll concentration was also among the highest values, but it not associated with a strong recruitment. Time series from other portions the estuary were not correlated with the recruitment signal. Finally, it is worth noting that the 2019 chlorophyll concentration was the third highest in the time series. If the remote sensing series is capturing a part of the recruitment signal, 2019 may be a large year class and the index may provide some forecast skill for recruitment events.
 
 # Zooplankton
 
@@ -1361,11 +1496,22 @@ knitr::kable(
 
 ## Occupancy models {#methodsocc}
 
-Occupancy and productivity habitats for {{COMMON_NAME}} were estimated with random forest classification and regression models using a suite of static and dynamic predictor variables. Variation in species presence or absence and biomass across space, bathymetry factors, productivity factors, and climate factors were tested. Models were constructed separately for spring and fall seasons. The response variables were the occurrence and catch-per-unit-effort of {{COMMON_NAME}} in the Northeast Fisheries Science Center bottom trawl survey, which is a fishery-independent survey on the Northeast US Shelf. The survey is conducted in the spring and fall of the year and is based on a stratified random design, which provides both spatial and temporal depictions of fish and macroinvertebrate abundances [@Grosslein1969]. The independent or predictor variable set included physical environment variables, habitat descriptors, zooplankton variables, and remote sensing variables; the variables will be described in more detail below. Occupancy models were fit as two-factor classification models (absence as 0; presence as 1) using the randomForest R package [@randomForest].
+Occupancy and productivity habitats for Atlantic menhaden were estimated with random forest classification and regression models using a suite of static and dynamic predictor variables. Variation in species presence or absence and biomass across space, bathymetry factors, productivity factors, and climate factors were tested. Models were constructed separately for spring and fall seasons. The response variables were the occurrence and catch-per-unit-effort of Atlantic menhaden in the Northeast Fisheries Science Center bottom trawl survey, which is a fishery-independent survey on the Northeast US Shelf. The survey is conducted in the spring and fall of the year and is based on a stratified random design, which provides both spatial and temporal depictions of fish and macroinvertebrate abundances [@Grosslein1969]. The independent or predictor variable set included physical environment variables, habitat descriptors, zooplankton variables, and remote sensing variables; the variables will be described in more detail below. Occupancy models were fit as two-factor classification models (absence as 0; presence as 1) using the randomForest R package [@randomForest].
 
 Prior to fitting the model, the independent variable set was first tested for multi-collinearity among the predictors and correlated variables were eliminated (R package @rfUtilities-package, version 2.1-3). From this reduced set of predictors, the final model variables were selected utilizing the model selection criteria of [@Murphy2010] as implemented in rfUtilities. Productivity models were fit as regression models with log10 transformed biomass-per-unit-effort as the response variable and the same starting set of predictor variables as in the occupancy models. As with the occupancy models, independent variables were tested for multi-collinearity and the model selection criteria was applied. Habitat was estimated from the model fits over a standard 0.1° grid, which circumscribes the range of ecosystem assessment areas [in the region](#fig:study-area). 
 
 Three types of visualizations were created from the output of the tree models. The first visualization was used to see the average probability of occupancy over space and the rate of change (Sen's slope) in occupancy over the years. The second visualization was used to see the mean occupancy gradient magnitude, or frontal strength and the rate of change (Sen's slope) in occupancy gradient magnitude over the years. Gradient magnitude was calculated by calculating the median of the occupancy probabilities with a moving window and then summing those medians with a moving window with a matrix of weights. The third visualization was used to see the average biomass over space and the rate of change (Sen's slope) in biomass over the years. Trends in total occupancy habitat area, with occupancy probabilities of 25, 50, and 75% over time were plotted as well by calculating the sum of the area with occupancy probabilities at each percentage during each year. 
+
+**Following from the 2018 ECSA for summer flounder, the methodology was changed by the conversion of salinity, surface and bottom, from a dynamic variable to a static variable. By so doing, the fitting period is extended from 1992-2017 to 1976-2018. Dynamic salinity data was limited by the time series of modern instrumentation, which began in 1992. In the 2018 model fits, dynamic salinity was not an important variable in any species model; hence, conversion to a static variable was of little consequence.**
+
+### Minimum swept area abundance based on habitat informed dynamic re-stratification 
+
+Estimates of the numbers and biomass minimum population size of stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat. The habitat area was restricted to the portion of the shelf associated with the stock based on the roster of bottom trawl strata consider to comprise the stock area. To raise an annual estimate, the habitat was partitioned into ten intervals based on the probability of occurrence from the species distribution model. The partitions were based on equal intervals of occurrence probability; hence, the size of each habitat strata could vary. The trawl catch per unit effort values were assigned to the appropriate habitat strata based on the habitat score where the trawl was made. Once the requisite trawl hauls associated with a habitat strata were identified, a mean catch per unit effort was determined and raised to a total minimum population estimate for that stratum assuming a constant trawl path area of 0.024 km2. The total population was the sum of the estimates for the ten strata.
+
+$Total\;numbers\;or\;biomass =\sum_{i=1}^{10} (strata\;area/trawl\;path\;area) * mean\;CPUE$
+
+These estimates were conditioned on three options intended to ameliorate some of the issues associated with the variability in survey catch rates. The first allowed for the application of catch per unit effort data from either the stock area only or including tows from outside the stock area if they were collected in areas with habitat scores matching the probability from the intervals in the stock area. It was felt this may enhance the estimate by increasing the sample size for key strata. The second option provided the choice of performing a test for outliers on the trawl catch per unit effort data. The boxplot command in R was used to identify the outliers for removal. The last option involved whether to apply a smoothing across the mean catch per unit effort estimates in each strata. If the option was invoked, a loess smoother (span = 0.75) was applied to generate the smoothed catch rates; the procedure also had the benefit of interpolating and extrapolating a rate to a habitat strata that may not have had catch samples associated with it. Therefore, for each species/stock, an estimate of seasonal total abundance or biomass minimum population size will have eight realizations that test the sensitively of the calculations to these three formulation choices.
+
 
 ### Predictor Variables
 Static variables were kept constant over years where dynamic variables varied annually. Hence, the length of the time series of model fits is constrained by the shortest dynamic variable time series to meet the requirement of complete cases in the Random Forest fitting. The fitting time series was constrained to 1992 – 2016, which was determined by the length of the station salinity data. 
@@ -1515,9 +1661,9 @@ __Manunal preprocessing__
 
 __Automation__
 
-1. `create_template.R` is run to create the species specific `.Rmd` document with the following arguments (for additional arguments, refer to `?create_template`). For {{COMMON_NAME}}:
+1. `create_template.R` is run to create the species specific `.Rmd` document with the following arguments (for additional arguments, refer to `?create_template`). For Atlantic menhaden:
 ``` {r, cre_tmp, echo=T, eval =F}
-create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here::here("docs"))
+create_template(stock_name = atlantic-menhaden, render_book=TRUE, output_dir = here::here("docs"))
 ```
 2. The species specific `Rmd` file is then rendered. During this step:
 
@@ -1532,7 +1678,7 @@ create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here
 * Occupancy probability:
 
 
-3. This document (the one you are viewing) will then automatically open in a web browser and all associated files can be found in the `docs\{{STOCK_NAME}}` folder in your current working directory.
+3. This document (the one you are viewing) will then automatically open in a web browser and all associated files can be found in the `docs\atlantic-menhaden` folder in your current working directory.
 4. These steps are repeated for additional species.
 
 

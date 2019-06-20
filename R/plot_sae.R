@@ -3,11 +3,16 @@ plot_sae <- function(data_season, biomass_, svspp_, include_zeros = F, k, fill =
                      exclude_treatments = NA, include_legend = T, legend_title){
   
   `%>%` <- magrittr::`%>%`
+  #swept area estimates
+  spring_sae <- read.csv(here::here("data-raw/spring_sae_tb_sum.csv"), stringsAsFactors = F)
+  fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"), stringsAsFactors = F)
   
   if (data_season == "fall"){
     df <- fall_sae
+    rm(fall_sae);rm(spring_sae)
   } else if (data_season == "spring"){
     df <- spring_sae
+    rm(fall_sae);rm(spring_sae)
   }
   
   Var_ <- ifelse(!include_zeros,"ztotal","total")
@@ -51,9 +56,10 @@ plot_sae <- function(data_season, biomass_, svspp_, include_zeros = F, k, fill =
                   ggplot2::aes(x = Time,
                   y = smoothed_group_mean_log10,
                   color = area),
-              size = 1.1) +
+              size = 1) +
     ggplot2::guides(color = guide_legend(title = leg.title)) +
-    ggplot2::ylab(ylab)
+    ggplot2::ylab(ylab) +
+    theme_bw()
   
   p <- plotly::ggplotly(out)
   
