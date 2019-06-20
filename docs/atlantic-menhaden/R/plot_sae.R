@@ -1,6 +1,6 @@
 
 plot_sae <- function(data_season, biomass_, svspp_, include_zeros = F, k, fill = NA,
-                     exclude_treatments = NA, include_legend = T, legend_title){
+                     exclude_treatments = NA, include_legend = T, legend_title, menhaden = T){
   
   `%>%` <- magrittr::`%>%`
   #swept area estimates
@@ -51,31 +51,39 @@ plot_sae <- function(data_season, biomass_, svspp_, include_zeros = F, k, fill =
       read.csv(here::here("docs/atlantic-menhaden/atlantic-menhaden_data/menhaden_updated_sae.csv"),
                     stringsAsFactors = F) %>%
       tidyr::gather(.,Var, Value, -Time) %>% 
-      mutate(area = stringr::str_extract(Var, "north|south|unit")) %>% 
+      mutate(area = stringr::str_extract(Var, "north|south|unit"),
+             season = stringr::str_extract(Var, "spring|fall"),
+             biomass = ifelse(stringr::str_detect(Var, "bio"), "yes", "no")) %>% 
+      dplyr::filter(season == data_season,
+                    biomass == biomass_) %>% 
       dplyr::filter(str_detect(Var, "_ma_")) %>% 
       dplyr::rename(smoothed_group_mean_log10 = Value)
     sae_smoothed$smoothed_group_mean_log10 <- round(sae_smoothed$smoothed_group_mean_log10,
                                                     3)
   }
   
-  
-  
-  out <- 
-    sae_all %>% 
+  sae_all$area <- as.factor(sae_all$area)
+ 
+   out <- 
+
     ggplot2::ggplot() +
-    ggplot2::geom_point(ggplot2::aes(x = Time,
-                  y = Value_log10),
-                  alpha = 0.05) +
-    ggplot2::geom_line(data = sae_smoothed,
-                  ggplot2::aes(x = Time,
-                  y = smoothed_group_mean_log10,
+     ggplot2::geom_line(data = sae_smoothed,
+                        ggplot2::aes(x = Time,
+                                     y = smoothed_group_mean_log10,
+                                     color = area)) +
+    ggplot2::geom_point(data = sae_all,
+                        ggplot2::aes(x = Time,
+                  y = Value_log10,
                   color = area),
-              size = 1) +
-    ggplot2::guides(color = guide_legend(title = leg.title)) +
+                  alpha = 0.25) +
+
+    ggplot2::guides(color = guide_legend(title = leg.title,
+                                         override.aes = list(shape = NA,
+                                                             linetype = "solid"))) +
     ggplot2::ylab(ylab) +
     theme_bw()
   
-  p <- plotly::ggplotly(out)
+  (p <- plotly::ggplotly(out))
   
   if (!include_legend){
     
@@ -90,5 +98,3 @@ plot_sae <- function(data_season, biomass_, svspp_, include_zeros = F, k, fill =
   return(p)
 }
 
-
-str_extract("hell_north_","north")
