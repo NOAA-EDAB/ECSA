@@ -80,7 +80,7 @@ source(here::here("R/tab_plotly.R"))
 source(here::here("R/create_buttons.R"))
 source(here::here("R/STARS_v18.R"))
 source(here::here("R/gls_summary.R"))
-source(here::here("R/plot_sae.R"))
+source(here::here("docs/atlantic-menhaden/R/plot_sae.R"))
 
 
 #Function to rank time series by group mean. Returns top N groups
@@ -129,9 +129,8 @@ This report provides contextual ecosystem information for Atlantic menhaden (*Br
 
 ### Summary {-#summary}
 
-* Add summary point 
-* Add summary point 
-* Add summary point 
+Substantial changes have occurred the coast environment supporting the menhaden population. Thermal condition have changed in both spring and fall season, with great rate of change in fall temperatures. Further physical change in the environment can be seen in shift in salinity during the spring. There has also been change in lower trophic level productivity with a significant decline in fall chlorophyll concentration. Zooplankton taxa utilized by menhaden show varying patterns of time series change, with some of the principal taxa increase and other in decline. Zooplankton biomass has not declined during the spring, which would suggest the food resources for menhaden larvae has remained abundant. However, fall zooplankton biomass has decline over the most recent decade and may be a factor for adult feeding. Abundance estimates based on a habitat model suggest the stock continues to be a high level and that regional abundances patterns may have changed.  
+
 
 ### Strata definition {-#strata-definition}
 
@@ -220,6 +219,8 @@ _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the `r common_name` stock areas are shown below.
 
 ## Bottom Temperature {-#bottom-temperature}
+
+Thermal conditions on the Northeast Shelf have changed in recent decades and these changes are reflected in change in bottom water temperatures in the stock areas. In both spring and fall, bottom water temperature have significantly increased, with the suggestion of abrupt changes in temperature early in the time series. The rate of increase has been twice as high in the fall. This index reflect conditions of the inner shelf, so it reflects thermal conditions at relatively shallow depths and would likely have relevance to menhaden.
 
 ```{r bot_temp_process}
 spring_bottom_temp <- 
@@ -369,6 +370,8 @@ fall_bottom_temp_plt
 
 
 ## Surface Temperature {-#surface-temperature}
+
+There does not appear to be any trend associated with spring surface temperature conditions, however, fall temperature have increased over time. Furthermore, the change point in fall conditions in 2011 may be related to the cumulative warming that marked the extreme warming in 2012. 
 
 ```{r surf_temp_process}
 spring_surface_temp <- 
@@ -521,9 +524,12 @@ fall_surface_temp_plt
 
 # Salinity
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see methods). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the Atlantic menhaden stock areas are shown below.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methods)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the Atlantic menhaden stock areas are shown below.
 
 ## Bottom Salinity {-#bottom-salinity}
+
+There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000. This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series. The first around 1999 and a second change around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mills2013].
+
 
 ```{r bot_sal_process}
 spring_bottom_sal <- 
@@ -666,11 +672,10 @@ fall_bottom_sal_plt
 ```
 
 
-There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000. This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series. The first around 1999 and a second change around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mill2013].
-
-
 
 ## Surface Salinity {-#surface-salinity}
+
+The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013. The fall surface salinity time series was without trend or any change points. These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
 
 ```{r surf_sal_process}
 spring_surface_sal <- 
@@ -807,7 +812,6 @@ fall_surface_sal_plt
 ```
 
 
-The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013. The fall surface salinity time series was without trend or any change points. These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
 
 # Chlorophyll
 
@@ -1358,7 +1362,7 @@ occ_prob_plt <- occ_prob %>%
 occ_prob_plt
 ```
 
-## Habitat footprint {-#habitat-footprint}
+## Habitat area {-#habitat-area}
 
 The area of the Northeast Shelf with an estimated occurrence probability for menhaden of 0.25 was determined for the stock area and the ecosystem. The area of habitat with the stock area generally ranged from 2,000-4,000 km<sup>2</sup> with a notable peak in habitat associated with 2012 spring conditions. With the exception of 2012, spring habitat appear to have been represent by a larger area during the 1980s. Fall habitat has increase in recent years and was also at high levels in the early 1980s. The fall habitat area for menhaden over the ecosystem is larger than the areas restricted to the stock definition. Fall habitat approached 5,000 km<sup>2</sup> reflecting a greater use of the ecosystem during the warmer part of the year. The spring habitat over the ecosystem were similar to the stock area dimensions.
 
@@ -1388,15 +1392,16 @@ hab_area_eco
 
 However, the habitat size in the fall has changed with distinct periods of high and low habitat area and there is the suggestion of an increasing trend in habitat over time. The fall stock area habitat peaked in 1983, was lowest in the late 1990sm and has been increasing since 2000. The habitat has increased in size by about is approximately 50,000 km <sup>2</sup> to 80,000 km <sup>2</sup>, noting a decrease in 2017. The fall habitat has increased approximately 15% within the stock area and approximately 20% over the ecosystem.
 
-## Biomass {-#biomass}
+## Minimum Population Size {-#minimum-population-size}
 
-Estimates of the numbers and biomass minimum population size of menhaden stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see methods for details). The procedure provides eight populations size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
+Estimates of the numbers and biomass minimum population size of menhaden stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see [methods](#methods) for details). The procedure provides eight populations size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
 
 Of the eight treatment options, the four that included outlier testing and elimination were found to produce many missing values; hence, the abundance and biomass estimates were based on the four other treatments (NNN, NYN, YNN, and YYN). The spring minimum population size in numbers suggests the stock continues the trend of high abundance that began with the 2005 recruitment. When disaggregated by northern and southern subareas, it appear the southern subunit approximates the unit abundance for most of the time series. 
 
 In recent years, the southern subareas appears to have declined whereas the northern subarea is closer to the unit population size. Similar trends in the relative role of the subareas can be seen the minimum biomass estimates as well; the southern subarea approximates the unit early in the time series and in recent years the northern subarea estimate the unit. Collectively, both the abundance and biomass data suggest a shift in spring population distribution, with more of the population now distribution in the northern subareas. The time series trends in both abundance and biomass appear to be positive, however, the recent biomass peak level are higher than the peak biomass in the 1980. This is not the case when comparing the recent and 1980s peaks in abundance. The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
 
 
+<<<<<<< HEAD
 ```{r biomass_processing, eval = F}
 spring_biomass <- 
   stars_to_series(r = "biomass_spring.rdata",
@@ -1508,6 +1513,8 @@ fall_biomass_plt
 
 ## Swept Habitat Area Abundance Estimates {-#swept-habitat-area-abundance-estimates}
 
+=======
+>>>>>>> cd918e3ddd48c1ff31435ee8eac1ab7f4c2bc105
 ```{r sae_processing}
 
 
