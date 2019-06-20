@@ -207,6 +207,7 @@ ggplot2::ggplot() +
     ggplot2::coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
     ggplot2::labs(title = sprintf("%s", common_name),
                   fill = "Season") +
+    ggplot2::theme_bw()+
     ggplot2::theme(legend.key.width = ggplot2::unit(2, "cm"))
 
 ```
@@ -235,26 +236,37 @@ spring_bottom_temp <-
                 diagnostic = T,
                 fit_model  = T) 
 
-spring_mod <- spring_bottom_temp$model
 
 STARS_in <- spring_bottom_temp$fit %>% 
   dplyr::select(-fit) %>% 
   as.matrix()
 
 if (spring_bottom_temp$`selection summary`$pval[1] < 0.05){
+  spring_mod <- spring_bottom_temp$model
+  
   spring_bottom_temp <- spring_bottom_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
+    dplyr::select(Time = time, 
+                  Series = series,
+                  Trend = fit)
+  
+  summ_ <- gls_summary(mod = spring_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+
+  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+
 } else {
     spring_bottom_temp <- spring_bottom_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    spring_title <- "Spring"
 }
 
 spring_bottom_temp %<>%  
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 spring_min <- min(spring_bottom_temp$Time)
@@ -274,7 +286,6 @@ fall_bottom_temp <-
                 diagnostic = T,
                 fit_model  = T) 
 
-fall_mod <- fall_bottom_temp$model
 
 
 STARS_in <- fall_bottom_temp$fit %>% 
@@ -282,20 +293,32 @@ STARS_in <- fall_bottom_temp$fit %>%
   as.matrix()
 
 if (fall_bottom_temp$`selection summary`$pval[1] < 0.05){
+
+  fall_mod <- fall_bottom_temp$model
+  
   fall_bottom_temp <- fall_bottom_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = fall_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
 } else {
     fall_bottom_temp <- fall_bottom_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    fall_tile <- "Fall"
 }
 
 
 fall_bottom_temp %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 fall_min <- min(fall_bottom_temp$Time)
@@ -309,23 +332,17 @@ if (fall_min > spring_min) {
 
 
 ```{r bot_temp_spring_plt, fig.height=3}
+
 spring_bottom_temp_plt <- 
   tab_plotly(spring_bottom_temp, series.name = "Temperature") %>% 
-  layout(title = "Spring",
+  layout(title = spring_title,
+         # title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_bottom_temp$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
-
-summ_ <- gls_summary(mod = spring_mod)
-trend <- summ_$Value[1]
-lci <- summ_$Value[2]
-uci <- summ_$Value[3]
-
-
-print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
 
 spring_bottom_temp_plt
 ```
@@ -333,21 +350,18 @@ spring_bottom_temp_plt
 ```{r bot_temp_fall_plt, fig.height=3}
 fall_bottom_temp_plt <- 
   tab_plotly(fall_bottom_temp, series.name = "Temperature") %>% 
-  layout(title = "Fall",
+  layout(title = fall_title,
+    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f',
+                      mirror = FALSE,
+                      showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_bottom_temp$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE,
+                      mirror = FALSE,
+                      showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
-
-summ_ <- gls_summary(mod = fall_mod)
-trend <- summ_$Value[1]
-lci <- summ_$Value[2]
-uci <- summ_$Value[3]
-
-
-print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
 
 fall_bottom_temp_plt
 ```
@@ -371,27 +385,37 @@ spring_surface_temp <-
                 diagnostic = T,
                 fit_model  = T) 
 
-spring_mod <- spring_surface_temp$model
-
 
 STARS_in <- spring_surface_temp$fit %>% 
   dplyr::select(-fit) %>% 
   as.matrix()
 
 if (spring_surface_temp$`selection summary`$pval[1] < 0.05){
+  spring_mod <- spring_surface_temp$model
+
   spring_surface_temp <- spring_surface_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = spring_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+
+  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  
 } else {
     spring_surface_temp <- spring_surface_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    spring_title <- "Spring"
 }
 
 spring_surface_temp %<>%  
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 spring_min <- min(spring_surface_temp$Time)
@@ -411,7 +435,6 @@ fall_surface_temp <-
                 diagnostic = T,
                 fit_model  = T) 
 
-fall_mod <- fall_surface_temp$model
 
 
 STARS_in <- fall_surface_temp$fit %>% 
@@ -419,20 +442,31 @@ STARS_in <- fall_surface_temp$fit %>%
   as.matrix()
 
 if (fall_surface_temp$`selection summary`$pval[1] < 0.05){
+  fall_mod <- fall_surface_temp$model
+  
   fall_surface_temp <- fall_surface_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = fall_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
 } else {
     fall_surface_temp <- fall_surface_temp$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    fall_title <- "Fall"
 }
 
 
 fall_surface_temp %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 fall_min <- min(fall_surface_temp$Time)
@@ -445,44 +479,41 @@ if (fall_min > spring_min) {
 ```
 
 ```{r surf_temp_spring_plt, fig.height=3}
+
 spring_surface_temp_plt <- 
   tab_plotly(spring_surface_temp, series.name = "Temperature") %>% 
-  layout(title = "Spring",
+  layout(title = spring_title,
+         #title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_surface_temp$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
-summ_ <- gls_summary(mod = spring_mod)
-trend <- summ_$Value[1]
-lci <- summ_$Value[2]
-uci <- summ_$Value[3]
 
 
-print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
+# print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
 
 spring_surface_temp_plt
 ```
 
 ```{r surf_temp_fall_plt, fig.height=3}
+
+
 fall_surface_temp_plt <- 
   tab_plotly(fall_surface_temp, series.name = "Temperature") %>% 
-  layout(title = "Fall",
+  layout(title = fall_title,
+    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_surface_temp$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 
-summ_ <- gls_summary(mod = fall_mod)
-trend <- summ_$Value[1]
-lci <- summ_$Value[2]
-uci <- summ_$Value[3]
 
 
-print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
+# print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
 
 fall_surface_temp_plt
 ```
@@ -506,26 +537,39 @@ spring_bottom_sal <-
   ecotrend::glsMs(Mean ~ Time,
                 data = .,
                 diagnostic = T,
-                fit_model  = T) 
+                fit_model  = T)
 
 STARS_in <- spring_bottom_sal$fit %>% 
   dplyr::select(-fit) %>% 
   as.matrix()
 
 if (spring_bottom_sal$`selection summary`$pval[1] < 0.05){
+  spring_mod <- spring_bottom_sal$model
+
   spring_bottom_sal <- spring_bottom_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = spring_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  
 } else {
     spring_bottom_sal <- spring_bottom_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    
+  spring_title <- "Spring"
 }
 
 spring_bottom_sal %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 spring_min <- min(spring_bottom_sal$Time)
@@ -544,24 +588,40 @@ fall_bottom_sal <-
                 diagnostic = T,
                 fit_model  = T) 
 
+
+
 STARS_in <- fall_bottom_sal$fit %>% 
   dplyr::select(-fit) %>% 
   as.matrix()
 
 if (fall_bottom_sal$`selection summary`$pval[1] < 0.05){
+fall_mod <- fall_bottom_sal$model
+
   fall_bottom_sal <- fall_bottom_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = fall_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
+  
 } else {
     fall_bottom_sal <- fall_bottom_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+  
+    fall_title <- "Fall"
+  
 }
 
 fall_bottom_sal %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 fall_min <- min(fall_bottom_sal$Time)
@@ -575,26 +635,31 @@ if (fall_min > spring_min) {
 
 
 ```{r bot_sal_spring_plt, fig.height=3}
+
+
 spring_bottom_sal_plt <- 
   tab_plotly(spring_bottom_sal, series.name = "Salinity") %>% 
-  layout(title = "Spring",
+  layout(#title = "Spring",
+    title = spring_title,
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_bottom_sal$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 spring_bottom_sal_plt
 ```
 
 ```{r bot_sal_fall_plt, fig.height=3}
+
 fall_bottom_sal_plt <- 
   tab_plotly(fall_bottom_sal, series.name = "Salinity") %>% 
   layout(title = "Fall",
+    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_bottom_sal$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_bottom_sal_plt
@@ -626,19 +691,34 @@ STARS_in <- spring_surface_sal$fit %>%
   as.matrix()
 
 if (spring_surface_sal$`selection summary`$pval[1] < 0.05){
+  spring_mod <- spring_surface_sal$model
+  
+  
   spring_surface_sal <- spring_surface_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+
+
+  summ_ <- gls_summary(mod = spring_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
 } else {
     spring_surface_sal <- spring_surface_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+      spring_title <- "Spring"
+
 }
 
 spring_surface_sal %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 spring_min <- min(spring_surface_sal$Time)
@@ -662,19 +742,31 @@ STARS_in <- fall_surface_sal$fit %>%
   as.matrix()
 
 if (fall_surface_sal$`selection summary`$pval[1] < 0.05){
+  fall_mod <- fall_surface_sal$model
+  
   fall_surface_sal <- fall_surface_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  
+  summ_ <- gls_summary(mod = fall_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
 } else {
     fall_surface_sal <- fall_surface_sal$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    fall_title <- "Fall"
 }
 
 fall_surface_sal %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 fall_min <- min(fall_surface_sal$Time)
@@ -689,11 +781,12 @@ if (fall_min > spring_min) {
 ```{r surf_sal_spring_plt, fig.height=3}
 spring_surface_sal_plt <- 
   tab_plotly(spring_surface_sal, series.name = "Salinity") %>% 
-  layout(title = "Spring",
+  layout(title = spring_title,
+         #title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_surface_sal$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 spring_surface_sal_plt
@@ -702,11 +795,12 @@ spring_surface_sal_plt
 ```{r surf_sal_fall_plt, fig.height=3}
 fall_surface_sal_plt <- 
   tab_plotly(fall_surface_sal, series.name = "Salinity") %>% 
-  layout(title = "Fall",
+  layout(title = fall_title,
+    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_surface_sal$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_surface_sal_plt
@@ -747,6 +841,13 @@ if (spring_chl$`selection summary`$pval[1] < 0.05){
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = spring_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+
+  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
 } else {
     spring_chl <- spring_chl$fit %>% 
       dplyr::select(Time = time, 
@@ -755,7 +856,8 @@ if (spring_chl$`selection summary`$pval[1] < 0.05){
 
 spring_chl %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 spring_min <- min(spring_chl$Time)
@@ -792,7 +894,8 @@ if (fall_chl$`selection summary`$pval[1] < 0.05){
 
 fall_chl %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 fall_min <- min(fall_chl$Time)
@@ -809,11 +912,11 @@ if (fall_min > spring_min) {
 ```{r spring_chl_plt, fig.height=3}
 spring_chl_plt <- 
   tab_plotly(spring_chl, series.name = "CHL") %>% 
-  layout(title = "Spring",
+  layout(title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_chl$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 spring_chl_plt 
 ```
@@ -821,11 +924,11 @@ spring_chl_plt
 ```{r fall_chl_plt, fig.height=3}
 fall_chl_plt <- 
   tab_plotly(fall_chl, series.name = "CHL") %>% 
-  layout(title = "Fall",
+  layout(title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_chl$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_chl_plt
@@ -843,7 +946,7 @@ ches_bay_rec_plt <- ches_bay_rec %>%
         tab_plotly(., series.name = "CHL") %>% 
         layout(title = "Chesapeake Bay CHL",
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 ches_bay_rec_plt
@@ -909,7 +1012,7 @@ spring_cope_plt <-
   tab_plotly(spring_cope, add_smoother = T, showlegend = F) %>% 
   layout(title = "Spring copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -998,7 +1101,7 @@ fall_cope_plt <-
   tab_plotly(fall_cope, add_smoother = T, showlegend = F) %>% 
   layout(title = "Fall copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -1086,7 +1189,7 @@ spring_noncope_plt <-
   tab_plotly(spring_noncope, add_smoother = T) %>% 
   layout(title = "Spring non-copepod zoo. abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          showlegend = F,
          updatemenus = 
         
@@ -1173,7 +1276,7 @@ fall_noncope_plt <-
   tab_plotly(fall_noncope, add_smoother = T) %>% 
   layout(title = "Fall non-copepod zoo. abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          showlegend = F,
          updatemenus = 
         
@@ -1250,7 +1353,7 @@ occ_prob_plt <- occ_prob %>%
   tab_plotly(.) %>% 
   layout(title = "Occupancy Probability", 
          yaxis = list(title = "Occupancy probability",
-                      hoverformat = '.3f'))
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE))
 
 occ_prob_plt
 ```
@@ -1267,7 +1370,7 @@ hab_area_sa <- hab_area %>%
   tab_plotly(.) %>% 
   layout(title = "Stock habitat area", 
          yaxis = list(title = "Habitat area (km <sup>2</sup>)",
-                      hoverformat = '.3f'))
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE))
 hab_area_sa
 ```
 
@@ -1279,7 +1382,7 @@ hab_area_eco <- hab_area %>%
   tab_plotly(.) %>% 
   layout(title = "Ecosystem habitat area", 
          yaxis = list(title = "Habitat area (km <sup>2</sup>)",
-                      hoverformat = '.3f'))
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE))
 hab_area_eco
 ```
 
@@ -1325,7 +1428,8 @@ if (spring_biomass$`selection summary`$pval[1] < 0.05){
 
 spring_biomass %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 spring_min <- min(spring_biomass$Time)
@@ -1361,7 +1465,8 @@ if (fall_biomass$`selection summary`$pval[1] < 0.05){
 
 fall_biomass %<>%
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number) %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
 fall_min <- min(fall_biomass$Time)
@@ -1377,11 +1482,11 @@ if (fall_min > spring_min) {
 ```{r spring_biomass_plt, fig.height=3, eval = F}
 spring_biomass_plt <-  
   tab_plotly(spring_biomass, series.name = "Biomass") %>% 
-  layout(title = "Spring",
+  layout(title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Biomass (kg)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_biomass$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 spring_biomass_plt
@@ -1390,11 +1495,11 @@ spring_biomass_plt
 ```{r fall_biomass_plt, fig.height=3, eval = F}
 fall_biomass_plt <- 
   tab_plotly(fall_biomass, series.name = "Biomass") %>% 
-  layout(title = "Fall",
+  layout(title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Biomass (kg)",
-                      hoverformat = '.3f'),
+                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_biomass$Time)),
-                      title = ""),
+                      title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_biomass_plt
