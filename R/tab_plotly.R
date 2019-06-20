@@ -25,7 +25,7 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F)
   
   for (i in 1:length(plotvars)){
     
-    if (plotvars[i] == "Regime.Mean" ) {
+    if (plotvars[i] == "Regime mean" ) {
       color <- "#b2df8a"
     } else if (plotvars[i] == "Trend"| plotvars[i] == "Fall"){
       color <- "#a6cee3"
