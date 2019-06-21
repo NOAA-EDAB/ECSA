@@ -40,8 +40,8 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F)
     if (!add_smoother){
       
       plot_df <- df %>%
-        dplyr::rename(data=one_of(plotvars[i])) %>%  ##make sure rename is from dplyr
-        dplyr::select(Time, data)
+        dplyr::select(Time,
+                      data = which(colnames(.) == plotvars[i]))
       
     } else {
       
@@ -66,16 +66,24 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F)
     if (add_smoother) {
         p <- p %>%
          plotly::add_trace(data=plot_df, x=~Time,
-                            y=~data, 
-                            name=plotvars[i], 
+                            y=~data,
+                            name=plotvars[i],
                             mode = 'markers',
-                            showlegend = F) %>% 
+                            showlegend = F) %>%
           plotly::add_trace(data=plot_df,
                             x = ~Time,
                             y=~smooth,
                             mode = 'lines',
                             name=plotvars[i],
                             showlegend = F)
+    } else if (length(plotvars) > 3 & !add_smoother){
+      p <- p %>%
+        plotly::add_trace(data=plot_df, x=~Time,
+                          y=~data,
+                          name=plotvars[i],
+                          mode = 'markers+lines',
+                          showlegend = F,
+                          connectgaps = F)
       }
 
       
