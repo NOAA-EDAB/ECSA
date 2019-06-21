@@ -125,14 +125,16 @@ ches_bay_rec <- read.csv(
 
 # Introduction
 
-This report provides contextual ecosystem information for Atlantic menhaden (*Brevoortia tyrannus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the Atlantic menhaden stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of Atlantic menhaden, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval Atlantic menhaden. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+This report provides contextual ecosystem information for Atlantic menhaden (*Brevoortia tyrannus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the Atlantic menhaden stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of Atlantic menhaden including physical factors, lower trophic level changes, and habitat distribution. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 ### Summary {-#summary}
 
 Substantial changes have occurred the coast environment supporting the menhaden population. Thermal condition have changed in both spring and fall season, with great rate of change in fall temperatures. Further physical change in the environment can be seen in shift in salinity during the spring. There has also been change in lower trophic level productivity with a significant decline in fall chlorophyll concentration. Zooplankton taxa utilized by menhaden show varying patterns of time series change, with some of the principal taxa increase and other in decline. Zooplankton biomass has not declined during the spring, which would suggest the food resources for menhaden larvae has remained abundant. However, fall zooplankton biomass has decline over the most recent decade and may be a factor for adult feeding. Abundance estimates based on a habitat model suggest the stock continues to be a high level and that regional abundances patterns may have changed.  
 
 
-### Strata definition {-#strata-definition}
+### Stock area {-#stock-area}
+
+The putative seasonal stock areas for menhaden are based on sets of survey strata from the Northeast Fisheries Science Center bottom trawl survey. The spring stock area is shown as the green filled strata in the map. The fall stock area includes the spring strata and in addition includes strata in the Gulf of Maine filled in blue. These two area are further divided into northern and southern subareas; the strata for the areas are outline in red and blue, respectively.
 
 ```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for Atlantic menhaden (*Brevoortia tyrannus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 # all_strata <- map_strata(stock_name = stock_name,
@@ -1390,7 +1392,7 @@ hab_area_eco <- hab_area %>%
 hab_area_eco
 ```
 
-However, the habitat size in the fall has changed with distinct periods of high and low habitat area and there is the suggestion of an increasing trend in habitat over time. The fall stock area habitat peaked in 1983, was lowest in the late 1990sm and has been increasing since 2000. The habitat has increased in size by about is approximately 50,000 km <sup>2</sup> to 80,000 km <sup>2</sup>, noting a decrease in 2017. The fall habitat has increased approximately 15% within the stock area and approximately 20% over the ecosystem.
+
 
 ## Minimum Population Size {-#minimum-population-size}
 

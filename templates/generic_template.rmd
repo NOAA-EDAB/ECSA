@@ -736,7 +736,7 @@ fall_biomass_plt
 
 ## Swept Habitat Area Abundance Estimates
 
-```{r sae_processing}
+```{r sae_processing, eval = F}
 # Change parameters of moving average. `fill = "extend"` will do linear interpolation over gaps in moving average. Change length of window with the k parameter
 fill = "extend"
 k <- 2
@@ -785,7 +785,7 @@ fall_numbers_sae <-
 
 ```
 
-```{r spring_sae_plt, fig.height = 6}
+```{r spring_sae_plt, fig.height = 6, eval = F}
 spring_sae_plt <- subplot(
           spring_biomass_sae,
           spring_numbers_sae,
@@ -801,7 +801,7 @@ spring_sae_plt <- subplot(
 spring_sae_plt
 ```
 
-```{r fall_sae_plt, fig.height = 6}
+```{r fall_sae_plt, fig.height = 6, eval = F}
 fall_sae_plt <- subplot(
           fall_biomass_sae,
           fall_numbers_sae,
