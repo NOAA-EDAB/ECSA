@@ -949,6 +949,7 @@ ches_bay_rec_plt <- ches_bay_rec %>%
         layout(title = "Chesapeake Bay CHL",
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
                       hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 ches_bay_rec_plt
@@ -1015,6 +1016,7 @@ spring_cope_plt <-
   layout(title = "Spring copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -1104,6 +1106,7 @@ fall_cope_plt <-
   layout(title = "Fall copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
          updatemenus = 
         
         list(
