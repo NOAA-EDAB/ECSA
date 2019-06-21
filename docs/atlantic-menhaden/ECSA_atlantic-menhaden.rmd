@@ -218,11 +218,11 @@ _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 
 # Temperature
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the `r common_name` stock areas are shown below.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the `r common_name` stock areas are shown below.
 
 ## Bottom Temperature {-#bottom-temperature}
 
-Thermal conditions on the Northeast Shelf have changed in recent decades and these changes are reflected in change in bottom water temperatures in the stock areas. In both spring and fall, bottom water temperature have significantly increased, with the suggestion of abrupt changes in temperature early in the time series. The rate of increase has been twice as high in the fall. This index reflect conditions of the inner shelf, so it reflects thermal conditions at relatively shallow depths and would likely have relevance to menhaden.
+Thermal conditions on the Northeast Shelf have changed in recent decades and these changes are reflected in change in bottom water temperatures in the stock areas. In both spring (Figure \@ref(fig:bot_temp_spring_plt)) and fall \@ref(fig:bot_temp_fall_plt), bottom water temperature have significantly increased, with the suggestion of abrupt changes in temperature early in the time series. The rate of increase has been twice as high in the fall. This index reflect conditions of the inner shelf, so it reflects thermal conditions at relatively shallow depths and would likely have relevance to menhaden.
 
 ```{r bot_temp_process}
 spring_bottom_temp <- 
@@ -373,7 +373,7 @@ fall_bottom_temp_plt
 
 ## Surface Temperature {-#surface-temperature}
 
-There does not appear to be any trend associated with spring surface temperature conditions, however, fall temperature have increased over time. Furthermore, the change point in fall conditions in 2011 may be related to the cumulative warming that marked the extreme warming in 2012. 
+There does not appear to be any trend associated with spring surface temperature conditions (Figure \@ref(fig:surf_temp_spring_plt)), however, fall temperature have increased over time (Figure \@ref(fig:bot_temp_spring_plt)). Furthermore, the change point in fall conditions in 2011 may be related to the cumulative warming that marked the extreme warming in 2012. 
 
 ```{r surf_temp_process}
 spring_surface_temp <- 
@@ -526,11 +526,11 @@ fall_surface_temp_plt
 
 # Salinity
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methods)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the Atlantic menhaden stock areas are shown below.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the Atlantic menhaden stock areas are shown below.
 
 ## Bottom Salinity {-#bottom-salinity}
 
-There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000. This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series. The first around 1999 and a second change around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mills2013].
+There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000 (Figure \@ref(fig:bot_sal_spring_plt)). This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series (Figure \@ref(fig:bot_sal_fal_plt)). The first around 1999 and a second change around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mills2013].
 
 
 ```{r bot_sal_process}
@@ -677,7 +677,7 @@ fall_bottom_sal_plt
 
 ## Surface Salinity {-#surface-salinity}
 
-The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013. The fall surface salinity time series was without trend or any change points. These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
+The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013 (Figure \@ref(fig:surf_sal_spring_plt)). The fall surface salinity time series was without trend or any change points (Figure \@ref(fig:surf_sal_fall_plt)). These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
 
 ```{r surf_sal_process}
 spring_surface_sal <- 
@@ -817,9 +817,7 @@ fall_surface_sal_plt
 
 # Chlorophyll
 
-## Stock area {-#stock-area}
-
-The concentration of chlorophyll is an indicator of lower trophic level productivity and may be of particular importance to menhaden considering both juvenile and adults directly utilize phytoplankton as a food resource. Chlorophyll concentration was extracted for the spring and fall stock areas using a merged sensor data set. The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data were a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm @maritorena2010 obtained from the Hermes GlobColour [website](hermes.acri.fr/index.php). There is no apparent trend in spring chlorophyll concentration; however, there is a significant trend in fall chlorophyll associated with a regime change in levels in 2013. In recent years, fall chlorophyll has been at the lowest levels in this time series.
+The concentration of chlorophyll is an indicator of lower trophic level productivity and may be of particular importance to menhaden considering both juvenile and adults directly utilize phytoplankton as a food resource. Chlorophyll concentration was extracted for the spring and fall stock areas using a merged sensor data set (see [methods](#methodschl). The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data were a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm @maritorena2010 obtained from the Hermes GlobColour [website](hermes.acri.fr/index.php). There is no apparent trend in spring chlorophyll concentration (Figure \@ref(fig:chl_spring_plt)); however, there is a significant trend in fall chlorophyll associated with a regime change in levels in 2013 (Figure \@ref(fig:surf_sal_spring_plt)). In recent years, fall chlorophyll has been at the lowest levels in this time series.
 
 
 ```{r chl_processing}
@@ -915,7 +913,7 @@ if (fall_min > spring_min) {
 }
 ```
 
-```{r spring_chl_plt, fig.height=3}
+```{r chl_spring_plt, fig.height=3}
 spring_chl_plt <- 
   tab_plotly(spring_chl, series.name = "CHL") %>% 
   layout(title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
@@ -927,7 +925,7 @@ spring_chl_plt <-
 spring_chl_plt 
 ```
 
-```{r fall_chl_plt, fig.height=3}
+```{r chl_fal_plt, fig.height=3}
 fall_chl_plt <- 
   tab_plotly(fall_chl, series.name = "CHL") %>% 
   layout(title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
@@ -942,9 +940,9 @@ fall_chl_plt
 
 ## Chesapeake Bay recruitment index {-#chesapeake-bay-recruitment-index}
 
-Recruitment is a complex process in marine fishes and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf, the successful egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variably in @houde2016, which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass
+Recruitment is a complex process in marine fishes and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf, the successful egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variably in @houde2016, which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass.
 
-A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentration for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from the merged dataset described above.
+A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentration for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from the merged dataset described above (Figure \@ref(fig:ches_bay_rec)).
 
 ```{r ches_bay_rec}
 ches_bay_rec_plt <- ches_bay_rec %>%
@@ -953,6 +951,7 @@ ches_bay_rec_plt <- ches_bay_rec %>%
         layout(title = "Chesapeake Bay CHL",
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
                       hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 ches_bay_rec_plt
@@ -1019,6 +1018,7 @@ spring_cope_plt <-
   layout(title = "Spring copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -1108,6 +1108,7 @@ fall_cope_plt <-
   layout(title = "Fall copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
                       hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -1496,7 +1497,7 @@ The fall population estimates are dissimilar to the spring estimates in terms of
 
 # Methods {#methods}
 
-## Surface and Bottom Temperature and Salinity {#sec:methodstempsalin}
+## Surface and Bottom Temperature and Salinity {#methodstempsalin}
 
 ### Study System
 The U.S. Northeast Shelf ecosystem, which roughly aligns with the boundaries of the Northeast U.S. Continental Shelf Large Marine Ecosystem (LME), is the study area for the surface and bottom thermal environments. Surface and bottom temperatures were estimated over a 0.1° latitude/longitude grid, termed the estimation grid, which circumscribes the range of ecosystem assessment areas in the [region](#fig:study-area). The difference between the extents of the estimation grid from the extent of the LME relate to the resource management programs that are the sources of the data, which are focused on fishery management needs in the region. 
