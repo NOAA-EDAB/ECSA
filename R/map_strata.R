@@ -31,6 +31,7 @@
 #' 
 map_strata <- function(stock_name, common_name, stock_season, strata,
                        overwrite = FALSE, save_plot, get_sf = F) {
+
   
   `%>%` <- magrittr::`%>%`
   
@@ -61,9 +62,13 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
                                         returnclass = "sf") %>% 
     sf::st_transform(crs = crs)
   
+<<<<<<< HEAD
   
   strata_spring <- strata %>% dplyr::filter(stock_season == "spring") %>% dplyr::pull(strata)
   strata_fall <- strata %>% dplyr::filter(stock_season == "fall") %>% dplyr::pull(strata)
+=======
+  ## 
+>>>>>>> master
   
   if (any(stock_season == "both")){
     strata_both <- strata %>%
@@ -76,6 +81,7 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
 
   strata_int <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
                              quiet = TRUE) %>% 
+<<<<<<< HEAD
     dplyr::mutate(both = dplyr::case_when(STRATA %in% strata_both ~ "spring and fall", TRUE ~ NA_character_),
                   spring = dplyr::case_when(STRATA %in% strata_spring ~ "spring", TRUE ~ NA_character_),
                   fall = dplyr::case_when(STRATA %in% strata_fall ~ "fall" ,TRUE ~ NA_character_),
@@ -90,6 +96,15 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
   strata_grid <- strata_int %>% 
     dplyr::select(-SEASON) %>% 
     dplyr::filter_at(vars(both, fall, spring), any_vars(!is.na(.)))
+=======
+    dplyr::mutate(SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
+                                            STRATA %in% strata_spring ~ "spring",
+                                            STRATA %in% strata_fall ~ "fall",
+                                            TRUE ~ NA_character_)) %>% 
+    filter(!is.na(SEASON)) %>% 
+    dplyr::mutate(SEASON = tolower(SEASON),
+                  SEASON = factor(SEASON, levels = c("spring", "fall", "spring and fall")))
+>>>>>>> master
   
   if (!get_sf){
   #For plotting
@@ -103,12 +118,17 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
     viridis::scale_fill_viridis(discrete = TRUE) +
     ggplot2::coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
     ggthemes::theme_map() +
+<<<<<<< HEAD
     ggplot2::labs(title = sprintf("%s", common_name),
+=======
+    ggplot2::labs(title = sprintf("%s strata", common_name),
+>>>>>>> master
                   fill = "Season") +
     ggplot2::theme(legend.position = "bottom",
                    legend.key.width = ggplot2::unit(2, "cm"))
   
   if(save_plot) {
+<<<<<<< HEAD
     ggplot2::ggsave(p1, sprintf("%s_strata-map.png", stock_name), type = "cairo")
   }
     return(p1)
@@ -116,4 +136,9 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
     return(strata_grid)
   }
   
+=======
+    ggplot2::ggsave(p1, sprintf("%s_strata-map.png", common_name), type = "cairo")
+  }
+  return(p1)
+>>>>>>> master
 } 
