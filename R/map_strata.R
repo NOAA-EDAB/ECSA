@@ -7,7 +7,8 @@
 #' @param save_plot 
 #'
 #' @return a ggplot2 object
-#' @export
+#' 
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #' spring_strata <- c(1010L, 1020L, 1030L, 1040L, 1050L, 1060L, 1070L, 1080L, 1090L, 
@@ -28,7 +29,11 @@
 #' map_strata(common_name = "summer flounder", spring_strata = spring_strata,
 #' fall_strata = fall_strata, overwrite = FALSE, save_plot = FALSE)
 #' 
-map_strata <- function(common_name, spring_strata, fall_strata, overwrite = FALSE, save_plot) {
+map_strata <- function(stock_name, common_name, stock_season, strata,
+                       overwrite = FALSE, save_plot, get_sf = F) {
+
+  
+  `%>%` <- magrittr::`%>%`
   
   ## General mapping parameters
   xmin = -77
@@ -41,11 +46,11 @@ map_strata <- function(common_name, spring_strata, fall_strata, overwrite = FALS
   crs <-  "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
   
   ## Download data layers
-  
+ 
   ## 1) Strata  
   # source("R/get_strata.R")
   get_strata(overwrite = overwrite)
-  
+
   ## 2) North America layer
   ne_countries <- rnaturalearth::ne_countries(scale = 10,
                                               continent = "North America",
@@ -57,10 +62,41 @@ map_strata <- function(common_name, spring_strata, fall_strata, overwrite = FALS
                                         returnclass = "sf") %>% 
     sf::st_transform(crs = crs)
   
-  ## 
+<<<<<<< HEAD
   
-  strata_grid <- sf::st_read("data/strata_shapefiles/BTS_Strata.shp",
+  strata_spring <- strata %>% dplyr::filter(stock_season == "spring") %>% dplyr::pull(strata)
+  strata_fall <- strata %>% dplyr::filter(stock_season == "fall") %>% dplyr::pull(strata)
+=======
+  ## 
+>>>>>>> master
+  
+  if (any(stock_season == "both")){
+    strata_both <- strata %>%
+      dplyr::filter(stock_season == "both") %>%
+      dplyr::mutate(stock_season = "spring and fall") %>% 
+      dplyr::pull(strata)
+  } else {
+    strata_both <- base::intersect(strata_spring, strata_fall)
+  }
+
+  strata_int <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
                              quiet = TRUE) %>% 
+<<<<<<< HEAD
+    dplyr::mutate(both = dplyr::case_when(STRATA %in% strata_both ~ "spring and fall", TRUE ~ NA_character_),
+                  spring = dplyr::case_when(STRATA %in% strata_spring ~ "spring", TRUE ~ NA_character_),
+                  fall = dplyr::case_when(STRATA %in% strata_fall ~ "fall" ,TRUE ~ NA_character_),
+                  SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
+                                            STRATA %in% strata_both ~ "spring and fall",
+                                            STRATA %in% strata_spring ~ "spring",
+                                            STRATA %in% strata_fall ~ "fall",
+                                            TRUE ~ NA_character_)) %>% 
+    dplyr::select(SEASON, both, fall, spring, geometry)
+  
+  #For export
+  strata_grid <- strata_int %>% 
+    dplyr::select(-SEASON) %>% 
+    dplyr::filter_at(vars(both, fall, spring), any_vars(!is.na(.)))
+=======
     dplyr::mutate(SEASON = dplyr::case_when(STRATA %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
                                             STRATA %in% strata_spring ~ "spring",
                                             STRATA %in% strata_fall ~ "fall",
@@ -68,22 +104,41 @@ map_strata <- function(common_name, spring_strata, fall_strata, overwrite = FALS
     filter(!is.na(SEASON)) %>% 
     dplyr::mutate(SEASON = tolower(SEASON),
                   SEASON = factor(SEASON, levels = c("spring", "fall", "spring and fall")))
+>>>>>>> master
   
+  if (!get_sf){
+  #For plotting
+  strata_plot <- strata_int %>% 
+    dplyr::select(SEASON, geometry) 
   
   p1 <- ggplot2::ggplot() +
-    ggplot2::geom_sf(data = strata_grid, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +
+    ggplot2::geom_sf(data = strata_plot, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +
     ggplot2::geom_sf(data = ne_countries, color = "grey60", size = 0.25) +
     ggplot2::geom_sf(data = ne_states, color = "grey60", size = 0.05) +
     viridis::scale_fill_viridis(discrete = TRUE) +
     ggplot2::coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
     ggthemes::theme_map() +
+<<<<<<< HEAD
+    ggplot2::labs(title = sprintf("%s", common_name),
+=======
     ggplot2::labs(title = sprintf("%s strata", common_name),
+>>>>>>> master
                   fill = "Season") +
     ggplot2::theme(legend.position = "bottom",
                    legend.key.width = ggplot2::unit(2, "cm"))
   
   if(save_plot) {
+<<<<<<< HEAD
+    ggplot2::ggsave(p1, sprintf("%s_strata-map.png", stock_name), type = "cairo")
+  }
+    return(p1)
+  } else {
+    return(strata_grid)
+  }
+  
+=======
     ggplot2::ggsave(p1, sprintf("%s_strata-map.png", common_name), type = "cairo")
   }
   return(p1)
+>>>>>>> master
 } 

@@ -6,3 +6,5 @@
 *.pdf
 *.docx
 !template.html
+
+other

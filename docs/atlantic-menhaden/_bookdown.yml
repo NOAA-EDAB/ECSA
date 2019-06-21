@@ -1,0 +1,4 @@
+rmd_files: ["ECSA_atlantic-menhaden.rmd"]
+delete_merged_file: false
+output_dir: /Users/seanhardison/Documents/git/ECSA/docs
+book_filename: "ECSA_atlantic-menhaden_working_draft"
