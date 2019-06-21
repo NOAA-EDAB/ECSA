@@ -4,7 +4,7 @@ title:
     | Ecosystem Context for Stock Assessments:
     | Atlantic menhaden
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: "Ecosystem Dynamics and Assessment Branch"
+author: ""
 always_allow_html: yes
 bibliography: ["atlantic-menhaden_bib.bib","`r here::here('ECSA_bibliography.bib')`"]
 link-citations: true
@@ -129,12 +129,15 @@ This report provides contextual ecosystem information for Atlantic menhaden (*Br
 
 ### Summary {-#summary}
 
-Substantial changes have occurred the coast environment supporting the menhaden population. Thermal condition have changed in both spring and fall season, with great rate of change in fall temperatures. Further physical change in the environment can be seen in shift in salinity during the spring. There has also been change in lower trophic level productivity with a significant decline in fall chlorophyll concentration. Zooplankton taxa utilized by menhaden show varying patterns of time series change, with some of the principal taxa increase and other in decline. Zooplankton biomass has not declined during the spring, which would suggest the food resources for menhaden larvae has remained abundant. However, fall zooplankton biomass has decline over the most recent decade and may be a factor for adult feeding. Abundance estimates based on a habitat model suggest the stock continues to be a high level and that regional abundances patterns may have changed.  
+Substantial changes have occurred in the coastal environment supporting the menhaden population. Thermal conditions have changed in both spring and fall seasons, with high rates of change in fall temperatures. Further physical change in the environment can be seen in a shift in salinity during the spring.
 
+There have also been changes in lower trophic level productivity with a significant decline in fall chlorophyll concentration. Zooplankton taxa utilized by menhaden show varying patterns of time series changes, with some of the principal taxa increasing and others in decline. Zooplankton biomass has not declined during the spring, which would suggest the food resources for menhaden larvae have remained abundant. However, fall zooplankton biomass has declined over the most recent decade and may be a factor for adult feeding.
+
+Abundance estimates based on a habitat model suggest the stock is presently at a high level although regional abundance patterns may have changed. During spring, it appears more of the population is in the northern end of the stock than in earlier years. 
 
 ### Stock area {-#stock-area}
 
-The putative seasonal stock areas for menhaden are based on sets of survey strata from the Northeast Fisheries Science Center bottom trawl survey. The spring stock area is shown as the green filled strata in the map. The fall stock area includes the spring strata and in addition includes strata in the Gulf of Maine filled in blue. These two area are further divided into northern and southern subareas; the strata for the areas are outline in red and blue, respectively.
+The putative seasonal stock areas for menhaden are based on sets of survey strata from the Northeast Fisheries Science Center bottom trawl survey. The spring stock area is shown as the green filled strata in the map. The fall stock area includes the spring strata as well as strata in the Gulf of Maine filled in blue. These two areas are further divided into northern and southern subareas; the strata for the areas are outlined in orange and blue, respectively.
 
 ```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for Atlantic menhaden (*Brevoortia tyrannus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 # all_strata <- map_strata(stock_name = stock_name,
@@ -214,6 +217,11 @@ ggplot2::ggplot() +
 ```
 
 
+#### A note on figures {-#a-note-on-figures}
+
+Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by green and light blue lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
+
+
 _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 
 # Temperature
@@ -222,7 +230,9 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 
 ## Bottom Temperature {-#bottom-temperature}
 
-Thermal conditions on the Northeast Shelf have changed in recent decades and these changes are reflected in change in bottom water temperatures in the stock areas. In both spring (Figure \@ref(fig:bot_temp_spring_plt)) and fall \@ref(fig:bot_temp_fall_plt), bottom water temperature have significantly increased, with the suggestion of abrupt changes in temperature early in the time series. The rate of increase has been twice as high in the fall. This index reflect conditions of the inner shelf, so it reflects thermal conditions at relatively shallow depths and would likely have relevance to menhaden.
+Thermal conditions on the Northeast Shelf have changed in recent decades as reflected in changes in bottom water temperatures in the stock areas. In both spring and fall, bottom water temperatures have significantly increased, with the suggestion of abrupt changes in temperature early in the time series. The rate of increase has been twice as high in the fall. This index reflects conditions of the inner shelf, representing thermal conditions at relatively shallow depths and would likely have relevance to menhaden.
+
+
 
 ```{r bot_temp_process}
 spring_bottom_temp <- 
@@ -350,6 +360,7 @@ spring_bottom_temp_plt <-
 spring_bottom_temp_plt
 ```
 
+
 ```{r bot_temp_fall_plt, fig.height=3}
 fall_bottom_temp_plt <- 
   tab_plotly(fall_bottom_temp, series.name = "Temperature") %>% 
@@ -373,7 +384,7 @@ fall_bottom_temp_plt
 
 ## Surface Temperature {-#surface-temperature}
 
-There does not appear to be any trend associated with spring surface temperature conditions (Figure \@ref(fig:surf_temp_spring_plt)), however, fall temperature have increased over time (Figure \@ref(fig:bot_temp_spring_plt)). Furthermore, the change point in fall conditions in 2011 may be related to the cumulative warming that marked the extreme warming in 2012. 
+There does not appear to be any trend associated with spring surface temperature conditions, however, fall temperature have increased over time. Furthermore, the change point in fall conditions in 2011 may be related to the cumulative warming that marked the extreme warming in 2012. 
 
 ```{r surf_temp_process}
 spring_surface_temp <- 
@@ -483,6 +494,7 @@ if (fall_min > spring_min) {
 }
 ```
 
+
 ```{r surf_temp_spring_plt, fig.height=3}
 
 spring_surface_temp_plt <- 
@@ -501,6 +513,7 @@ spring_surface_temp_plt <-
 
 spring_surface_temp_plt
 ```
+
 
 ```{r surf_temp_fall_plt, fig.height=3}
 
@@ -528,9 +541,11 @@ fall_surface_temp_plt
 
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the Atlantic menhaden stock areas are shown below.
 
+
 ## Bottom Salinity {-#bottom-salinity}
 
-There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000 (Figure \@ref(fig:bot_sal_spring_plt)). This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series (Figure \@ref(fig:bot_sal_fal_plt)). The first around 1999 and a second change around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mills2013].
+There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000. This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series. The first change was around 1999 and the second around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mills2013].
+
 
 
 ```{r bot_sal_process}
@@ -677,7 +692,7 @@ fall_bottom_sal_plt
 
 ## Surface Salinity {-#surface-salinity}
 
-The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013 (Figure \@ref(fig:surf_sal_spring_plt)). The fall surface salinity time series was without trend or any change points (Figure \@ref(fig:surf_sal_fall_plt)). These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
+The spring surface salinity, like the bottom conditions, also show a long-term increasing trend and a change point in 2013. The fall surface salinity time series was without trend or any change points. These changes in salinity conditions are likely indicators of changes in source water on the shelf and may have ramifications for patterns of primary production.
 
 ```{r surf_sal_process}
 spring_surface_sal <- 
@@ -817,7 +832,9 @@ fall_surface_sal_plt
 
 # Chlorophyll
 
-The concentration of chlorophyll is an indicator of lower trophic level productivity and may be of particular importance to menhaden considering both juvenile and adults directly utilize phytoplankton as a food resource. Chlorophyll concentration was extracted for the spring and fall stock areas using a merged sensor data set (see [methods](#methodschl). The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data were a merged product using the Garver, Siegel, Maritorena Model (GSM) algorithm @maritorena2010 obtained from the Hermes GlobColour [website](hermes.acri.fr/index.php). There is no apparent trend in spring chlorophyll concentration (Figure \@ref(fig:chl_spring_plt)); however, there is a significant trend in fall chlorophyll associated with a regime change in levels in 2013 (Figure \@ref(fig:surf_sal_spring_plt)). In recent years, fall chlorophyll has been at the lowest levels in this time series.
+## Chlorophyll concentration in the stock area
+
+The concentration of chlorophyll is an indicator of lower trophic level productivity and may be of particular importance to menhaden considering both juvenile and adults directly utilize phytoplankton as a food resource. Chlorophyll concentration was extracted for the spring and fall stock areas using a merged sensor data set. The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data used were a merged product using the Garver, Siegel, and Maritorena (GSM) algorithm @maritorena2010 obtained from the Hermes GlobColour [website](hermes.acri.fr/index.php). There is no apparent trend in spring chlorophyll concentration; however, there is a significant trend in fall chlorophyll associated with a regime change to lower levels in 2012. During this new regime, fall chlorophyll has been at the lowest levels in this time series.
 
 
 ```{r chl_processing}
@@ -951,9 +968,9 @@ fall_chl_plt
 
 ## Chesapeake Bay recruitment index {-#chesapeake-bay-recruitment-index}
 
-Recruitment is a complex process in marine fishes and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf, the successful egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variably in @houde2016, which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass.
+Recruitment is a complex process in marine fishes and in the case of menhaden, it has been long recognized that recruitment variability is related to the life history of larval menhaden on the continental shelf, the successful egress into estuarine nursery areas, and the growth and survival of post-metamorphic juveniles in nursery habitats. Particular attention was focused on the later source of variability in @houde2016, which suggested the development of spring bloom conditions may factor into the success of a year class. This study utilized local sources of data to describe the dependency of year class strength on primary production and phytoplankton biomass.
 
-A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentration for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from the merged dataset described above (Figure \@ref(fig:ches_bay_rec)).
+A proxy index for this relationship is developed here based on satellite remote sensing data. Time series of chlorophyll concentrations for the oligohaline, mesohaline, and polyhaline segments of the bay were extracted from the merged dataset described above.
 
 ```{r ches_bay_rec}
 ches_bay_rec_plt <- ches_bay_rec %>%
@@ -969,11 +986,11 @@ ches_bay_rec_plt
 ```
 
 
-Based on the most recent menhaden assessment, the chlorophyll time series overlaps the recruitments series for the years 1998-2016, noting that the two largest year classes during that period appear to have occurred in 2005 and 2010 (based on age-0 numbers). The correlation between April polyhaline chlorophyll concentration and recruitment was 0.43 (P = .066). The polyhaline chlorophyll time series was at its highest value in 2005 and among its highest values in 2010; the 2011 chlorophyll concentration was also among the highest values, but it not associated with a strong recruitment. Time series from other portions the estuary were not correlated with the recruitment signal. Finally, it is worth noting that the 2019 chlorophyll concentration was the third highest in the time series. If the remote sensing series is capturing a part of the recruitment signal, 2019 may be a large year class and the index may provide some forecast skill for recruitment events.
+Based on the most recent menhaden assessment, the chlorophyll time series overlaps the recruitment series for the years 1998-2016. The two largest year classes during that period appear to have occurred in 2005 and 2010 (based on age-0 numbers). The correlation between April polyhaline chlorophyll concentration and recruitment was 0.43 (P = .066). The polyhaline chlorophyll time series was at its highest value in 2005 and among its highest values in 2010; the 2011 chlorophyll concentration was also among the highest values, but it was not associated with a strong recruitment event. Time series from other portions of the estuary were not correlated with the recruitment signal. Finally, it is worth noting that the 2019 chlorophyll concentration was the third highest in the time series. If the remote sensing series is capturing a part of the recruitment signal, 2019 may be a large year class and the index may provide some forecast skill for recruitment events.
 
 # Zooplankton
 
-Menhaden consume zooplankton during all their life history stages, but have a dependency on zooplankton as larval fish and a preference for zooplankton as adults [@friedland2011]. @june1971 characterize larval menhaden feeding in context to metamorphosis, partitioning their sampling between marine and estuarine waters. In marine water, the diet consisted predominantly of copepods and mainly the genera *Centropages* and *Acartia*. In estuarine waters, the copepod genera *Acartia* and *Temora* played larger roles along with other zooplankton species. These samples were collected over two years. @lozano2011 analyzed the feeding of larval menhaden over three seasons and found they utilized copepods, cladocerans, barnacle nauplii, bivalve larvae, ostracods, decapods, polychaetes, tunicate larvae, metatrochophores, and digested material. 
+Menhaden consume zooplankton during all their life history stages, but have a dependency on zooplankton as larval fish and a preference for zooplankton as adults [@friedland2011]. @june1971 characterized larval menhaden feeding in context to metamorphosis, partitioning their sampling between marine and estuarine waters. In marine waters, the diet consisted predominantly of copepods and mainly the genera *Centropages* and *Acartia*. In estuarine waters, the copepod genera *Acartia* and *Temora* played larger roles along with other zooplankton species. These samples were collected over two years. @lozano2011 analyzed the feeding of larval menhaden over three seasons and found they utilized copepods, cladocerans, barnacle nauplii, bivalve larvae, ostracods, decapods, polychaetes, tunicate larvae, metatrochophores, and digested material.   
 
 The most commonly encountered copepod genera were *Centropages*, *Acartia*, *Temora*, *Caligus*, and *Labidocera*. Though identifications were not made to species, it is likely *Centropages typicus*, *Acartia tonsa*, and *Temora longicornis* were the most important prey species. Numerically, the most important prey were copepods, which accounted for approximately 46-70% of the prey, followed by barnacle nauplii and cladocerans, which ranged from 10-30% of the diet. After the metamorphosis from larval particle feeding to filter feeding, the nature of their gill raker feeding apparatus would suggest they would feed on any size zooplankton and not be limited by any minimum size like some herring species [@friedland2006]. So generally, whatever taxa are abundant would likely be a useful prey resource for both larval or adult fish.
 
@@ -1340,7 +1357,7 @@ fall_noncope_plt
 
 ## Occurrence probability {-#occurrence-probability}
 
-The probability of occurrence was estimated using random forest classification models (see [methods](#methods)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. The most dramatic change in occupancy probability occurred in the spring. In the beginning of the time series, occupancy probability was less than 0.08 and has increase to well over 0.1 in recent decades. This suggest greater utilization of the continental shelf by menhaden during the spring period. Fall occupancy has remained relatively constant of the time series range between 0.12-0.13. 
+The probability of occurrence was estimated using random forest classification models (see [methods](#methods)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. The most dramatic change in occupancy probability occurred in the spring. In the beginning of the time series, occupancy probability was less than 0.08 and has increased to well over 0.1 in recent decades. This suggests greater utilization of the continental shelf by menhaden during the spring period. Fall occupancy has remained relatively constant of the time series range between 0.12-0.13.  
 
 ```{r occ_prob, fig.height=4}
 spring_occ_prob <- 
@@ -1379,7 +1396,7 @@ occ_prob_plt
 
 ## Habitat area {-#habitat-area}
 
-The area of the Northeast Shelf with an estimated occurrence probability for menhaden of 0.25 was determined for the stock area and the ecosystem. The area of habitat with the stock area generally ranged from 2,000-4,000 km<sup>2</sup> with a notable peak in habitat associated with 2012 spring conditions. With the exception of 2012, spring habitat appear to have been represent by a larger area during the 1980s. Fall habitat has increase in recent years and was also at high levels in the early 1980s. The fall habitat area for menhaden over the ecosystem is larger than the areas restricted to the stock definition. Fall habitat approached 5,000 km<sup>2</sup> reflecting a greater use of the ecosystem during the warmer part of the year. The spring habitat over the ecosystem were similar to the stock area dimensions.
+The area of the Northeast Shelf with an estimated occurrence probability for menhaden of 0.25 was determined for the stock area and the ecosystem. The area of habitat with the stock area generally ranged from 2,000-4,000 km<sup>2</sup> with a notable peak in habitat associated with 2012 spring conditions. With the exception of 2012, spring habitat appears to have been represented by a larger area during the 1980s. Fall habitat has increased in recent years and was also at high levels in the early 1980s. The fall habitat area for menhaden over the ecosystem is larger than the areas restricted to the stock definition. Fall habitat approached 5,000 km<sup>2</sup> reflecting a greater use of the ecosystem during the warmer part of the year. The spring habitat over the ecosystem were similar to the stock area dimensions.
 
 ### Stock area  {-#stock-area}
 
@@ -1411,11 +1428,12 @@ hab_area_eco
 
 ## Minimum Population Size {-#minimum-population-size}
 
-Estimates of the numbers and biomass minimum population size of menhaden stocks was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see [methods](#methods) for details). The procedure provides eight populations size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
+Estimates of the numbers and biomasses for the minimum population size of menhaden stocks were determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see [methods](#methods) for details). The procedure provides eight population size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. 
 
-Of the eight treatment options, the four that included outlier testing and elimination were found to produce many missing values; hence, the abundance and biomass estimates were based on the four other treatments (NNN, NYN, YNN, and YYN). The spring minimum population size in numbers suggests the stock continues the trend of high abundance that began with the 2005 recruitment. When disaggregated by northern and southern subareas, it appear the southern subunit approximates the unit abundance for most of the time series. 
+Of the eight treatment options, the four that included outlier testing and elimination were found to produce many missing values; hence, the abundance and biomass estimates were based on the four other treatments (NNN, NYN, YNN, and YYN). The spring minimum population size in numbers suggests the stock continues the trend of high abundance that began with the 2005 recruitment. When disaggregated by northern and southern subareas, it appears the southern subunit approximates the unit abundance for most of the time series. 
 
-In recent years, the southern subareas appears to have declined whereas the northern subarea is closer to the unit population size. Similar trends in the relative role of the subareas can be seen the minimum biomass estimates as well; the southern subarea approximates the unit early in the time series and in recent years the northern subarea estimate the unit. Collectively, both the abundance and biomass data suggest a shift in spring population distribution, with more of the population now distribution in the northern subareas. The time series trends in both abundance and biomass appear to be positive, however, the recent biomass peak level are higher than the peak biomass in the 1980. This is not the case when comparing the recent and 1980s peaks in abundance. The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
+In recent years, the southern subareas appear to have declined whereas the northern subarea is closer to the unit population size. Similar trends in the relative role of the subareas can be seen in the minimum biomass estimates as well; the southern subarea approximates the unit early in the time series and in recent years the northern subarea estimates the unit. Collectively, both the abundance and biomass data suggest a shift in spring population distribution, with more of the population now distributed in the northern subareas. The time series trends in both abundance and biomass appear to be positive, however, the recent biomass peak level is higher than the peak biomass in the 1980. This is not the case when comparing the recent and 1980s peaks in abundance. The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximated by the northern subarea estimate in all cases.
+
 
 
 ```{r sae_processing}
@@ -1504,9 +1522,6 @@ fall_sae_plt <- subplot(
   layout( legend=list(y=0.8, yanchor="top" ) )
 fall_sae_plt
 ```
-
-The fall population estimates are dissimilar to the spring estimates in terms of both localized abundance and trends. The fall data suggest an abundance peak in the early 2000s that is not seen in the spring data. Furthermore, a peak in fall biomass does not accompany this peak in abundance. The fall data do not suggest any trend in abundance or biomass in the unit estimate or the in the subareas estimates either. The fall unit estimate is most closely approximate by the northern subarea estimate in all cases.
-
 
 
 # Methods {#methods}
