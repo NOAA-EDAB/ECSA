@@ -257,7 +257,7 @@ if (spring_bottom_temp$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
 
-  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
 
 } else {
     spring_bottom_temp <- spring_bottom_temp$fit %>% 
@@ -309,7 +309,7 @@ if (fall_bottom_temp$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
   
-  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
+  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
 } else {
     fall_bottom_temp <- fall_bottom_temp$fit %>% 
       dplyr::select(Time = time, 
@@ -341,9 +341,9 @@ spring_bottom_temp_plt <-
   layout(title = spring_title,
          # title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_bottom_temp$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 
@@ -357,11 +357,11 @@ fall_bottom_temp_plt <-
     #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
                       hoverformat = '.3f',
-                      mirror = FALSE,
+                      mirror = TRUE,
                       showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_bottom_temp$Time)),
-                      title = "", mirror = FALSE, showline = TRUE,
-                      mirror = FALSE,
+                      title = "", mirror = TRUE, showline = TRUE,
+                      mirror = TRUE,
                       showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
@@ -408,7 +408,7 @@ if (spring_surface_temp$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
 
-  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
   
 } else {
     spring_surface_temp <- spring_surface_temp$fit %>% 
@@ -459,7 +459,7 @@ if (fall_surface_temp$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
   
-  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
+  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
 } else {
     fall_surface_temp <- fall_surface_temp$fit %>% 
       dplyr::select(Time = time, 
@@ -490,9 +490,9 @@ spring_surface_temp_plt <-
   layout(title = spring_title,
          #title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_surface_temp$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 
@@ -510,9 +510,9 @@ fall_surface_temp_plt <-
   layout(title = fall_title,
     #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_surface_temp$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 
@@ -564,7 +564,7 @@ if (spring_bottom_sal$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
   
-  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
   
 } else {
     spring_bottom_sal <- spring_bottom_sal$fit %>% 
@@ -615,7 +615,7 @@ fall_mod <- fall_bottom_sal$model
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
   
-  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
+  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
   
 } else {
     fall_bottom_sal <- fall_bottom_sal$fit %>% 
@@ -650,9 +650,9 @@ spring_bottom_sal_plt <-
   layout(#title = "Spring",
     title = spring_title,
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_bottom_sal$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 spring_bottom_sal_plt
@@ -665,9 +665,9 @@ fall_bottom_sal_plt <-
   layout(title = "Fall",
     #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_bottom_sal$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_bottom_sal_plt
@@ -713,7 +713,7 @@ if (spring_surface_sal$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
   
-  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
 } else {
     spring_surface_sal <- spring_surface_sal$fit %>% 
       dplyr::select(Time = time, 
@@ -762,7 +762,7 @@ if (fall_surface_sal$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
   
-  fall_title <- sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci)
+  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
 } else {
     fall_surface_sal <- fall_surface_sal$fit %>% 
       dplyr::select(Time = time, 
@@ -791,9 +791,9 @@ spring_surface_sal_plt <-
   layout(title = spring_title,
          #title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_surface_sal$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 spring_surface_sal_plt
@@ -805,9 +805,9 @@ fall_surface_sal_plt <-
   layout(title = fall_title,
     #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_surface_sal$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_surface_sal_plt
@@ -851,11 +851,12 @@ if (spring_chl$`selection summary`$pval[1] < 0.05){
   lci <- summ_$Value[2]
   uci <- summ_$Value[3]
 
-  spring_title <- sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci)
+  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
 } else {
     spring_chl <- spring_chl$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+    spring_title <- "Spring"
 }
 
 spring_chl %<>%
@@ -890,10 +891,19 @@ if (fall_chl$`selection summary`$pval[1] < 0.05){
       dplyr::select(Time = time, 
                 Series = series,
                 Trend = fit)
+  
+  summ_ <- gls_summary(mod = fall_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+  
+  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
+  
 } else {
     fall_chl <- fall_chl$fit %>% 
       dplyr::select(Time = time, 
                 Series = series)
+  fall_title <- "Fall"
 }
 
 fall_chl %<>%
@@ -916,11 +926,12 @@ if (fall_min > spring_min) {
 ```{r chl_spring_plt, fig.height=3}
 spring_chl_plt <- 
   tab_plotly(spring_chl, series.name = "CHL") %>% 
-  layout(title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
+  # layout(title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
+  layout(title = spring_title,
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_chl$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 spring_chl_plt 
 ```
@@ -928,11 +939,11 @@ spring_chl_plt
 ```{r chl_fal_plt, fig.height=3}
 fall_chl_plt <- 
   tab_plotly(fall_chl, series.name = "CHL") %>% 
-  layout(title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
+  layout(title = fall_title,
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_chl$Time)),
-                      title = "", mirror = FALSE, showline = TRUE),
+                      title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 fall_chl_plt
@@ -950,8 +961,8 @@ ches_bay_rec_plt <- ches_bay_rec %>%
         tab_plotly(., series.name = "CHL") %>% 
         layout(title = "Chesapeake Bay CHL",
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
-         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
+         xaxis = list(title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
 
 ches_bay_rec_plt
@@ -970,7 +981,7 @@ The most commonly encountered copepod genera were *Centropages*, *Acartia*, *Tem
 
 
 ```{r zoo_cope_spring, fig.height=5}
-spring_zoo_1yr_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
+spring_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
@@ -984,41 +995,41 @@ spring_zoo_1yr_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
   tidyr::spread(full_name, Mean)
 
 
-spring_zoo_5yr_cope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "spring",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "spring") %>% 
-  left_join(.,zoo_lookup, by = "Grouping") %>% 
-  dplyr::filter(copepod == "y") %>% 
-  dplyr::select(-Grouping, -season, -copepod) %>%
-  dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
-  tidyr::spread(full_name, Mean)
+# spring_zoo_5yr_cope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+#                 stock_name = stock_name, 
+#                 common_name = common_name, 
+#                 stock_season = stock_season,
+#                 data_season = "spring",
+#                 measure_name = "zoo",
+#                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
+#   mutate(season = "spring") %>% 
+#   left_join(.,zoo_lookup, by = "Grouping") %>% 
+#   dplyr::filter(copepod == "y") %>% 
+#   dplyr::select(-Grouping, -season, -copepod) %>%
+#   dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
+#   tidyr::spread(full_name, Mean)
 
-spring_cope <- left_join(spring_zoo_1yr_cope,
-                         spring_zoo_5yr_cope,
-                         by = "Time")
+# spring_cope <- left_join(spring_zoo_1yr_cope,
+#                          spring_zoo_5yr_cope,
+#                          by = "Time")
 
 #I'm sorry I wrote this....
 buttons <- create_buttons(spring_cope)
-buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,30))
-buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,28))
-buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,26))
-buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,24))
-buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,22))
-buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,20))
-buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,18))
-buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,16))
+# buttons[[1]]$args[[1]]$visible <- c(F,T,F,rep(F,30))
+# buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,F,rep(F,28))
+# buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,F,rep(F,26))
+# buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,F,rep(F,24))
+# buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,F,rep(F,22))
+# buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,F,rep(F,20))
+# buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,F,rep(F,18))
+# buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,F,rep(F,16))
 
 spring_cope_plt <-
-  tab_plotly(spring_cope, add_smoother = T, showlegend = F) %>% 
+  tab_plotly(spring_cope, add_smoother = F, showlegend = F) %>% 
   layout(title = "Spring copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
-         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
+         xaxis = list(title = "", mirror = TRUE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -1060,7 +1071,7 @@ spring_cope_plt
 
 
 ```{r zoo_cope_fall, fig.height=5}
-fall_zoo_1yr_cope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
+fall_cope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
@@ -1074,41 +1085,41 @@ fall_zoo_1yr_cope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
   tidyr::spread(full_name, Mean)
 
 
-fall_zoo_5yr_cope <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "fall",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "fall") %>% 
-  left_join(.,zoo_lookup, by = "Grouping") %>% 
-  dplyr::filter(copepod == "y") %>% 
-  dplyr::select(-Grouping, -season, -copepod) %>%
-  dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
-  tidyr::spread(full_name, Mean)
+# fall_zoo_5yr_cope <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
+#                 stock_name = stock_name, 
+#                 common_name = common_name, 
+#                 stock_season = stock_season,
+#                 data_season = "fall",
+#                 measure_name = "zoo",
+#                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
+#   mutate(season = "fall") %>% 
+#   left_join(.,zoo_lookup, by = "Grouping") %>% 
+#   dplyr::filter(copepod == "y") %>% 
+#   dplyr::select(-Grouping, -season, -copepod) %>%
+#   dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
+#   tidyr::spread(full_name, Mean)
 
-fall_cope <- left_join(fall_zoo_1yr_cope,
-                         fall_zoo_5yr_cope,
-                         by = "Time")
+# fall_cope <- left_join(fall_zoo_1yr_cope,
+#                          fall_zoo_5yr_cope,
+#                          by = "Time")
 
 #I'm sorry I wrote this....
 buttons <- create_buttons(fall_cope)
-buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,30))
-buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,28))
-buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,26))
-buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,24))
-buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,22))
-buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,20))
-buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,18))
-buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,16))
+# buttons[[1]]$args[[1]]$visible <- c(F,T,F,rep(F,30))
+# buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,F,rep(F,28))
+# buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,F,rep(F,26))
+# buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,F,rep(F,24))
+# buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,F,rep(F,22))
+# buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,F,rep(F,20))
+# buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,F,rep(F,18))
+# buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,F,rep(F,16))
 
 fall_cope_plt <-
-  tab_plotly(fall_cope, add_smoother = T, showlegend = F) %>% 
+  tab_plotly(fall_cope, add_smoother = F, showlegend = F) %>% 
   layout(title = "Fall copepod abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
-         xaxis = list(title = "", mirror = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
+         xaxis = list(title = "", mirror = TRUE, showline = TRUE),
          updatemenus = 
         
         list(
@@ -1151,7 +1162,7 @@ fall_cope_plt
 ## Non-copepod zooplankton abundance {-#non-copepod-zooplankton-abundance}
 
 ```{r zoo_spring_noncope, fig.height=5}
-spring_zoo_1yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
+spring_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
@@ -1164,39 +1175,39 @@ spring_zoo_1yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
-spring_zoo_5yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "spring",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "spring") %>% 
-  left_join(.,zoo_lookup, by = "Grouping") %>% 
-  dplyr::filter(copepod == "n") %>% 
-  dplyr::select(-Grouping, -season, -copepod) %>%  
-  dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
-  tidyr::spread(full_name, Mean)
+# spring_zoo_5yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
+#                 stock_name = stock_name, 
+#                 common_name = common_name, 
+#                 stock_season = stock_season,
+#                 data_season = "spring",
+#                 measure_name = "zoo",
+#                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
+#   mutate(season = "spring") %>% 
+#   left_join(.,zoo_lookup, by = "Grouping") %>% 
+#   dplyr::filter(copepod == "n") %>% 
+#   dplyr::select(-Grouping, -season, -copepod) %>%  
+#   dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
+#   tidyr::spread(full_name, Mean)
 
-spring_noncope <- left_join(spring_zoo_1yr_noncope, spring_zoo_5yr_noncope, by = "Time")
+# spring_noncope <- left_join(spring_zoo_1yr_noncope, spring_zoo_5yr_noncope, by = "Time")
 
 buttons <- create_buttons(spring_noncope)
-buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,36))
-buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,32))
-buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,29))
-buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,27))
-buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,25))
-buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,23))
-buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,21))
-buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,19))
-buttons[[9]]$args[[1]]$visible <- c(F,rep(F,16),T,T,rep(F,17))
-buttons[[10]]$args[[1]]$visible <- c(F,rep(F,18),T,T,rep(F,15))
+# buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,36))
+# buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,32))
+# buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,29))
+# buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,27))
+# buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,25))
+# buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,23))
+# buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,21))
+# buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,19))
+# buttons[[9]]$args[[1]]$visible <- c(F,rep(F,16),T,T,rep(F,17))
+# buttons[[10]]$args[[1]]$visible <- c(F,rep(F,18),T,T,rep(F,15))
 
 spring_noncope_plt <-
-  tab_plotly(spring_noncope, add_smoother = T) %>% 
+  tab_plotly(spring_noncope, add_smoother = F, showlegend = F) %>% 
   layout(title = "Spring non-copepod zoo. abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          showlegend = F,
          updatemenus = 
         
@@ -1238,7 +1249,7 @@ spring_noncope_plt
 ```
 
 ```{r zoo_fall_noncope, fig.height=5}
-fall_zoo_1yr_noncope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
+fall_noncope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
                 stock_name = stock_name, 
                 common_name = common_name, 
                 stock_season = stock_season,
@@ -1251,39 +1262,39 @@ fall_zoo_1yr_noncope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
-fall_zoo_5yr_noncope <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "fall",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "fall") %>% 
-  left_join(.,zoo_lookup, by = "Grouping") %>% 
-  dplyr::filter(copepod == "n") %>% 
-  dplyr::select(-Grouping, -season, -copepod) %>%  
-  dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
-  tidyr::spread(full_name, Mean)
+# fall_zoo_5yr_noncope <- stars_to_series(r <- "zoo_fall_rasters_5yr.rdata",
+#                 stock_name = stock_name, 
+#                 common_name = common_name, 
+#                 stock_season = stock_season,
+#                 data_season = "fall",
+#                 measure_name = "zoo",
+#                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
+#   mutate(season = "fall") %>% 
+#   left_join(.,zoo_lookup, by = "Grouping") %>% 
+#   dplyr::filter(copepod == "n") %>% 
+#   dplyr::select(-Grouping, -season, -copepod) %>%  
+#   dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
+#   tidyr::spread(full_name, Mean)
 
-fall_noncope <- left_join(fall_zoo_1yr_noncope, fall_zoo_5yr_noncope, by = "Time")
+# fall_noncope <- left_join(fall_zoo_1yr_noncope, fall_zoo_5yr_noncope, by = "Time")
 
 buttons <- create_buttons(fall_noncope)
-buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,36))
-buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,32))
-buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,29))
-buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,27))
-buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,25))
-buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,23))
-buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,21))
-buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,19))
-buttons[[9]]$args[[1]]$visible <- c(F,rep(F,16),T,T,rep(F,17))
-buttons[[10]]$args[[1]]$visible <- c(F,rep(F,18),T,T,rep(F,15))
+# buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,36))
+# buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,32))
+# buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,29))
+# buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,27))
+# buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,25))
+# buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,23))
+# buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,21))
+# buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,19))
+# buttons[[9]]$args[[1]]$visible <- c(F,rep(F,16),T,T,rep(F,17))
+# buttons[[10]]$args[[1]]$visible <- c(F,rep(F,18),T,T,rep(F,15))
 
 fall_noncope_plt <-
-  tab_plotly(fall_noncope, add_smoother = T) %>% 
+  tab_plotly(fall_noncope, add_smoother = F, showlegend = F) %>% 
   layout(title = "Fall non-copepod zoo. abundance",
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE),
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          showlegend = F,
          updatemenus = 
         
@@ -1360,7 +1371,8 @@ occ_prob_plt <- occ_prob %>%
   tab_plotly(.) %>% 
   layout(title = "Occupancy Probability", 
          yaxis = list(title = "Occupancy probability",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE))
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
+         xaxis = list(mirror = TRUE, showline = TRUE))
 
 occ_prob_plt
 ```
@@ -1377,7 +1389,8 @@ hab_area_sa <- hab_area %>%
   tab_plotly(.) %>% 
   layout(title = "Stock habitat area", 
          yaxis = list(title = "Habitat area (km <sup>2</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE))
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
+         xaxis = list(mirror = TRUE, showline = TRUE))
 hab_area_sa
 ```
 
@@ -1389,7 +1402,8 @@ hab_area_eco <- hab_area %>%
   tab_plotly(.) %>% 
   layout(title = "Ecosystem habitat area", 
          yaxis = list(title = "Habitat area (km <sup>2</sup>)",
-                      hoverformat = '.3f', mirrow = FALSE, showline = TRUE))
+                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
+         xaxis = list(mirror = TRUE, showline = TRUE))
 hab_area_eco
 ```
 
