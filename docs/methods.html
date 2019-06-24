@@ -105,7 +105,7 @@ Atlantic menhaden</div>">
 <li class="chapter" data-level="7.1.1" data-path="methods.html"><a href="methods.html#study-system"><i class="fa fa-check"></i><b>7.1.1</b> Study System</a></li>
 <li class="chapter" data-level="7.1.2" data-path="methods.html"><a href="methods.html#data-source"><i class="fa fa-check"></i><b>7.1.2</b> Data Source</a></li>
 <li class="chapter" data-level="7.1.3" data-path="methods.html"><a href="methods.html#interpolation-procedure"><i class="fa fa-check"></i><b>7.1.3</b> Interpolation Procedure</a></li>
-<li class="chapter" data-level="7.1.4" data-path="methods.html"><a href="methods.html#fig:study-area"><i class="fa fa-check"></i><b>7.1.4</b> </a></li>
+<li><a href="methods.html#fig:study-area"></a></li>
 </ul></li>
 <li class="chapter" data-level="7.2" data-path="methods.html"><a href="methods.html#methodschl"><i class="fa fa-check"></i><b>7.2</b> Chlorophyll data</a></li>
 <li class="chapter" data-level="7.3" data-path="methods.html"><a href="methods.html#methodszoo"><i class="fa fa-check"></i><b>7.3</b> Zooplankton abundance</a><ul>
@@ -171,10 +171,10 @@ Atlantic menhaden</div></a>
 <p>The annual estimate of temperature for a depth and season was imputed by used universal kriging to estimate the temperature over the estimation grid with depth as a covariate. The kriging yielded temperature estimates and a variance estimate over the same grid. The optimal interpolation field was assembled by combining the annual estimate and information from the anomaly climatology. The climatology was re-leveled from anomaly values to temperatures by adding back the appropriate annual mean. For each location in the estimation grid, temperature was calculated as a weighted mean between the kriged annual estimate and the releveled climatology. The weightings in the calculations were partitioned based on the variance field of the annual kriging. The field was divided into quartiles from low to high variance with the weighting ratio of annual:climatology temperatures of 4:1, 3:1, 2:1, and 1:1, respectively. Hence, in areas of low variance the weighted mean was based on a weighting of 4:1, which would reflect a higher contribution of information from the annual estimate and thus be closer to an observation. In areas with high variance, the weighting ratio of 1:1 would reflect a greater effect of the climatology in determining the interpolation estimate.</p>
 <p>The optimal interpolation temperature fields were evaluated using cross validation and a comparison to external data. The performance of optimal interpolation was compared to the predictive skill of using either the climatology or annual interpolation alone by doing ten random cross validations of each treatment. Each random draw of training and test sets sampled 3% of the data for the test set, or about 500 observations per draw. The temperature fields were fit with the training data and compared with the test set data. The lowest error rates were realized with the optimal interpolation contrasted with highest predictive error associated with fields based on the climatology alone (see Appendix, <a href="methods.html#fig:cross_val">Figure A2</a>). The spatial distribution of error had distinct depth and seasonal patterns. The spatial errors associated with the surface estimates were generally low with the exception of a few locations along the shelf break between latitudes 39-41°N; the spatial error in the bottom temperature varied by season, and was concentrated along the shelf break in spring and across the shelf between latitudes 36-40°N in fall (see Appendix, <a href="methods.html#fig:oi_mae">Figure A3</a>). The optimal interpolation data were also compared to external data from other collection programs. The absolute errors between surface temperature data collected by satellites and the interpolation had interquartile ranges of approximately ±0.75°C (see Appendix, <a href="methods.html#fig:oi_compare">Figure A4</a>). The absolute error in a comparison of interpolated bottom temperature to opportunist sampling was approximately ±0.75°C for spring bottom temperature and approximately 0.75-1.0°C in the fall. Salinity was estimated in the same way with the exception of collection correction, which was deemed unnecessary for the salinity data.</p>
 </div>
-<div id="fig:study-area" class="section level3">
-<h3><span class="header-section-number">7.1.4</span> </h3>
+<div id="fig:study-area" class="section level3 unnumbered">
+<h3></h3>
 <div class="figure" style="text-align: center">
-<img src="/Users/seanhardison/Documents/git/ECSA/data/images/ECSA_study_area.jpg" alt="Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line." width="400" />
+<img src="../data/images/ECSA_study_area.jpg" alt="Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line." width="400" />
 <p class="caption">
 (#fig:study area)Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line.
 </p>
@@ -294,7 +294,7 @@ Atlantic menhaden</div></a>
 <div id="fig:occ_grid" class="section level3">
 <h3><span class="header-section-number">7.4.4</span> </h3>
 <div class="figure" style="text-align: center">
-<img src="/Users/seanhardison/Documents/git/ECSA/data/images/ECSA_occ_grid.png" alt="Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude." width="500" />
+<img src="../data/images/ECSA_occ_grid.png" alt="Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude." width="500" />
 <p class="caption">
 (#fig:occ_grid)Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.
 </p>
@@ -406,7 +406,7 @@ Atlantic menhaden</div></a>
 <div id="fig:cross_val" class="section level4">
 <h4><span class="header-section-number">7.6.3.1</span> </h4>
 <div class="figure" style="text-align: center">
-<img src="/Users/seanhardison/Documents/git/ECSA/data/images/ECSA_crossval_temp_oi.png" alt="**Figure A2**: Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates." width="398" />
+<img src="../data/images/ECSA_crossval_temp_oi.png" alt="**Figure A2**: Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates." width="398" />
 <p class="caption">
 (#fig:cross_val)<strong>Figure A2</strong>: Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.
 </p>
@@ -432,7 +432,7 @@ Atlantic menhaden</div></a>
 <div id="fig:oi_compare" class="section level3">
 <h3><span class="header-section-number">7.6.6</span> </h3>
 <div class="figure" style="text-align: center">
-<img src="/Users/seanhardison/Documents/git/ECSA/data/images/ECSA_oi_compare.png" alt="**Figure A4**: Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data." width="500" />
+<img src="../data/images/ECSA_oi_compare.png" alt="**Figure A4**: Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data." width="500" />
 <p class="caption">
 (#fig:oi_compare)<strong>Figure A4</strong>: Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data.
 </p>
