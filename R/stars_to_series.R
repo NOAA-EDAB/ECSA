@@ -1,21 +1,20 @@
-#' What
+#' A function to aggregate \code{stars} objects into derived time series.
 #' 
-#' Describe
 #'
-#' @param r
-#' @param stock_name
-#' @param common_name
-#' @param stock_season
-#' @param measure_name
-#' @param data_season
-#' @param process_to_season
-#' @param group_regex
+#' @param r Filename of an .rdata file containing a RasterStack of ecosystem data to be masked.
+#' @param stock_name Name of stock to be queried from 'data/stock_data/stock_list.csv'. 
+#' @param stock_season Seasonal designation for strata. Can be \code{"fall"}, \code{"spring"}, or \code{"both"}. However, all seasons do not apply to all stocks.
+#' @param common_name Common name of species of interest.
+#' @param measure_name Sets name of grouping variable for summarizing time series.
+#' @param data_season Seasonal designation for the loaded data set \code{r}. 
+#' @param process_to_season Logical. If \code{TRUE} and data layers within \code{r} are listed monthly, then months are aggregated into fall (Sep., Oct., Nov) and spring (Mar., Apr., May) 
+#' seasons before deriving a mean time series.  
+#' @param group_regex A regex to match a grouping variable within the filename \code{r}. This grouping variable is added as a column in the output \code{data.frame}. 
 #'
-#' @return  ???
+#' @return  A \code{data.frame} object.
 #'
 #' @importFrom magrittr "%>%"
-#'
-#'
+
 
 
 stars_to_series <- function(r, 
@@ -27,7 +26,6 @@ stars_to_series <- function(r,
                             process_to_season = NULL,
                             group_regex = NULL){
   
-  `%>%` <- magrittr::`%>%`
   
   if (any(stock_season != "both")){
     if (all(stringr::str_detect(r, "fall") &

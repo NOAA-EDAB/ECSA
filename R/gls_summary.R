@@ -2,23 +2,23 @@
 #'
 #' Uses output object from nlme and customizes summary stats
 #'
-#' @param mod object from nlme fit
+#' @param mod object from nlme fit 
 #'
 #' @return data frame
 #' 
-#' \item{Trend}{Estimate of trend intercept and slope}
-#' \item{Lower 95%CI}{Lower 95% confidence interval for the slope}
-#' \item{Upper 95%CI}{Upper 95% confidence interval for the slope}
-#' \item{P}{Pvalue for significance of the slope}
-#' \item{N}{Number of data points used in fitting trend and assessing significance}
-#' \item{Corr.Struct.}{error correlation structure}
+#' \describe{
+#'   \item{Trend}{Estimate of trend intercept and slope}
+#'   \item{Lower 95%CI}{Lower 95% confidence interval for the slope}
+#'   \item{Upper 95%CI}{Upper 95% confidence interval for the slope}
+#'   \item{P}{P value for significance of the slope}
+#'   \item{N}{Number of data points used in fitting trend and assessing significance}
+#'   \item{Corr.Struct.}{error correlation structure}
+#' }
 #' 
 #' @importFrom magrittr "%<>%"
 #'
 
 gls_summary <- function(mod){
-  
-  `%<>%` <- magrittr::`%<>%`
   
   intercept <- round(coef(mod)[1],3)
   trend <- round(coef(mod)[2],3)

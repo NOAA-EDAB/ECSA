@@ -2,11 +2,11 @@
 #' 
 #' Describe
 #' 
-#' @param mat.in
-#' @param window.L
-#' @param sub.sample.size
-#' @param huber.wt.val
-#' @param alpha.level
+#' @param mat.in A matrix with the time values in column 1 and data vector in column 2. 
+#' @param window.L STARS window length.
+#' @param sub.sample.size Sub-sample size.
+#' @param huber.wt.val Huber weight.
+#' @param alpha.level Alpha level.
 #' 
 #' @return 
 #' 

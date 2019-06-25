@@ -31,9 +31,6 @@
 #' 
 map_strata <- function(stock_name, common_name, stock_season, strata,
                        overwrite = FALSE, save_plot, get_sf = F) {
-
-  
-  `%>%` <- magrittr::`%>%`
   
   ## General mapping parameters
   xmin = -77

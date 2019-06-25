@@ -11,15 +11,16 @@ resample_strat(svspp, season, mask_type)
 
 \item{season}{Season in which trawl survey occurred.}
 
-\item{mask_type}{Specifies raster masking behavior. Can be one of "nes", "gom", "gbk", "sne", or "unit".
-If mask is "unit", then returned time series reflect stock boundaries drawn from depth strata.}
+\item{mask_type}{Specifies masking behavior for specific stock areas. Can be one of "unit", "gbk",
+"gom", "south", "north", "snemab", "gbkgom", "ccgom", or "sne".}
 }
 \value{
-Returns a downsampled raster depicting area of interest.
+Returns a downsampled raster depicting stock area of interest.
 }
 \description{
 This function converts NEFSC Bottom Trawl depth stata in "BTS_strata" shapefiles to a downsampled raster format,
-which is necessary for masking target rasters containing ecosystem data. Primarily an interal function used by \code{stock_env()}
+which is necessary for masking target rasters containing ecosystem data. See the file "seasonal_stock_strata.csv"
+for choosing species and stock areas of interest.
 }
 \examples{
 resample_strat(svspp = 103, mask_type = "unit", season = "spring")

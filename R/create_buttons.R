@@ -1,35 +1,31 @@
-#' Add column names to a plotly figure as buttons by writing them into the correct list structure
-#'
-#'
-#' @param df
+#' Build a nested list of \code{Plotly} layout arguments from a wide-format data.frame. Output can be passed
+#' to a \code{Plotly} function to create buttons on figures.
 #' 
-#' @return 
-
-
-
-
-# This function needs to be passed to plotly::layout as follows:
-# df <- data.frame(var = rep(c("A","B","C","D"), each = 20),
-#                   value = rnorm(80),
-#                   time = rep(c(1:20),4)) %>%
-#   tidyr::spread(var, value)
-# 
-# p <- plot_ly(type = 'scatter', mode = 'lines')
-# plotvars <- names(df)  [2: ncol(df)]
-# for (i in 1:length(plotvars)){
-#   temp <- df %>%
-#     rename(data=one_of(plotvars [i] )) %>%
-#     select(time, data)
-#   
-#   p <- p %>%
-#     add_lines(data=temp, x=~time, y=~data, name=i) 
-# }
-# 
-# buttons <- create_buttons(df)
-# 
-# p %>% 
-#   layout(updatemenus = buttons)
-
+#'
+#' @param df A wide-format \code{data.frame} where the first column is a Time variable.
+#'  
+#' @return A list of \code{Plotly} layout arguments. Each list item reflects a different column variable in \code{df}.
+#' This function needs to be passed to plotly::layout as follows:
+#' df <- data.frame(var = rep(c("A","B","C","D"), each = 20),
+#'                   value = rnorm(80),
+#'                   time = rep(c(1:20),4)) %>%
+#'   tidyr::spread(var, value)
+#' 
+#' p <- plot_ly(type = 'scatter', mode = 'lines')
+#' plotvars <- names(df)  [2: ncol(df)]
+#' for (i in 1:length(plotvars)){
+#'   temp <- df %>%
+#'     rename(data=one_of(plotvars [i] )) %>%
+#'     select(time, data)
+#'   
+#'   p <- p %>%
+#'     add_lines(data=temp, x=~time, y=~data, name=i) 
+#' }
+#' 
+#' buttons <- create_buttons(df)
+#' 
+#' p %>% 
+#'   layout(updatemenus = buttons)
 
 create_buttons <- function(df){
   

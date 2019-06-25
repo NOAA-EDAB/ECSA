@@ -5,7 +5,8 @@
 \title{Compile ECSA Data.}
 \usage{
 stock_env(variable, type = NULL, season, genus = NULL, svspp,
-  mask_type, xlab, interpo = F, ylab, ylim = NULL, plt = F)
+  mask_type, xlab = "", interpo = F, ylab = "", ylim = NULL,
+  plt = F)
 }
 \arguments{
 \item{variable}{Can be "chlorophyll", "temperature", "salinity",

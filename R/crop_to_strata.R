@@ -1,34 +1,16 @@
-#' 
+#'A function to mask ecosystem RasterStacks with stock-specific strata of interest. Outputs \code{RasterStacks} as \code{stars} objects for further aggregation.
 #'
-#'
-#'
-#'
-#'
-
-
-loadRData <- function(fileName){
-  load(fileName)
-  get(ls()[ls() != "fileName"])
-}
-
-#'
-#'
-#'@param r 
-#'@param stock_name
-#'@param stock_season
-#'@param common_name
-#'@param season_
-#'@param mask_type
+#'@param r Filename of an .rdata file containing a RasterStack of ecosystem data to be masked.
+#'@param stock_name Name of stock to be queried from 'data/stock_data/stock_list.csv'. 
+#'@param stock_season Seasonal designation for strata. Can be \code{"fall"}, \code{"spring"}, or \code{"both"}. However, all seasons do not apply to all stocks.
+#'@param common_name Common name of species of interest.
 #'
 #'@return 
-#'
 #'
 #'@importFrom magrittr "%>%"
 #'
 
-crop_to_strata <- function(r, stock_name, stock_season, common_name, season_, mask_type = "unit"){
-  
-  `%>%` <- magrittr::`%>%`
+crop_to_strata <- function(r, stock_name, stock_season, common_name){
   
   s1 <- read.csv(here::here('data','stock_data','stock_list.csv'),
                  stringsAsFactors = F) %>% 

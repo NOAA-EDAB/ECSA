@@ -1,10 +1,9 @@
-#' What
+#' A function to create standard \code{Plotly} figures for ECSA documents.
 #' 
-#' Describe
-#' 
-#' @param df
-#' @param showlegend
-#' @param series.name
+#' @param df A wide-format \code{data.frame}, with a Time variable as the first column.
+#' @param showlegend Logical. If \code{FALSE}, no legend will appear on the figure.
+#' @param series.name Assigns a name to display with the data series of interest.
+#' @param add_smoother Adds lines for columns whose names are appended with the string "smooth".
 #' 
 #' @return 
 #'
@@ -13,7 +12,6 @@
 
 tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F){
   
-  `%>%` <- magrittr::`%>%`
   
   if (showlegend) {
     p <- plotly::plot_ly(type = 'scatter', mode = 'lines', showlegend = T)
@@ -46,7 +44,7 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F)
     } else {
       
       smoothcol <- unlist(stringr::str_extract(plotvars,
-                                               paste0(plotvars[i], " smooth")))
+                                               paste(plotvars[i], "smooth")))
       smoothcol <- smoothcol[!is.na(smoothcol)]
       
       plot_df <- df %>%

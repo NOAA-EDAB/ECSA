@@ -26,9 +26,6 @@ create_template <- function(stock_name,
                             render_book = T,
                             overwrite = F) {
   
-  `%>%` <- magrittr::`%>%`
-  library(readr)
-  
   #setwd(here::here())
   ## Select the stock and format stock area and common name
   clean_names <- readr::read_csv(here::here("data","stock_data/stock_list.csv"),

@@ -4,19 +4,19 @@
 \alias{map_strata}
 \title{Map strata}
 \usage{
-map_strata(common_name, spring_strata, fall_strata, overwrite = FALSE,
-  save_plot)
+map_strata(stock_name, common_name, stock_season, strata,
+  overwrite = FALSE, save_plot, get_sf = F)
 }
 \arguments{
 \item{common_name}{}
 
-\item{spring_strata}{}
-
-\item{fall_strata}{}
-
 \item{overwrite}{}
 
 \item{save_plot}{}
+
+\item{spring_strata}{}
+
+\item{fall_strata}{}
 }
 \value{
 a ggplot2 object
