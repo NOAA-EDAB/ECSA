@@ -45,23 +45,28 @@ plot_sae <- function(data_season, biomass_, svspp_, include_zeros = F, k, fill =
   sae_all$Value_log10 <- round(sae_all$Value_log10, 3)
   sae_smoothed$smoothed_group_mean_log10 <- round(sae_smoothed$smoothed_group_mean_log10,
                                                   3)
+  sae_all$area <- as.factor(sae_all$area)
   
   out <- 
-    sae_all %>% 
+    
     ggplot2::ggplot() +
-    ggplot2::geom_point(ggplot2::aes(x = Time,
-                  y = Value_log10),
-                  alpha = 0.05) +
     ggplot2::geom_line(data = sae_smoothed,
-                  ggplot2::aes(x = Time,
-                  y = smoothed_group_mean_log10,
-                  color = area),
-              size = 1) +
-    ggplot2::guides(color = guide_legend(title = leg.title)) +
+                       ggplot2::aes(x = Time,
+                                    y = smoothed_group_mean_log10,
+                                    color = area)) +
+    ggplot2::geom_point(data = sae_all,
+                        ggplot2::aes(x = Time,
+                                     y = Value_log10,
+                                     color = area),
+                        alpha = 0.25) +
+    
+    ggplot2::guides(color = guide_legend(title = leg.title,
+                                         override.aes = list(shape = NA,
+                                                             linetype = "solid"))) +
     ggplot2::ylab(ylab) +
     theme_bw()
   
-  p <- plotly::ggplotly(out)
+  (p <- plotly::ggplotly(out))
   
   if (!include_legend){
     
