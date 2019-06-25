@@ -90,18 +90,18 @@ create_template <- function(stock_name,
   if(!dir.exists(folder_name)) {
     dir.create(folder_name,recursive = T)
   }
-
-  #Adjust _bookdown.yml accordingly
-  bookyml <- suppressWarnings(
-    readLines(here::here("templates","_bookdown_template.yml"))
-  )
-  # replace .rmd file name
-  bookyml <- stringr::str_replace(bookyml, "\\[.*\\]", sprintf('["ECSA_%s.rmd"]', clean_names$stock_name))
-  #Set output directory for bookdown files
-  bookyml <- stringr::str_replace(bookyml, 'output_dir: .*', sprintf('output_dir: %s', output_dir))
-  #Set filename of final HTML document (by default this is the title of the template)
-  bookyml <- stringr::str_replace(bookyml, 'book_filename: ".*"', 
-                                sprintf('book_filename: "ECSA_%s_working_draft"', clean_names$stock_name))
+# 
+#   #Adjust _bookdown.yml accordingly
+#   bookyml <- suppressWarnings(
+#     readLines(here::here("templates","_bookdown_template.yml"))
+#   )
+#   # replace .rmd file name
+#   bookyml <- stringr::str_replace(bookyml, "\\[.*\\]", sprintf('["ECSA_%s.rmd"]', clean_names$stock_name))
+#   #Set output directory for bookdown files
+#   bookyml <- stringr::str_replace(bookyml, 'output_dir: .*', sprintf('output_dir: %s', output_dir))
+#   #Set filename of final HTML document (by default this is the title of the template)
+#   bookyml <- stringr::str_replace(bookyml, 'book_filename: ".*"', 
+#                                 sprintf('book_filename: "ECSA_%s_working_draft"', clean_names$stock_name))
 
   #Check to make sure existing file is not over-written
   if(file.exists(sprintf("%s/%s",folder_name,file_name)) &  !overwrite){
@@ -117,11 +117,11 @@ create_template <- function(stock_name,
                   sprintf("%s/%s", folder_name, file_name)))
   
   # copy _bookdown.yml to differnt location
-  book_connection <- file(sprintf("%s/_bookdown.yml", folder_name), open = "w")
-  writeLines(bookyml, book_connection)
-  close(book_connection)
-  
-  message(sprintf("\n%s/_bookdown.yml successfully created.", folder_name))
+  # book_connection <- file(sprintf("%s/_bookdown.yml", folder_name), open = "w")
+  # writeLines(bookyml, book_connection)
+  # close(book_connection)
+  # 
+  # message(sprintf("\n%s/_bookdown.yml successfully created.", folder_name))
 
 
   # render the species specific markdown file into book

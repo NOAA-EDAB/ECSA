@@ -2,7 +2,7 @@
 title:
     | 
     | Ecosystem Context for Stock Assessments:
-    | {{STOCK_SUBAREA}}{{COMMON_NAME}}
+    | summer flounder
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: ""
 always_allow_html: yes
@@ -66,11 +66,11 @@ fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"), stringsAsFactor
 zoo_lookup <- read.csv(here::here("data-raw/zooplankton_lookup.csv"), stringsAsFactors = F)
 
 ## Put all mustaches here
-common_name <- "{{COMMON_NAME}}"
-stock_code <- "{{SPECIES_CODE}}"
-stock_name <- "{{STOCK_NAME}}"
-cc_name <- "{{CC_NAME}}"
-stock_subarea <- "{{STOCK_SUBAREA}}"
+common_name <- "summer flounder"
+stock_code <- "103"
+stock_name <- "summer-flounder"
+cc_name <- "summer-flounder"
+stock_subarea <- ""
 # svspp <- "{{SVSPP}}"
 
 
@@ -116,7 +116,7 @@ treatments <- spring_sae %>%
 
 # Introduction
 
-This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+This report provides contextual ecosystem information for summer flounder (*Paralichthys dentatus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the summer flounder stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of summer flounder, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval summer flounder. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 ### Summary {-#summary}
 
@@ -126,7 +126,7 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 
 ### Stock area {-#stock-area}
 
-```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for summer flounder (*Paralichthys dentatus*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_season = stock_season,
@@ -1489,9 +1489,9 @@ __Manunal preprocessing__
 
 __Automation__
 
-1. `create_template.R` is run to create the species specific `.Rmd` document with the following arguments (for additional arguments, refer to `?create_template`). For {{COMMON_NAME}}:
+1. `create_template.R` is run to create the species specific `.Rmd` document with the following arguments (for additional arguments, refer to `?create_template`). For summer flounder:
 ``` {r, cre_tmp, echo=T, eval =F}
-create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here::here("docs"))
+create_template(stock_name = summer-flounder, render_book=TRUE, output_dir = here::here("docs"))
 ```
 2. The species specific `Rmd` file is then rendered. During this step:
 
@@ -1506,7 +1506,7 @@ create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here
 * Occupancy probability:
 
 
-3. This document (the one you are viewing) will then automatically open in a web browser and all associated files can be found in the `docs\{{STOCK_NAME}}` folder in your current working directory.
+3. This document (the one you are viewing) will then automatically open in a web browser and all associated files can be found in the `docs\summer-flounder` folder in your current working directory.
 4. These steps are repeated for additional species.
 
 

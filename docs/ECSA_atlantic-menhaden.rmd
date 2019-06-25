@@ -12,6 +12,7 @@ site: "bookdown::bookdown_site"
 output:
   bookdown::gitbook:
     lib_dir: "book_assets"
+    split_by: "none"
     config:
       toc:
         collapse: yes
@@ -349,7 +350,6 @@ if (fall_min > spring_min) {
 spring_bottom_temp_plt <- 
   tab_plotly(spring_bottom_temp, series.name = "Temperature") %>% 
   layout(title = spring_title,
-         # title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_bottom_temp$Time)),
@@ -365,7 +365,6 @@ spring_bottom_temp_plt
 fall_bottom_temp_plt <- 
   tab_plotly(fall_bottom_temp, series.name = "Temperature") %>% 
   layout(title = fall_title,
-    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
                       hoverformat = '.3f',
                       mirror = TRUE,
@@ -500,16 +499,11 @@ if (fall_min > spring_min) {
 spring_surface_temp_plt <- 
   tab_plotly(spring_surface_temp, series.name = "Temperature") %>% 
   layout(title = spring_title,
-         #title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_surface_temp$Time)),
                       title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
-
-
-
-# print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
 
 spring_surface_temp_plt
 ```
@@ -521,17 +515,11 @@ spring_surface_temp_plt
 fall_surface_temp_plt <- 
   tab_plotly(fall_surface_temp, series.name = "Temperature") %>% 
   layout(title = fall_title,
-    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Temperature (&deg;C)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_surface_temp$Time)),
                       title = "", mirror = TRUE, showline = TRUE),
          showlegend = T, legend = list(orientation = 'h'))
-
-
-
-
-# print(paste0("Trend: ", trend, " Up95%CI: ", uci, " Low95%CI: ",lci))
 
 fall_surface_temp_plt
 ```
@@ -545,7 +533,6 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 ## Bottom Salinity {-#bottom-salinity}
 
 There is a long-term trend in spring bottom salinity in the stock area and the suggestion of an abrupt change in salinity around the year 2000. This change point would correspond to other changes in the ecosystem around that time [@morse2017]. The fall bottom salinity does not appear to have a long-term trend, however, there are two change points present in the time series. The first change was around 1999 and the second around the year 2012, which may be related to the changes in thermal conditions associated with the temperature conditions in 2012 [@mills2013].
-
 
 
 ```{r bot_sal_process}
@@ -659,11 +646,9 @@ if (fall_min > spring_min) {
 
 ```{r bot_sal_spring_plt, fig.height=3}
 
-
 spring_bottom_sal_plt <- 
   tab_plotly(spring_bottom_sal, series.name = "Salinity") %>% 
-  layout(#title = "Spring",
-    title = spring_title,
+  layout(title = spring_title,
          yaxis = list(title = "Salinity (PSU)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_bottom_sal$Time)),
@@ -677,8 +662,7 @@ spring_bottom_sal_plt
 
 fall_bottom_sal_plt <- 
   tab_plotly(fall_bottom_sal, series.name = "Salinity") %>% 
-  layout(title = "Fall",
-    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
+  layout(title = fall_title,
          yaxis = list(title = "Salinity (PSU)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_bottom_sal$Time)),
@@ -804,7 +788,6 @@ if (fall_min > spring_min) {
 spring_surface_sal_plt <- 
   tab_plotly(spring_surface_sal, series.name = "Salinity") %>% 
   layout(title = spring_title,
-         #title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(spring_surface_sal$Time)),
@@ -818,7 +801,6 @@ spring_surface_sal_plt
 fall_surface_sal_plt <- 
   tab_plotly(fall_surface_sal, series.name = "Salinity") %>% 
   layout(title = fall_title,
-    #title = sprintf("Fall\nTrend:%s (%s, %s)", trend, lci, uci),
          yaxis = list(title = "Salinity (PSU)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
          xaxis = list(range = c(plot_min, max(fall_surface_sal$Time)),
@@ -832,7 +814,7 @@ fall_surface_sal_plt
 
 # Chlorophyll
 
-## Chlorophyll concentration in the stock area
+## Chlorophyll concentration in the stock area {-#chlorophyll-concentration-in-the-stock-area}
 
 The concentration of chlorophyll is an indicator of lower trophic level productivity and may be of particular importance to menhaden considering both juvenile and adults directly utilize phytoplankton as a food resource. Chlorophyll concentration was extracted for the spring and fall stock areas using a merged sensor data set. The data set included measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors during the period 1997-2016. The data used were a merged product using the Garver, Siegel, and Maritorena (GSM) algorithm @maritorena2010 obtained from the Hermes GlobColour [website](hermes.acri.fr/index.php). There is no apparent trend in spring chlorophyll concentration; however, there is a significant trend in fall chlorophyll associated with a regime change to lower levels in 2012. During this new regime, fall chlorophyll has been at the lowest levels in this time series.
 
@@ -945,7 +927,6 @@ if (fall_min > spring_min) {
 ```{r chl_spring_plt, fig.height=3}
 spring_chl_plt <- 
   tab_plotly(spring_chl, series.name = "CHL") %>% 
-  # layout(title = sprintf("Spring\nTrend:%s (%s, %s)", trend, lci, uci),
   layout(title = spring_title,
          yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
@@ -954,6 +935,7 @@ spring_chl_plt <-
          showlegend = T, legend = list(orientation = 'h'))
 spring_chl_plt 
 ```
+
 
 ```{r chl_fal_plt, fig.height=3}
 fall_chl_plt <- 
@@ -1439,8 +1421,6 @@ In recent years, the southern subareas appear to have declined whereas the north
 
 
 ```{r sae_processing}
-
-
 # Change parameters of moving average. `fill = "extend"` will do linear interpolation over gaps in moving average. Change length of window with the k parameter
 fill = "extend"
 k <- 2
