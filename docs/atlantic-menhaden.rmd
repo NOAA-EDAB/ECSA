@@ -6,7 +6,7 @@ title:
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: ""
 always_allow_html: yes
-bibliography: ["atlantic-menhaden_bib.bib","`r here::here('ECSA_bibliography.bib')`"]
+bibliography: ["atlantic-menhaden/atlantic-menhaden_bib.bib","`r here::here('ECSA_bibliography.bib')`"]
 link-citations: true
 site: "bookdown::bookdown_site"
 output:
@@ -1176,33 +1176,8 @@ spring_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
-# spring_zoo_5yr_noncope <- stars_to_series(r <- "zoo_spring_rasters_5yr.rdata",
-#                 stock_name = stock_name, 
-#                 common_name = common_name, 
-#                 stock_season = stock_season,
-#                 data_season = "spring",
-#                 measure_name = "zoo",
-#                 group_regex = "[^A-Z_](.*)(?=_)") %>% 
-#   mutate(season = "spring") %>% 
-#   left_join(.,zoo_lookup, by = "Grouping") %>% 
-#   dplyr::filter(copepod == "n") %>% 
-#   dplyr::select(-Grouping, -season, -copepod) %>%  
-#   dplyr::mutate(full_name = paste0(full_name, " smooth")) %>% 
-#   tidyr::spread(full_name, Mean)
-
-# spring_noncope <- left_join(spring_zoo_1yr_noncope, spring_zoo_5yr_noncope, by = "Time")
 
 buttons <- create_buttons(spring_noncope)
-# buttons[[1]]$args[[1]]$visible <- c(F,T,T,rep(F,36))
-# buttons[[2]]$args[[1]]$visible <- c(F,rep(F,2),T,T,rep(F,32))
-# buttons[[3]]$args[[1]]$visible <- c(F,rep(F,4),T,T,rep(F,29))
-# buttons[[4]]$args[[1]]$visible <- c(F,rep(F,6),T,T,rep(F,27))
-# buttons[[5]]$args[[1]]$visible <- c(F,rep(F,8),T,T,rep(F,25))
-# buttons[[6]]$args[[1]]$visible <- c(F,rep(F,10),T,T,rep(F,23))
-# buttons[[7]]$args[[1]]$visible <- c(F,rep(F,12),T,T,rep(F,21))
-# buttons[[8]]$args[[1]]$visible <- c(F,rep(F,14),T,T,rep(F,19))
-# buttons[[9]]$args[[1]]$visible <- c(F,rep(F,16),T,T,rep(F,17))
-# buttons[[10]]$args[[1]]$visible <- c(F,rep(F,18),T,T,rep(F,15))
 
 spring_noncope_plt <-
   tab_plotly(spring_noncope, add_smoother = F, showlegend = F) %>% 
@@ -1527,7 +1502,7 @@ The optimal interpolation temperature fields were evaluated using cross validati
 ### {-#fig:study-area}
   
 ```{r study area, echo = F, fig.align="center", fig.cap = "Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line."}
-knitr::include_graphics('../data/images/ECSA_study_area.jpg')
+knitr::include_graphics('images/ECSA_study_area.jpg')
 ```
 
 ## Chlorophyll data {#methodschl}
@@ -1598,7 +1573,7 @@ Station data included observations made contemporaneously to survey bottom trawl
 ### {#fig:occ_grid}
 
 ```{r occ_grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width=switch(knitr::opts_knit$get("rmarkdown.pandoc.to"), latex = "0.5\\linewidth", html = '500')}
-knitr::include_graphics("../data/images/ECSA_occ_grid.png")
+knitr::include_graphics("images/ECSA_occ_grid.png")
 ```
 
 Surface and bottom water temperature and salinity were used as dynamic variables in the analysis. Temperature and salinity on the NE Shelf was collected using Conductivity/Temperature/Depth (CTD) instruments with the most complete sample coverage associated with spring (February –April) and fall (September-November) time frames. Surface and bottom temperatures were used to develop date of collection corrections using linear regression for each time frame. Temperatures were standardized to a collection date of April 3 for spring collections and October 11 for fall. A date of collection correction was not indicated for salinity data. The observed date-corrected temperature (°C) and uncorrected salinity data (PSU) was used in model fitting. 
@@ -1668,10 +1643,10 @@ The dates of survey data collection varied by year. To date correct temperature 
 
 ```{r doc_correction, fig.align = "center", echo = F, fig.width=6, fig.cap = "**Figure A1**: Spring (a) and fall (b) linear slope coefficients used to date correct surface temperature to standard spring and fall dates; same for spring (c) and fall (d) bottom temperature correction."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
-a <-jpeg::readJPEG(here::here('data/images/ECSA_doc_correction_a.jpg'))
-b <-jpeg::readJPEG(here::here('data/images/ECSA_doc_correction_b.jpg'))
-c <-jpeg::readJPEG(here::here('data/images/ECSA_doc_correction_c.jpg'))
-d <-jpeg::readJPEG(here::here('data/images/ECSA_doc_correction_d.jpg'))
+a <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_a.jpg'))
+b <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_b.jpg'))
+c <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_c.jpg'))
+d <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_d.jpg'))
 plot.new()
 usr<-par("usr")
  
@@ -1690,7 +1665,7 @@ A series of random draws of training and test sets were taken to evaluate the pr
 #### {#fig:cross_val}
 
 ```{r cross_val, fig.align="center", fig.cap = "**Figure A2**: Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F}
-knitr::include_graphics("../data/images/ECSA_crossval_temp_oi.png")
+knitr::include_graphics("images/ECSA_crossval_temp_oi.png")
 ```
 
 <br>
@@ -1700,10 +1675,10 @@ The distribution of errors from the optimal interpolation test sets were evaluat
 ### {#fig:oi_mae}
 ```{r oi_mae, fig.align = "center", echo = F, fig.width=5.75, fig.cap = "**Figure A3**: Mean absolute error by 0.1 degree latitude and longitude intervals for spring (a) and fall (b) surface temperature; same data for spring (c) and fall (d) bottom temperature. Red indicates a positive error where blue indicates negative."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
-a <-jpeg::readJPEG(here::here('data/images/ECSA_oi_error_dist_a.jpg'))
-b <-jpeg::readJPEG(here::here('data/images/ECSA_oi_error_dist_b.jpg'))
-c <-jpeg::readJPEG(here::here('data/images/ECSA_oi_error_dist_c.jpg'))
-d <-jpeg::readJPEG(here::here('data/images/ECSA_oi_error_dist_d.jpg'))
+a <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_a.jpg'))
+b <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_b.jpg'))
+c <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_c.jpg'))
+d <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_d.jpg'))
 plot.new()
 usr<-par("usr")
  
@@ -1723,7 +1698,7 @@ Sea surface temperature estimated in this study were compared to the [OISST data
 ### {#fig:oi_compare}
 
 ```{r oi_compare, fig.align="center", fig.cap = "**Figure A4**: Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data.", echo = F}
-knitr::include_graphics("../data/images/ECSA_oi_compare.png")
+knitr::include_graphics("images/ECSA_oi_compare.png")
 ```
 
 
