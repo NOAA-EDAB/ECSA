@@ -34,8 +34,7 @@ Imports:
     here,
     readr,
     plotly,
-    bookdown,
-    gt
+    bookdown
 License: CC0
 Encoding: UTF-8
 LazyData: true
@@ -43,3 +42,7 @@ Suggests:
     testthat,
     devtools
 RoxygenNote: 6.1.1
+Remotes: 
+  rstudio/gt,
+  thomasp85/patchwork,
+  NOAA-EDAB/ecodata

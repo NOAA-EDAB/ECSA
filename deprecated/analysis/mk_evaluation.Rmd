@@ -1,0 +1,55 @@
+---
+title: "Evaluation of MK Test"
+author: "Charles Perretti"
+date: "8/13/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## A simulation test of the MK test corrected for autocorrelation
+
+The MK test corrected for autocorrelation ostensibly guards against detecting a trend if it is merely driven by autocorrelation. Here I evaluate its performance on time series of length that we are applying it on.
+
+First, generate 1000 autocorrelated random time series of length 40.
+```{r}
+set.seed(123456) # for reproducibility
+
+# Create some autocorrelated error
+T <- 40 # Number of observations
+n_reps <- 1000 # Number of replicates
+ar_err <- matrix(data = NA, nrow = T, ncol = n_reps)
+ar_err[1,] <- 0 # Initial condition
+
+for (t in 2:T) {
+    ar_err[t,] <- 0.9 * ar_err[t-1,] + rnorm(1, n = n_reps)
+}
+```
+
+
+Next, apply the MK Test corrected for autocorrelation.
+```{r}
+# Apply the mk-test corrected for autocorrelation
+mk_out <- apply(ar_err, 2, zyp::zyp.trend.vector)
+```
+
+Plot an example time series, linear trend fit, and p-value from the autocorrealtion corrected MK Test. This should not detect a trend.
+```{r}
+# Plot an example with linear trend line
+Year <- 1:T
+plot(Year, ar_err[, 1], type = "l")
+lines(x= Year, y = predict(lm(formula = ar_err[, 1] ~ Year)), col = "red")
+title(paste("MK p =", round(mk_out["sig", 1], 3)))
+```
+
+Plot a histogram of all of the p-values from the 1000 simulations. This should not be clustered at p<0.05.
+```{r}
+# Histogram of p-values
+hist(mk_out["sig",], breaks = seq(0, 1, 0.05))
+```
+
+
