@@ -27,8 +27,6 @@ write_erddapXML <- function(variable_name,
   #Read xml
   template_xml <- xml2::read_xml(here::here("templates/erddap_xml_template.xml"))
   
-  #Convert to list
-  template_xml_list <- xml2::as_list(template_xml)
   
   #Change datasetID
   xml2::xml_attr(template_xml, "datasetID") <- datasetID
