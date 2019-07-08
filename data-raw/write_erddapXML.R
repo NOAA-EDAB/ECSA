@@ -13,7 +13,8 @@ write_erddapXML <- function(variable_name,
                             infoUrl){
 
 
-  datasetID <- sprintf("fall_bot_sal_%s_%s",
+  datasetID <- sprintf("%s_%s_%s",
+                       variable_name,
                        data_type,
                        version)
   fileNameRegex <- sprintf("%s, %s, %s, %s.nc",
