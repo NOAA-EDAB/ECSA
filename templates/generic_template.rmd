@@ -4,20 +4,10 @@ title:
     | Ecosystem Context for Stock Assessments:
     | {{STOCK_SUBAREA}}{{COMMON_NAME}}
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: ""
 always_allow_html: yes
-bibliography: ["`r here::here('ECSA_bibliography.bib')`"]
-link-citations: true
-site: "bookdown::bookdown_site"
-output:
-  bookdown::gitbook:
-    lib_dir: "book_assets"
-    split_by: "none"
-    config:
-      toc:
-        collapse: yes
-        after: |
-          <li><a href="https://bookdown.org" target="_blank">Published with bookdown</a></li>
+output: 
+        html_document:
+          fig_caption: yes
 
 ---
 
@@ -41,6 +31,7 @@ library(dplyr)
 library(here)
 library(zoo)
 library(gt)
+library(ggiraph)
 
 knitr::opts_chunk$set(echo = F, message = F ,warning = F, fig.align = 'center')
 
@@ -111,6 +102,8 @@ treatments <- spring_sae %>%
   dplyr::filter(svspp == svspp_) %>% 
   pull(treatment) %>% 
   unique()
+
+interactive <- F
 ```
 
 
@@ -120,9 +113,6 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 
 ### Summary {-#summary}
 
-* Add summary point 
-* Add summary point 
-* Add summary point 
 
 ### Stock area {-#stock-area}
 
@@ -261,35 +251,63 @@ if (fall_min > spring_min) {
 ```{r bot_temp_spring_plt, fig.height=3}
 
 spring_bottom_temp_plt <- 
-  tab_plotly(spring_bottom_temp, series.name = "Temperature") %>% 
-  layout(title = spring_title,
-         yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(spring_bottom_temp$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  spring_bottom_temp %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Temperature (°C)") +
+    ggtitle(spring_title)
 
+if (interactive){
+  girafe_options(girafe(code = print(spring_bottom_temp_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_bottom_temp_plt
+}
 
-spring_bottom_temp_plt
 ```
 
 
 ```{r bot_temp_fall_plt, fig.height=3}
 fall_bottom_temp_plt <- 
-  tab_plotly(fall_bottom_temp, series.name = "Temperature") %>% 
-  layout(title = fall_title,
-         yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f',
-                      mirror = TRUE,
-                      showline = TRUE),
-         xaxis = list(range = c(plot_min, max(fall_bottom_temp$Time)),
-                      title = "", mirror = TRUE, showline = TRUE,
-                      mirror = TRUE,
-                      showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  fall_bottom_temp %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Temperature (°C)") +
+    ggtitle(fall_title)
 
+if (interactive){
+  girafe_options(girafe(code = print(fall_bottom_temp_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_bottom_temp_plt
+}
 
-fall_bottom_temp_plt
 ```
 
 
@@ -407,29 +425,62 @@ if (fall_min > spring_min) {
 ```{r surf_temp_spring_plt, fig.height=3}
 
 spring_surface_temp_plt <- 
-  tab_plotly(spring_surface_temp, series.name = "Temperature") %>% 
-  layout(title = spring_title,
-         yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(spring_surface_temp$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  spring_surface_temp %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Temperature (°C)") +
+    ggtitle(spring_title)
 
-spring_surface_temp_plt
+if (interactive){
+  girafe_options(girafe(code = print(spring_surface_temp_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_surface_temp_plt
+}
+
 ```
 
 ```{r surf_temp_fall_plt, fig.height=3}
 
 fall_surface_temp_plt <- 
-  tab_plotly(fall_surface_temp, series.name = "Temperature") %>% 
-  layout(title = fall_title,
-         yaxis = list(title = "Temperature (&deg;C)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(fall_surface_temp$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  fall_surface_temp %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Temperature (°C)") +
+    ggtitle(fall_title)
 
-fall_surface_temp_plt
+if (interactive){
+  girafe_options(girafe(code = print(fall_surface_temp_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_surface_temp_plt
+}
 ```
 
 
@@ -553,30 +604,62 @@ if (fall_min > spring_min) {
 ```{r bot_sal_spring_plt, fig.height=3}
 
 spring_bottom_sal_plt <- 
-  tab_plotly(spring_bottom_sal, series.name = "Salinity") %>% 
-  layout(title = spring_title,
-         yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(spring_bottom_sal$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  spring_bottom_sal %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Salinity (PSU)") +
+    ggtitle(spring_title)
 
-spring_bottom_sal_plt
+if (interactive){
+  girafe_options(girafe(code = print(spring_bottom_sal_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_bottom_sal_plt
+}
 ```
 
 
 ```{r bot_sal_fall_plt, fig.height=3}
 
 fall_bottom_sal_plt <- 
-  tab_plotly(fall_bottom_sal, series.name = "Salinity") %>% 
-  layout(title = fall_title,
-         yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(fall_bottom_sal$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  fall_bottom_sal %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Salinity (PSU)") +
+    ggtitle(fall_title)
 
-fall_bottom_sal_plt
+if (interactive){
+  girafe_options(girafe(code = print(fall_bottom_sal_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_bottom_sal_plt
+}
 ```
 
 
@@ -691,29 +774,61 @@ if (fall_min > spring_min) {
 
 ```{r surf_sal_spring_plt, fig.height=3}
 spring_surface_sal_plt <- 
-  tab_plotly(spring_surface_sal, series.name = "Salinity") %>% 
-  layout(title = spring_title,
-         yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(spring_surface_sal$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  spring_surface_sal %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Salinity (PSU)") +
+    ggtitle(spring_title)
 
-spring_surface_sal_plt
+if (interactive){
+  girafe_options(girafe(code = print(spring_surface_sal_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_surface_sal_plt
+}
 ```
 
 
 ```{r surf_sal_fall_plt, fig.height=3}
 fall_surface_sal_plt <- 
-  tab_plotly(fall_surface_sal, series.name = "Salinity") %>% 
-  layout(title = fall_title,
-         yaxis = list(title = "Salinity (PSU)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(fall_surface_sal$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  fall_surface_sal %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Salinity (PSU)") +
+    ggtitle(fall_title)
 
-fall_surface_sal_plt
+if (interactive){
+  girafe_options(girafe(code = print(fall_surface_sal_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_surface_sal_plt
+}
 ```
 
 # Chlorophyll
@@ -831,28 +946,61 @@ if (fall_min > spring_min) {
 
 ```{r chl_spring_plt, fig.height=3}
 spring_chl_plt <- 
-  tab_plotly(spring_chl, series.name = "CHL") %>% 
-  layout(title = spring_title,
-         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(spring_chl$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
-spring_chl_plt 
+  spring_chl %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab(expression(paste("Chlorophyll (mg ", m^{-3}, ")")))+
+    ggtitle(spring_title)
+
+if (interactive){
+  girafe_options(girafe(code = print(spring_chl_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_chl_plt
+}
 ```
 
 
 ```{r chl_fal_plt, fig.height=3}
 fall_chl_plt <- 
-  tab_plotly(fall_chl, series.name = "CHL") %>% 
-  layout(title = fall_title,
-         yaxis = list(title = "Chlorophyll (mg m<sup>-3</sup>)",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(range = c(plot_min, max(fall_chl$Time)),
-                      title = "", mirror = TRUE, showline = TRUE),
-         showlegend = T, legend = list(orientation = 'h'))
+  fall_chl %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab(expression(paste("Chlorophyll (mg ", m^{-3}, ")")))+
+    ggtitle(fall_title)
 
-fall_chl_plt
+if (interactive){
+  girafe_options(girafe(code = print(fall_chl_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_chl_plt
+}
 ```
 
 
@@ -874,7 +1022,8 @@ spring_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
-buttons <- create_buttons(spring_cope)
+if (interactive){
+  buttons <- create_buttons(spring_cope)
 
 spring_cope_plt <-
   tab_plotly(spring_cope, add_smoother = F, showlegend = F) %>% 
@@ -919,6 +1068,20 @@ spring_cope_plt <-
                     )
 
 spring_cope_plt
+  
+} else {
+  spring_cope %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+    ggplot() +
+    geom_line(aes(x = Time, y = Value, group = Var)) +
+    facet_wrap(Var~., scales = "free_y") +
+    theme_minimal() +
+    ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
+    theme(strip.text = element_text(face = "italic")) +
+    ggtitle("Spring copepod abundance")
+}
+
+
 ```
 
 
@@ -936,7 +1099,8 @@ fall_cope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
-buttons <- create_buttons(fall_cope)
+if (interactive){
+  buttons <- create_buttons(fall_cope)
 
 fall_cope_plt <-
   tab_plotly(fall_cope, add_smoother = F, showlegend = F) %>% 
@@ -981,6 +1145,19 @@ fall_cope_plt <-
                     )
 
 fall_cope_plt
+  
+} else {
+  fall_cope %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+    ggplot() +
+    geom_line(aes(x = Time, y = Value, group = Var)) +
+    facet_wrap(Var~., scales = "free_y") +
+    theme_minimal() +
+    ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
+    theme(strip.text = element_text(face = "italic"))+
+    ggtitle("Fall copepod abundance")
+}
+
 ```
 
 ## Non-copepod zooplankton abundance
@@ -999,6 +1176,7 @@ spring_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
+if (interactive){
 
 buttons <- create_buttons(spring_noncope)
 
@@ -1045,6 +1223,19 @@ spring_noncope_plt <-
                     )
 
 spring_noncope_plt
+
+} else {
+  
+  spring_noncope %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+    ggplot() +
+    geom_line(aes(x = Time, y = Value, group = Var)) +
+    facet_wrap(Var~., scales = "free_y") +
+    theme_minimal() +
+    ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
+    theme(strip.text = element_text(face = "italic"))+
+    ggtitle("Spring non-copepod zoo. abundance")
+}
 ```
 
 ```{r zoo_fall_noncope, fig.height=5}
@@ -1061,6 +1252,7 @@ fall_noncope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
 
+if (interactive){
 
 buttons <- create_buttons(fall_noncope)
 
@@ -1107,6 +1299,19 @@ fall_noncope_plt <-
                     )
 
 fall_noncope_plt
+
+} else {
+  
+  fall_noncope %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+    ggplot() +
+    geom_line(aes(x = Time, y = Value, group = Var)) +
+    facet_wrap(Var~., scales = "free_y") +
+    theme_minimal() +
+    ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
+    theme(strip.text = element_text(face = "italic")) +
+    ggtitle("Fall non-copepod zoo. abundance")
+}
 ```
 
 
@@ -1141,14 +1346,31 @@ occ_prob <- spring_occ_prob %>%
   left_join(.,fall_occ_prob, by  = "Time") %>% 
   dplyr::select(Time, Spring, Fall)
 
-occ_prob_plt <- occ_prob %>% 
-  tab_plotly(.) %>% 
-  layout(title = "Occupancy Probability", 
-         yaxis = list(title = "Occupancy probability",
-                      hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-         xaxis = list(mirror = TRUE, showline = TRUE))
+occ_prob_plt <- 
+  occ_prob %>% 
+    tidyr::gather(Var, Value, -Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Fall" = "#a6cee3",
+                         "Spring" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab("Occupancy probability")+
+    ggtitle("Occupancy probability")
 
-occ_prob_plt
+if (interactive){
+  girafe_options(girafe(code = print(occ_prob_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  occ_prob_plt
+}
 ```
 
 ## Habitat area {-#habitat-area}
@@ -1510,5 +1732,5 @@ create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here
 4. These steps are repeated for additional species.
 
 
-`r if (knitr::is_html_output()) '# References {-}'`
+`r if (interactive) '# References {-}'`
 
