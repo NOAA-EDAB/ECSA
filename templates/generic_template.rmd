@@ -1479,7 +1479,8 @@ spring_sae_processed <- spring_sae %>%
 
 
 ### Spring numbers and biomass {-#spring-numbers-and-biomass}
-
+{{SpringHabitatAreaStart}}
+{{SpringHabitatAreaEnd}}
 
 ```{r spring_sae_plt, fig.height = 6, eval = T}
 if (do_transform){
@@ -1565,7 +1566,8 @@ if (interactive){
 
 
 ### Fall numbers and biomass {-#fall-numbers-and-biomass}
-
+{{FallHabitatAreaStart}}
+{{FallHabitatAreaEnd}}
 
 ```{r fall_sae_plt, fig.height = 6, eval = T}
 if (do_transform){
