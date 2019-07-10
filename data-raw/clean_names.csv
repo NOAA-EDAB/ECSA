@@ -1,0 +1,58 @@
+"common_name","stock_name","stock_subarea","sci_name","cc_name","svspp"
+"Atlantic hagfish","atlantic-hagfish","","Myxine glutinosa","atlantic-hagfish",1
+"smooth dogfish","smooth-dogfish","","Mustelus canis","smooth-dogfish",13
+"spiny dogfish","spiny-dogfish","","Squalus acanthias","spiny-dogfish",15
+"barndoor skate","barndoor-skate","","Dipturus laevis","barndoor-skate",22
+"winter skate","winter-skate","","Leucoraja ocellata","winter-skate",23
+"clearnose skate","clearnose-skate","","Raja eglanteria","clearnose-skate",24
+"rosette skate","rosette-skate","","Leucoraja garmani","rosette-skate",25
+"little skate","little-skate","","Leucoraja erinacea","little-skate",26
+"smooth skate","smooth-skate","","Malacoraja senta","smooth-skate",27
+"thorny skate","thorny-skate","","Amblyraja radiata","thorny-skate",28
+"Atlantic herring","atlantic-herring","","Clupea harengus","atlantic-herring",32
+"alewife","alewife","","Alosa pseudoharengus","alewife",33
+"blueback herring","blueback-herring","","Alosa aestivalis","blueback-herring",34
+"offshore hake","offshore-hake","","Merluccius albidus","offshore-hake",69
+"silver hake","silver-hake_gom-ngb","Gulf of Maine/northern Georges Bank ","Merluccius bilinearis","silver-hake",72
+"silver hake","silver-hake_sgb-ma","southern Georges Bank/mid-Atlantic ","Merluccius bilinearis","silver-hake",72
+"Atlantic cod","atlantic-cod_gb","Georges Bank ","Gadus morhua","atlantic-cod",73
+"Atlantic cod","atlantic-cod_gom","Gulf of Maine ","Gadus morhua","atlantic-cod",73
+"haddock","haddock_gb","Georges Bank ","Melanogrammus aeglefinus","haddock",74
+"haddock","haddock_gom","Gulf of Maine ","Melanogrammus aeglefinus","haddock",74
+"pollock","pollock","","Pollachius virens","pollock",75
+"white hake","white-hake","","Urophycis tenuis","white-hake",76
+"red hake","red-hake_gom-ngb","Gulf of Maine/northern Georges Bank ","Urophycis chuss","red-hake",77
+"red hake","red-hake_sgb-ma","southern Georges Bank/mid-Atlantic ","Urophycis chuss","red-hake",77
+"cusk","cusk","","Brosme brosme","cusk",84
+"Atlantic halibut","atlantic-halibut","","Hippoglossus hippoglossus","atlantic-halibut",101
+"American plaice","american-plaice","","Hippoglossoides platessoides","american-plaice",102
+"summer flounder","summer-flounder","","Paralichthys dentatus","summer-flounder",103
+"yellowtail flounder","yellowtail-flounder_cc","Cape Cod ","Limanda ferruginea","yellowtail-flounder",105
+"yellowtail flounder","yellowtail-flounder_gb","Georges Bank ","Limanda ferruginea","yellowtail-flounder",105
+"yellowtail flounder","yellowtail-flounder_sne-ma","southern New England/mid-Atlantic ","Limanda ferruginea","yellowtail-flounder",105
+"winter flounder","winter-flounder_gb","Georges Bank ","Pseudopleuronectes americanus","winter-flounder",106
+"winter flounder","winter-flounder_gom","Gulf of Maine ","Pseudopleuronectes americanus","winter-flounder",106
+"winter flounder","winter-flounder_sne-ma","southern New England/mid-Atlantic ","Pseudopleuronectes americanus","winter-flounder",106
+"witch flounder","witch-flounder","","Glyptocephalus cynoglossus","witch-flounder",107
+"windowpane flounder","windowpane-flounder_gom-gb","Gulf of Maine/Georges Bank ","Scophthalmus aquosus","windowpane-flounder",108
+"windowpane flounder","windowpane-flounder_sne-ma","southern New England/mid-Atlantic ","Scophthalmus aquosus","windowpane-flounder",108
+"Atlantic mackerel","atlantic-mackerel","","Scomber scombrus","atlantic-mackerel",121
+"butterfish","butterfish","","Peprilus triacanthus","butterfish",131
+"bluefish","bluefish","","Pomatomus saltatrix","bluefish",135
+"black sea bass","black-sea-bass_north","north ","Centropristis striata","black-sea-bass",141
+"black sea bass","black-sea-bass_south","south ","Centropristis striata","black-sea-bass",141
+"scup","scup","","Stenotomus chrysops","scup",143
+"Acadian redfish","acadian-redfish","","Sebastes fasciatus","acadian-redfish",155
+"Atlantic wolffish","atlantic-wolffish","","Anarhichas lupus","atlantic-wolffish",192
+"ocean pout","ocean-pout","","Zoarces americanus","ocean-pout",193
+"monkfish","monkfish_north","north ","Lophius americanus","monkfish",197
+"monkfish","monkfish_south","south ","Lophius americanus","monkfish",197
+"American lobster","american-lobster_gom","Gulf of Maine ","Homarus americanus","american-lobster",301
+"American lobster","american-lobster_gb","Georges Bank ","Homarus americanus","american-lobster",301
+"American lobster","american-lobster_sne","southern New England ","Homarus americanus","american-lobster",301
+"northern shrimp","northern-shrimp","","Pandalus borealis","northern-shrimp",306
+"northern shortfin squid","northern-shortfin-squid","","Ilex illecebrosus","northern-shortfin-squid",502
+"longfin inshore squid","longfin-inshore-squid","","Doryteuthis pealeii","longfin-inshore-squid",503
+"Atlantic menhaden","atlantic-menhaden_north","north ","Brevoortia tyrannus","atlantic-menhaden",36
+"Atlantic menhaden","atlantic-menhaden_south","south ","Brevoortia tyrannus","atlantic-menhaden",36
+"Atlantic menhaden","atlantic-menhaden","","Brevoortia tyrannus","atlantic-menhaden",36
