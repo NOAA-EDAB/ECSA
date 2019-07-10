@@ -1,23 +1,8 @@
 ---
-title:
-    | 
-    | Ecosystem Context for Stock Assessments:
-    | Atlantic menhaden
-#date: "`r format(Sys.time(), '%B %d, %Y')`"
-author: ""
-always_allow_html: yes
-bibliography: ["atlantic-menhaden/atlantic-menhaden_bib.bib","`r here::here('ECSA_bibliography.bib')`"]
-link-citations: true
-site: "bookdown::bookdown_site"
+title: "Untitled"
 output:
-  bookdown::gitbook:
-    lib_dir: "book_assets"
-    split_by: "none"
-    config:
-      toc:
-        collapse: yes
-        after: |
-          <li><a href="https://bookdown.org" target="_blank">Published with bookdown</a></li>
+  redoc::redoc
+always_allow_html: yes
 ---
 
 ```{r, include = FALSE}

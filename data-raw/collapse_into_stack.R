@@ -4,8 +4,10 @@ library(stars)
 library(stringr)
 library(dplyr)
 
-#A function to collapse many RasterLayers (saved as .RData files) within a directory to a RasterStack
-collapse_into_stack <- function(folder_path){
+#A function to collapse many RasterLayers (saved as .RData files) within a directory to a RasterStack. 
+#The argument fname_regex allows for filtering file names according to some regex. fname_regex passes
+#all files by default (i.e. .*). 
+collapse_into_stack <- function(folder_path, fname_regex = ".*"){
   p <- folder_path
   message(p)  
   
@@ -16,7 +18,7 @@ collapse_into_stack <- function(folder_path){
 
     f <- list.files(p)[i]
     
-    if (stringr::str_detect(f, "\\.RData|\\.rdata|\\.Rdata")){
+    if (stringr::str_detect(f, "\\.RData|\\.rdata|\\.Rdata") & stringr::str_detect(f, fname_regex)){
       
       fname <- stringr::str_split(f, "\\.RData|\\.rdata|\\.Rdata")[[1]][1]
       obj <- loadRData(file.path(p,f))
@@ -25,8 +27,12 @@ collapse_into_stack <- function(folder_path){
       assign("out",stack(out,obj))
       names(out)[i] <- fname
       message(fname)
-    } else {
+    } else if (!stringr::str_detect(f, "\\.RData|\\.rdata|\\.Rdata")) {
       message(paste0(f, " is not a .RData file"))
+      next
+    } else if (!stringr::str_detect(f, fname_regex)){
+      message(paste0(f, "does not meet regex criteria."))
+      next
     }
   
   }
@@ -95,9 +101,18 @@ for (k in c("bot_sal","surf_sal")){
 }
 
 #Occurrence probability
-occurrence_prob_fall <- collapse_into_stack(folder_path = file.path(raw.dir,"occurrence probability/fall"))
-occurrence_prob_spring <- collapse_into_stack(folder_path = file.path(raw.dir,"occurrence probability/spring"))
-# save(occurrence_prob_fall, file = paste0(raw.dir,"/occurrence_prob_fall.rdata"))
-# save(occurrence_prob_spring, file = paste0(raw.dir,"/occurrence_prob_spring.rdata"))
+raw.dir <- "~"
+  collapse_into_stack(file.path(raw.dir, "spring-occupancy/spring"),
+                    fname_regex = "(?=.*blabas)(?=.*PA)")
 
+unique_species <- 
+  unique(str_extract(list.files(file.path(raw.dir, "spring-occupancy/spring")), "_.*_"))
+
+
+
+list.files(file.path(raw.dir, "spring-occupancy/spring"))
+
+for (i in 1:length(list.files(file.path(raw.dir, "spring-occupancy/spring")))){
+  
+}
 
