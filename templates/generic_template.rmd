@@ -76,6 +76,7 @@ strata <- all_stock_season %>%
   dplyr::filter(stock_name == !!stock_name)
 
 svspp_ <- strata %>% pull(svspp) %>% unique()
+sixcode <- strata %>% pull(species_code) %>% unique()
 
 #Specific analytical treatments were selected beforehand for each stock. These data are in data-raw/treatment_selection.csv. We import here and filter the below SAE data by treatment selection. 
 treatment_selection <- 
@@ -1354,6 +1355,9 @@ The probability of occurrence was estimated using random forest classification m
 {{OccurrenceEnd}}
 
 ```{r occ_prob, fig.height=4}
+
+
+
 spring_occ_prob <- 
   stars_to_series(r = "occurrence_prob_spring.rdata",
                 stock_name = stock_name, 
