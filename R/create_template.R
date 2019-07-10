@@ -23,13 +23,12 @@
 
 create_template <- function(stock_name, 
                             output_dir = here::here("docs"),
-                            render_book = T,
-                            overwrite = F) {
+                            send_to_google_doc = FALSE,
+                            overwrite = FALSE) {
   
   `%>%` <- magrittr::`%>%`
   library(readr)
-  
-  #setwd(here::here())
+
   ## Select the stock and format stock area and common name
   clean_names <- readr::read_csv(here::here("data","stock_data/stock_list.csv"),
                                  col_types = readr::cols(
@@ -90,49 +89,40 @@ create_template <- function(stock_name,
   if(!dir.exists(folder_name)) {
     dir.create(folder_name,recursive = T)
   }
-# 
-#   #Adjust _bookdown.yml accordingly
-#   bookyml <- suppressWarnings(
-#     readLines(here::here("templates","_bookdown_template.yml"))
-#   )
-#   # replace .rmd file name
-#   bookyml <- stringr::str_replace(bookyml, "\\[.*\\]", sprintf('["ECSA_%s.rmd"]', clean_names$stock_name))
-#   #Set output directory for bookdown files
-#   bookyml <- stringr::str_replace(bookyml, 'output_dir: .*', sprintf('output_dir: %s', output_dir))
-#   #Set filename of final HTML document (by default this is the title of the template)
-#   bookyml <- stringr::str_replace(bookyml, 'book_filename: ".*"', 
-#                                 sprintf('book_filename: "ECSA_%s_working_draft"', clean_names$stock_name))
 
   #Check to make sure existing file is not over-written
   if(file.exists(sprintf("%s/%s",folder_name,file_name)) &  !overwrite){
     stop(sprintf("\nEasy, Cowboy!\n%s already exists. If you want to do this, change 'overwrite = TRUE'", file_name))
+  } else {
+    
+    # writes generic template after species specific substitutions to .rmd
+    file_connection <- file(sprintf("%s/%s", folder_name, file_name))
+    writeLines(dat, file_connection)
+    close(file_connection)
+    
+    message(sprintf("ECSA template written locally: %s\n",
+                    sprintf("%s/%s", folder_name, file_name)))
+    
   }
   
-  # writes generic template after species specific substitutions to .rmd
-  file_connection <- file(sprintf("%s/%s", folder_name, file_name))
-  writeLines(dat, file_connection)
-  close(file_connection)
-  
-  message(sprintf("ECSA template written to %s",
-                  sprintf("%s/%s", folder_name, file_name)))
-  
-  # copy _bookdown.yml to differnt location
-  # book_connection <- file(sprintf("%s/_bookdown.yml", folder_name), open = "w")
-  # writeLines(bookyml, book_connection)
-  # close(book_connection)
-  # 
-  # message(sprintf("\n%s/_bookdown.yml successfully created.", folder_name))
+  if(send_to_google_doc) {
+    gdoc_exist <- googledrive::drive_get( "EDABranch_Drive/Products/ECSA/file_name")
 
+    #Check to make sure existing file is not over-written
+    if(nrow(gdoc_exist) > 0 &
+       !overwrite) {
+      stop(sprintf("\nEasy, Cowboy!\n%s already exists. If you want to do this, change 'overwrite = TRUE'", file_name))
+    } else {
+      message("Now to render to Google Drive...\n")
+      
+      markdrive::gdoc_render(filename = sprintf("%s/%s", folder_name, file_name),
+                             gdoc_path = "EDABranch_Drive/Products/ECSA/")
+      
+      gdoc_link <- googledrive::drive_link(sprintf("EDABranch_Drive/Products/ECSA/%s", file_name))
 
-  # render the species specific markdown file into book
-  if (render_book){
-    pathToDir <- sprintf("%s", folder_name)
-    pathToRmd <- sprintf("%s/%s", folder_name,file_name)
-    #bookdown::render_book(sprintf("%s/%s",folder_name,file_name))
-    rmarkdown::render(pathToRmd)
-    browseURL(paste0(pathToDir,"/overview.html"))
+      message(sprintf("ECSA template written as a google doc:%s\n",
+                      gdoc_link))
+    }
   }
-  
-
 }
 
