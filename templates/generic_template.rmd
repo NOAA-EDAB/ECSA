@@ -8,7 +8,6 @@ always_allow_html: yes
 output: 
         html_document:
           fig_caption: yes
-
 ---
 
 ```{r, include = FALSE}
@@ -106,11 +105,12 @@ interactive <- F
 
 
 # Introduction
-
+{{IntroductionStart}}
 This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COMMON_NAME}} (*{{SCI_NAME}}*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the {{COMMON_NAME}} stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of {{COMMON_NAME}}, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval {{COMMON_NAME}}. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
-
+{{IntroductionEnd}}
 ### Summary {-#summary}
-
+{{SummaryStart}}
+{{SummaryEnd}}
 
 ### Stock area {-#stock-area}
 
