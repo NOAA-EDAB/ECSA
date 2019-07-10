@@ -96,7 +96,7 @@ fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"),
 stock_season <- strata %>% pull(stock_season) %>% unique()
 
 #Set interactive to F when pushing a draft document to google drive. Otherwise, the ggiraph figures will render as interactive. Interactive figures should only be used during the creation of the final bookdown document. 
-interactive <- T
+interactive <- F
 ```
 
 
