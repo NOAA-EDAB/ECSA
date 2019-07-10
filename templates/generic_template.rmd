@@ -44,9 +44,7 @@ all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv")
                                    stock_season = readr::col_character(),
                                    strata = readr::col_double()
                                  ))
-#swept area estimates
-spring_sae <- read.csv(here::here("data-raw/spring_sae_tb_sum.csv"), stringsAsFactors = F)
-fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"), stringsAsFactors = F)
+
 
 
 #zooplankton lookup table
@@ -72,17 +70,6 @@ source(here::here("R/gls_summary.R"))
 source(here::here("R/plot_sae.R"))
 
 
-#Function to rank time series by group mean. Returns top N groups
-rank_by_group <- function(df, group, N, join_with){
-  out <- df %>% 
-    dplyr::group_by(Grouping = get(group)) %>% 
-    dplyr::summarise(M = mean(Mean, na.rm = T)) %>% 
-    top_n(N) %>% 
-    arrange(desc(M)) %>% 
-    mutate(id = 1:N) 
-  return(out)
-}
-
 N <- 5
 alpha <- 0.05
 
@@ -91,15 +78,26 @@ strata <- all_stock_season %>%
 
 svspp_ <- strata %>% pull(svspp) %>% unique()
 
+#Specific analytical treatments were selected beforehand for each stock. These data are in data-raw/treatment_selection.csv. We import here and filter the below SAE data by treatment selection. 
+treatment_selection <- 
+  read.csv(here::here("data-raw/treatment_selection.csv"),
+                       stringsAsFactors = F) %>% 
+  filter(svspp == svspp_)
+
+#Load swept area estimate data. Filter by svspp code and treatment selection
+spring_sae <- read.csv(here::here("data-raw/spring_sae_tb_sum.csv"),
+                       stringsAsFactors = F) %>% 
+  filter(svspp == svspp_, treatment %in% unique(treatment_selection$treat))
+
+fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"),
+                     stringsAsFactors = F) %>% 
+  filter(svspp == svspp_, treatment %in% unique(treatment_selection$treat))
+
+#Get available seasons for stocks
 stock_season <- strata %>% pull(stock_season) %>% unique()
 
-#Get unique analytical treatment for SAE processing
-treatments <- spring_sae %>%
-  dplyr::filter(svspp == svspp_) %>% 
-  pull(treatment) %>% 
-  unique()
-
-interactive <- F
+#Set interactive to F when pushing a draft document to google drive. Otherwise, the ggiraph figures will render as interactive. Interactive figures should only be used during the creation of the final bookdown document. 
+interactive <- T
 ```
 
 
@@ -1435,101 +1433,220 @@ if (interactive){
 
 ## Minimum Population Size {-#minimum-population-size}
 
+<<<<<<< HEAD
 {{MinPopulationStart}}
 {{MinPopulationEnd}}
 
 ```{r sae_processing, eval = F}
+=======
+```{r sae_processing, eval = T}
+>>>>>>> da3f28dfd29420d9284295da38c956ac128c74f3
 # Change parameters of moving average. `fill = "extend"` will do linear interpolation over gaps in moving average. Change length of window with the k parameter
-fill = "extend"
-k <- 2
+do_transform <- T
 
-spring_biomass_sae <- 
-  plot_sae(data_season = "spring",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "yes",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         legend_title = "")
+fall_sae_processed <- fall_sae %>% 
+  dplyr::select(-svspp) %>% 
+  dplyr::rename(Time = year) %>% 
+  dplyr::select(-ztotal) %>%
+  mutate(total = ifelse(ciflag < 0 , NA, total),
+         lowerci =ifelse(ciflag < 0 , NA, lowerci),
+         upperci =ifelse(ciflag < 0 , NA, upperci)) %>% 
+  mutate(Treatment = as.factor(treatment),
+          total_log10 = log10(total),
+         upperci_log10 = log10(upperci),
+         lowerci_log10 = log10(lowerci),
+         biomass = ifelse(biomass == "yes","Biomass","Abundance")) %>% 
+  dplyr::select(-treatment) %>% 
+  mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
+         tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
 
-
-spring_numbers_sae <- 
-  plot_sae(data_season = "spring",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "no",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         include_legend = F)
-
-fall_biomass_sae <- 
-  plot_sae(data_season = "fall",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "yes",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         legend_title = "")
-
-
-fall_numbers_sae <- 
-  plot_sae(data_season = "fall",
-         exclude_treatments = treatments[stringr::str_detect(treatments, "Y$")],
-         biomass_ = "no",
-         include_zeros = F,
-         svspp_ = svspp_,
-         k = k,
-         fill = fill,
-         include_legend = F)
-
+spring_sae_processed <- spring_sae %>% 
+  dplyr::select(-svspp) %>% 
+  dplyr::rename(Time = year) %>% 
+  dplyr::select(-ztotal) %>%
+    mutate(total = ifelse(ciflag < 0 , NA, total),
+         lowerci =ifelse(ciflag < 0 , NA, lowerci),
+         upperci =ifelse(ciflag < 0 , NA, upperci)) %>% 
+  mutate(Treatment = as.factor(treatment),
+          total_log10 = log10(total),
+         upperci_log10 = log10(upperci),
+         lowerci_log10 = log10(lowerci),
+         biomass = ifelse(biomass == "yes","Biomass","Abundance")) %>% 
+  dplyr::select(-treatment) %>% 
+  mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
+         tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
 ```
 
 
 ### Spring numbers and biomass {-#spring-numbers-and-biomass}
 
-{{SpringHabitatAreaStart}}
-{{SpringHabitatAreaEnd}}
 
+```{r spring_sae_plt, fig.height = 6, eval = T}
+if (do_transform){
+  
+biomass_plt <- spring_sae_processed %>% 
+    filter(biomass == "Biomass") %>% 
+    ggplot(aes(x = Time, 
+            y = total_log10, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci_log10,
+                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time))
+       else geom_point() } +
 
-```{r spring_sae_plt, fig.height = 6, eval = F}
-spring_sae_plt <- subplot(
-          spring_biomass_sae,
-          spring_numbers_sae,
-          shareX = F, 
-          nrows = 2,
-          margin = 0.05,
-          titleY = TRUE) %>% 
-   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
-                  x=1.02, xanchor="left",
-                  y=0.8, yanchor="bottom",  
-                  legendtitle=TRUE, showarrow=FALSE ) %>%
-  layout( legend=list(y=0.8, yanchor="top" ) )
-spring_sae_plt
+     theme_minimal() +
+     guides(color = F, fill = F) +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Biomass (log10 kg)") +
+     xlab("")
+
+abundance_plt <- spring_sae_processed %>% 
+    filter(biomass == "Abundance") %>% 
+   ggplot(aes(x = Time, 
+            y = total_log10, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci_log10,
+                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time))
+       else geom_point() } +
+     theme_minimal() +
+     theme(legend.position = "bottom") +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Abundance (log10 N)")
+
+  } else {
+    
+biomass_plt <- spring_sae_processed %>% 
+    filter(biomass == "Biomass") %>% 
+   ggplot(aes(x = Time, 
+            y = total, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci,
+                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time))
+       else geom_point() } +
+     theme_minimal() +
+     guides(color = F, fill = F) +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Biomass (kg)") +
+     xlab("")
+
+abundance_plt <- spring_sae_processed %>% 
+    filter(biomass == "Abundance") %>% 
+   ggplot(aes(x = Time, 
+            y = total, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci,
+                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time))
+       else geom_point() } +
+     theme_minimal() +
+     theme(legend.position = "bottom") +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Abundance (N)")
+  }
+
+if (interactive){
+  title <- cowplot::ggdraw() +
+    cowplot::draw_label("Spring biomass & abundance",x = 0.25)
+
+  girafe_options(girafe(code = print(title + biomass_plt +
+                                       abundance_plt + plot_layout(nrow = 3)),
+                        width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+  
+} else {
+  title <- cowplot::ggdraw() +
+    cowplot::draw_label("Spring biomass & abundance",x = 0.25)
+
+  cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
+}
+
 ```
 
 
 ### Fall numbers and biomass {-#fall-numbers-and-biomass}
 
-{{FallHabitatAreaStart}}
-{{FallHabitatAreaEnd}}
 
-```{r fall_sae_plt, fig.height = 6, eval = F}
-fall_sae_plt <- subplot(
-          fall_biomass_sae,
-          fall_numbers_sae,
-          shareX = F, 
-          nrows = 2,
-          margin = 0.05,
-          titleY = TRUE) %>% 
-   add_annotations(text="Habitat\narea", xref="paper", yref="paper",
-                  x=1.02, xanchor="left",
-                  y=0.8, yanchor="bottom",   
-                  legendtitle=TRUE, showarrow=FALSE ) %>%
-  layout( legend=list(y=0.8, yanchor="top" ) )
-fall_sae_plt
+```{r fall_sae_plt, fig.height = 6, eval = T}
+if (do_transform){
+  
+biomass_plt <- fall_sae_processed %>% 
+    filter(biomass == "Biomass") %>% 
+    ggplot(aes(x = Time, 
+            y = total_log10, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci_log10,
+                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time))
+       else geom_point() } +
+
+     theme_minimal() +
+     guides(color = F, fill = F) +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Biomass (log10 kg)") +
+     xlab("")
+
+abundance_plt <- fall_sae_processed %>% 
+    filter(biomass == "Abundance") %>% 
+   ggplot(aes(x = Time, 
+            y = total_log10, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci_log10,
+                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time))
+       else geom_point() } +
+     theme_minimal() +
+     theme(legend.position = "bottom") +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Abundance (log10 N)")
+
+  } else {
+    
+biomass_plt <- fall_sae_processed %>% 
+    filter(biomass == "Biomass") %>% 
+   ggplot(aes(x = Time, 
+            y = total, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci,
+                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time))
+       else geom_point() } +
+     theme_minimal() +
+     guides(color = F, fill = F) +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Biomass (kg)") +
+     xlab("")
+
+abundance_plt <- fall_sae_processed %>% 
+    filter(biomass == "Abundance") %>% 
+   ggplot(aes(x = Time, 
+            y = total, color = Treatment, group = Treatment)) +
+     geom_line() +
+       geom_ribbon(aes(x = Time, ymax = upperci,
+                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
+     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time))
+       else geom_point() } +
+     theme_minimal() +
+     theme(legend.position = "bottom") +
+     scale_x_continuous(expand = c(0.01, 0.01)) +
+     ylab("Abundance (N)")
+  }
+
+if (interactive){
+  title <- cowplot::ggdraw() +
+    cowplot::draw_label("Fall biomass & abundance",x = 0.25)
+
+  girafe_options(girafe(code = print(title + biomass_plt +
+                                       abundance_plt + plot_layout(nrow = 3)),
+                        width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+  
+} else {
+  title <- cowplot::ggdraw() +
+    cowplot::draw_label("Fall biomass & abundance",x = 0.25)
+
+  cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
+}
+
 ```
 
 # Methods {#methods}
