@@ -21,74 +21,96 @@
 #' @export
 
 
-merge_to_bookdown <- function(file, 
+merge_to_bookdown <- function(stock_name, 
                               output_dir = here::here("docs"),
-                              render_book = T,
-                              overwrite = F) {
+                              render_book = TRUE,
+                              methods_gdoc_path = "generic_methods",
+                              overwrite = FALSE) {
   
   `%>%` <- magrittr::`%>%`
   library(readr)
   library(googledrive)
+
+  ### Helper functions
+
+  ## Function to mustache the section names
+  grab_text <- function(object, name) {
+    pattern <- sprintf(".*\\{\\{%sStart\\}\\}(.*?)\\{\\{%sEnd\\}\\}", name, name)
+    regmatches(object, regexec(pattern, object))[[1]][2]
+  }
+    
+
+  stock_name <- "smooth-dogfish"
+  # stock_file <- sprintf("%s.rmd", here::here("docs", stock_name))
   
-  
-  #setwd(here::here())
-  ## Select the stock and format stock area and common name
- 
-  ## Replace YAML
-  # yaml::read_yaml("templates/_bookdown_template.yml")
-  # drive_find("Hello world")
-  stock_name <- "Hello world"
+  ### Load the necessary files
+  ## Download the edited google doc 
   tmp_txt <- tempfile(pattern = stock_name, fileext = ".txt")
-  stock_file <- sprintf(here::here("docs/", stock_name, ".rmd"))
-  
   googledrive::drive_download(
     sprintf("EDABranch_Drive/Products/ECSA/%s", stock_name),
     path = tmp_txt,
     overwrite = TRUE
   )
-  
   docs_text <- readr::read_file(tmp_txt)
-  
-  intro_pattern <- ".*\\{\\{IntroductionStart\\}\\}(.*?)\\{\\{IntroductionEnd\\}\\}"
-  intro_text <- regmatches(docs_text, regexec(pattern, docs_text))[[1]][2]
 
+  ## Download the methods google doc  
+  methods_txt <- tempfile(pattern = stock_name, fileext = ".txt")
+  googledrive::drive_download(
+    sprintf("EDABranch_Drive/Products/ECSA/%s", methods_gdoc_path),
+    path = methods_txt,
+    overwrite = TRUE
+  )
+  methods_text <- readr::read_file(methods_txt)
+  
+  ## Download the draft rmd
+  rmd_text <- readr::read_file(sprintf("%s_draft.rmd", here::here("docs", stock_name)))
 
-  stock_file <- here::here("docs", "atlantic-menhaden.rmd")
+  ## Get the new YAML
+  
+  clean_names <- readr::read_csv(here::here("data-raw","clean_names.csv")) %>%
+    dplyr::filter(stock_name == !!stock_name) %>% 
+    dplyr::mutate(stock_subarea = ifelse(is.na(stock_subarea), "",
+                                          stock_subarea))
+  
+  yml <- yaml::read_yaml(here::here("templates/_bookdown_template.yml"))
+  yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, yml$title)
+  yml$title <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, yml$title)
+  
+  
+  ### Replace the text
+  
+  ## Extract the section names from the edited google doc
+  doc_names <- stringr::str_extract_all(docs_text, "\\{\\{(.*)Start\\}\\}")[[1]]
+  doc_names <- gsub("\\{\\{(.*?)Start\\}\\}", "\\1", doc_names)
+  
+  ## Extract the text from the edited google doc
+  text_list <- lapply(doc_names, grab_text, object = docs_text)
+  names(text_list) <- doc_names
+  
+  ## Pattern used to find and replace sections
+  pattern <- sprintf("\\{\\{%sStart\\}\\}(.*?)\\{\\{%sEnd\\}\\}", names(text_list), names(text_list))
+  #text_list[1:21] <- "This text be test"
+  
+  ## 
+  new_text <- rmd_text
+  for(i in 1:length(text_list)) {
+    new_text <- gsub(pattern[i], text_list[[i]], new_text)
+  }
+  
+## Adding the custom YAML  screws something up...
+#  new_text <- gsub("---(.*?)---", sprintf("---\r\n%s\r\n---", yaml::as.yaml(yml)), new_text)
 
-  #Create .Rmd file to be written to book
-  rmd_text <- readr::read_file(stock_file)
   
-  
-  gsub("\\{\\{RMarkdownend\\}\\}", "sassy", dat)
-  gsub(".*\\{\\{IntroductionStart\\}\\}(.*?)\\{\\{IntroductionEnd\\}\\}", "\\1", docs_text)
-  
-  dat <- gsub("\\{\\{STOCK_NAME\\}\\}", clean_names$stock_name, dat)
-  dat <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, dat)
-  dat <- gsub("\\{\\{SCI_NAME\\}\\}", clean_names$sci_name, dat)
-  dat <- gsub("\\{\\{CC_NAME\\}\\}", clean_names$cc_name, dat)
-  dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$svspp, dat)  
-  
-  # cat(dat,sep = "\n" )
-  file_name <- sprintf("%s.rmd", clean_names$stock_name)
+  ##Create .Rmd file to be written to book
+
+  file_name <- sprintf("%s.rmd", stock_name)
   folder_name <- sprintf("%s",output_dir)
-  #output_dir <- sprintf("%s_book", clean_names$stock_name)
-  
+
   # create the output directory if missing
   if(!dir.exists(folder_name)) {
     dir.create(folder_name,recursive = T)
   }
-  # 
-  #   #Adjust _bookdown.yml accordingly
-  #   bookyml <- suppressWarnings(
-  #     readLines(here::here("templates","_bookdown_template.yml"))
-  #   )
-  #   # replace .rmd file name
-  #   bookyml <- stringr::str_replace(bookyml, "\\[.*\\]", sprintf('["ECSA_%s.rmd"]', clean_names$stock_name))
-  #   #Set output directory for bookdown files
-  #   bookyml <- stringr::str_replace(bookyml, 'output_dir: .*', sprintf('output_dir: %s', output_dir))
-  #   #Set filename of final HTML document (by default this is the title of the template)
-  #   bookyml <- stringr::str_replace(bookyml, 'book_filename: ".*"', 
-  #                                 sprintf('book_filename: "ECSA_%s_working_draft"', clean_names$stock_name))
+   
   
   #Check to make sure existing file is not over-written
   if(file.exists(sprintf("%s/%s",folder_name,file_name)) &  !overwrite){
@@ -97,29 +119,11 @@ merge_to_bookdown <- function(file,
   
   # writes generic template after species specific substitutions to .rmd
   file_connection <- file(sprintf("%s/%s", folder_name, file_name))
-  writeLines(dat, file_connection)
+  writeLines(new_text, file_connection)
   close(file_connection)
   
   message(sprintf("ECSA template written to %s",
                   sprintf("%s/%s", folder_name, file_name)))
-  
-  # copy _bookdown.yml to differnt location
-  # book_connection <- file(sprintf("%s/_bookdown.yml", folder_name), open = "w")
-  # writeLines(bookyml, book_connection)
-  # close(book_connection)
-  # 
-  # message(sprintf("\n%s/_bookdown.yml successfully created.", folder_name))
-  
-  
-  # render the species specific markdown file into book
-  if (render_book){
-    pathToDir <- sprintf("%s", folder_name)
-    pathToRmd <- sprintf("%s/%s", folder_name,file_name)
-    #bookdown::render_book(sprintf("%s/%s",folder_name,file_name))
-    rmarkdown::render(pathToRmd)
-    browseURL(paste0(pathToDir,"/overview.html"))
-  }
-  
   
 }
 
