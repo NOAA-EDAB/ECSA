@@ -3,10 +3,10 @@ fall,135,blue,unit,bio,NYN,0.540229
 fall,135,blue,unit,num,YNN,0.15481
 fall,143,scup,unit,bio,NNN,0.220763
 fall,143,scup,unit,num,NNN,0.469939
-fall,197,goose,n,bio,YYN,0.837506
-fall,197,goose,n,num,YNY,0.955507
-fall,197,goose,s,bio,NYN,0.84399
-fall,197,goose,s,num,NYY,0.919624
+fall,197,monk,n,bio,YYN,0.837506
+fall,197,monk,n,num,YNY,0.955507
+fall,197,monk,s,bio,NYN,0.84399
+fall,197,monk,s,num,NYY,0.919624
 spring,141,bsb,n,bio,NNN,0.543982
 spring,141,bsb,n,num,NYY,0.689866
 spring,141,bsb,s,bio,NNN,0.655008
@@ -15,7 +15,7 @@ spring,141,bsb,unit,bio,NNN,0.603051
 spring,141,bsb,unit,num,NYN,0.601819
 spring,143,scup,unit,bio,NYN,-0.02206
 spring,143,scup,unit,num,NYN,0.269119
-spring,197,goose,n,bio,NNN,0.465125
-spring,197,goose,n,num,YYY,0.936535
-spring,197,goose,s,bio,NYY,0.585428
-spring,197,goose,s,num,YYY,0.903677
+spring,197,monk,n,bio,NNN,0.465125
+spring,197,monk,n,num,YYY,0.936535
+spring,197,monk,s,bio,NYY,0.585428
+spring,197,monk,s,num,YYY,0.903677
