@@ -31,12 +31,15 @@ create_template <- function(stock_name,
 
   ## Select the stock and format stock area and common name
   clean_names <- readr::read_csv(here::here("data-raw","clean_names.csv")) %>%
+    dplyr::mutate(stock_subarea = ifelse(is.na(stock_subarea), "",
+                                         stock_subarea)) %>% 
     dplyr::filter(stringr::str_detect(stock_name, !!stock_name)) 
   
   if (nrow(clean_names) > 1){
     clean_names <- 
-      clean_names %>% tidyr::separate(.,stock_name, c("stock_name","sub_area"), "_") %>% 
-      dplyr::slice(1)
+      clean_names %>% 
+      tidyr::separate(.,stock_name, c("stock_name","sub_area"), "_") %>% 
+      dplyr::slice(1) 
   }
     
   if(length(clean_names) < 1){
