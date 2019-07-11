@@ -53,7 +53,10 @@ common_name <- "{{COMMON_NAME}}"
 stock_code <- "{{SPECIES_CODE}}"
 stock_name <- "{{STOCK_NAME}}"
 cc_name <- "{{CC_NAME}}"
-
+# common_name <- "Scup"
+# stock_name <- "scup"
+# cc_name <- stock_name
+# stock_subarea <- ""
 
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   
@@ -1518,7 +1521,7 @@ spring_stock_area %<>%
   dplyr::select(-Data, -RSI, -Regime.Number,
                 `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
-message(spring_stock_area)
+
 ```
 
 
@@ -1591,9 +1594,160 @@ if (interactive){
 {{EcosystemAreaStart}}
 {{EcosystemAreaEnd}}
 
-```{r ecosys_hab_area, fig.height=4}
+```{r ecosystem_hab_area, fig.height=4, eval = T}
+ecosystem_hab_area_df <- 
+  ecosystem_habitat_area %>% 
+    dplyr::filter(threshold == !!threshold) %>% 
+    dplyr::select(season, Time = year, Value = value) %>% 
+  tidyr::spread(.,season, Value)  
+
+
+
+fall_ecosystem_area <- ecosystem_hab_area_df %>% 
+  dplyr::select(Value = fall, Time) %>% 
+  dplyr::distinct() %>% 
+  ecotrend::glsMs(Value ~ Time,
+                data = .,
+                diagnostic = T,
+                fit_model  = T)
+
+STARS_in <- fall_ecosystem_area$fit %>% 
+  dplyr::select(-fit) %>% 
+  as.matrix()
+
+if (fall_ecosystem_area$`selection summary`$pval[1] < 0.05){
+  fall_mod <- fall_ecosystem_area$model
+  
+  fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series,
+                Trend = fit)
+  
+  summ_ <- gls_summary(mod = fall_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+
+  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
+} else {
+    fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series)
+    fall_title <- "Fall"
+}
+
+fall_ecosystem_area %<>%
+  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
+  dplyr::select(which(sapply(.,var)!=0))
+
+
+spring_ecosystem_area <- ecosystem_hab_area_df %>% 
+  dplyr::select(Value = spring, Time) %>% 
+  dplyr::distinct() %>% 
+  ecotrend::glsMs(Value ~ Time,
+                data = .,
+                diagnostic = T,
+                fit_model  = T)
+
+STARS_in <- spring_ecosystem_area$fit %>% 
+  dplyr::select(-fit) %>% 
+  as.matrix()
+
+if (spring_ecosystem_area$`selection summary`$pval[1] < 0.05){
+  spring_mod <- spring_ecosystem_area$model
+  
+  spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series,
+                Trend = fit)
+  
+  summ_ <- gls_summary(mod = spring_mod)
+  trend <- summ_$Value[1]
+  lci <- summ_$Value[2]
+  uci <- summ_$Value[3]
+
+  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
+} else {
+    spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
+      dplyr::select(Time = time, 
+                Series = series)
+    spring_title <- "Spring"
+}
+
+spring_ecosystem_area %<>%
+  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
+  dplyr::select(-Data, -RSI, -Regime.Number,
+                `Regime mean` = Regime.Mean) %>% 
+  dplyr::select(which(sapply(.,var)!=0))
 
 ```
+
+
+```{r spring-hab-area-plt, fig.height=4}
+spring_ecosystem_area_plt <- 
+  spring_ecosystem_area %>% 
+  tidyr::gather(.,Var,Value, - Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab(expression(paste("Area (",km^{2}, ")")))+
+    ggtitle(spring_title)
+
+if (interactive){
+  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_ecosystem_area_plt
+}
+
+```
+
+```{r fall-hab-area-plt, fig.height=4}
+fall_ecosystem_area_plt <- 
+  fall_ecosystem_area %>% 
+  tidyr::gather(.,Var,Value, - Time) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  
+  ggplot(aes(x = Time, 
+            y = Value, color = Var, group = Var,
+                 tooltip = tooltip,
+                 data_id = Time)) +
+  geom_line()+
+  {if(interactive) geom_point_interactive(size = 0)
+    else geom_line()} +
+    scale_color_manual(values = 
+                         c("Regime mean" = "#b2df8a",
+                         "Trend" = "#a6cee3",
+                         "Series" = "#1f78b4"))+
+    theme_minimal() +
+    theme(legend.title = element_blank()) +
+    ylab(expression(paste("Area (",km^{2}, ")")))+
+    ggtitle(fall_title)
+
+if (interactive){
+  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_ecosystem_area_plt
+}
+
+
+```
+
 
 ## Minimum Population Size {-#minimum-population-size}
 
