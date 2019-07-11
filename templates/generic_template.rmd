@@ -49,14 +49,10 @@ all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv")
 zoo_lookup <- read.csv(here::here("data-raw/zooplankton_lookup.csv"), stringsAsFactors = F)
 
 ## Put all mustaches here
-common_name <- "{{COMMON_NAME}}"
 stock_code <- "{{SPECIES_CODE}}"
 stock_name <- "{{STOCK_NAME}}"
 cc_name <- "{{CC_NAME}}"
-# common_name <- "Scup"
-# stock_name <- "scup"
-# cc_name <- stock_name
-# stock_subarea <- ""
+common_name <- "{{COMMON_NAME}}"
 
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   
@@ -65,9 +61,13 @@ strata <- all_stock_season %>%
 if (length(unique(strata$stock_name)) > 1)  {
   strata %<>% 
     tidyr::separate(., stock_name, c("stock_name","sub_area"), "_")
+
 }
   
-  
+
+
+
+
 source(here::here("R/map_strata.R"))
 source(here::here("R/get_strata.R"))
 source(here::here("R/crop_to_strata.R"))
@@ -97,6 +97,15 @@ spring_sae <- read.csv(here::here("data-raw/spring_sae_tb_sum.csv"),
 fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"),
                      stringsAsFactors = F) %>% 
   filter(svspp == !!svspp, treatment %in% unique(treatment_selection$treat))
+
+#Adjust knitr fig height if a facet plot is needed
+if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
+ adjust_for_facet  <- 8
+} else if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
+  adjust_for_facet  <- 8
+} else {
+  adjust_for_facet  <- 6
+}
 
 #Get available seasons for stocks
 stock_season <- strata %>% pull(stock_season) %>% unique()
@@ -280,7 +289,7 @@ spring_bottom_temp_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Temperature (°C)") +
     ggtitle(spring_title)
@@ -311,7 +320,7 @@ fall_bottom_temp_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Temperature (°C)") +
     ggtitle(fall_title)
@@ -457,7 +466,7 @@ spring_surface_temp_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Temperature (°C)") +
     ggtitle(spring_title)
@@ -488,7 +497,7 @@ fall_surface_temp_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Temperature (°C)") +
     ggtitle(fall_title)
@@ -641,7 +650,7 @@ spring_bottom_sal_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Salinity (PSU)") +
     ggtitle(spring_title)
@@ -672,7 +681,7 @@ fall_bottom_sal_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Salinity (PSU)") +
     ggtitle(fall_title)
@@ -815,7 +824,7 @@ spring_surface_sal_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Salinity (PSU)") +
     ggtitle(spring_title)
@@ -845,7 +854,7 @@ fall_surface_sal_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Salinity (PSU)") +
     ggtitle(fall_title)
@@ -991,7 +1000,7 @@ spring_chl_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab(expression(paste("Chlorophyll (mg ", m^{-3}, ")")))+
     ggtitle(spring_title)
@@ -1021,7 +1030,7 @@ fall_chl_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab(expression(paste("Chlorophyll (mg ", m^{-3}, ")")))+
     ggtitle(fall_title)
@@ -1113,9 +1122,10 @@ spring_cope_plt
     ggplot() +
     geom_line(aes(x = Time, y = Value, group = Var)) +
     facet_wrap(Var~., scales = "free_y") +
-    theme_minimal() +
+    theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-    theme(strip.text = element_text(face = "italic")) +
+    theme(strip.text = element_text(face = "italic"),
+          strip.background =element_rect(fill="transparent")) +
     ggtitle("Spring copepod abundance")
 }
 
@@ -1190,9 +1200,10 @@ fall_cope_plt
     ggplot() +
     geom_line(aes(x = Time, y = Value, group = Var)) +
     facet_wrap(Var~., scales = "free_y") +
-    theme_minimal() +
+    theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-    theme(strip.text = element_text(face = "italic"))+
+        theme(strip.text = element_text(face = "italic"),
+          strip.background =element_rect(fill="transparent")) +
     ggtitle("Fall copepod abundance")
 }
 
@@ -1273,9 +1284,10 @@ spring_noncope_plt
     ggplot() +
     geom_line(aes(x = Time, y = Value, group = Var)) +
     facet_wrap(Var~., scales = "free_y") +
-    theme_minimal() +
+    theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-    theme(strip.text = element_text(face = "italic"))+
+        theme(strip.text = element_text(face = "italic"),
+          strip.background =element_rect(fill="transparent")) +
     ggtitle("Spring non-copepod zoo. abundance")
 }
 ```
@@ -1349,9 +1361,10 @@ fall_noncope_plt
     ggplot() +
     geom_line(aes(x = Time, y = Value, group = Var)) +
     facet_wrap(Var~., scales = "free_y") +
-    theme_minimal() +
+    theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-    theme(strip.text = element_text(face = "italic")) +
+        theme(strip.text = element_text(face = "italic"),
+          strip.background =element_rect(fill="transparent")) +
     ggtitle("Fall non-copepod zoo. abundance")
 }
 ```
@@ -1408,7 +1421,7 @@ occ_prob_plt <-
     scale_color_manual(values = 
                          c("Fall" = "#a6cee3",
                          "Spring" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab("Occupancy probability")+
     ggtitle("Occupancy probability")
@@ -1435,13 +1448,15 @@ if (interactive){
 ```{r stock_hab_area, fig.height=4, eval = T}
 threshold <- 0.5
 
+
+
 stock_hab_area_df <- 
   stock_habitat_area %>% 
     dplyr::filter(threshold == !!threshold) %>% 
     dplyr::select(season, Time = year, Value = value) %>% 
   tidyr::spread(.,season, Value)  
 
-
+if (any(stock_season %in% "fall")){
 
 fall_stock_area <- stock_hab_area_df %>% 
   dplyr::select(Value = fall, Time) %>% 
@@ -1482,7 +1497,10 @@ fall_stock_area %<>%
                 `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
+}
 
+if (any(stock_season %in% "spring")){
+  
 spring_stock_area <- stock_hab_area_df %>% 
   dplyr::select(Value = spring, Time) %>% 
   dplyr::distinct() %>% 
@@ -1521,11 +1539,14 @@ spring_stock_area %<>%
   dplyr::select(-Data, -RSI, -Regime.Number,
                 `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
+}
 
 ```
 
 
 ```{r spring-hab-area-plt, fig.height=4}
+if (any(stock_season %in% "spring")){
+  
 spring_stock_area_plt <- 
   spring_stock_area %>% 
   tidyr::gather(.,Var,Value, - Time) %>% 
@@ -1542,7 +1563,7 @@ spring_stock_area_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab(expression(paste("Area (",km^{2}, ")")))+
     ggtitle(spring_title)
@@ -1554,9 +1575,11 @@ if (interactive){
   spring_stock_area_plt
 }
 
+}
 ```
 
 ```{r fall-hab-area-plt, fig.height=4}
+if (any(stock_season %in% "fall")){
 fall_stock_area_plt <- 
   fall_stock_area %>% 
   tidyr::gather(.,Var,Value, - Time) %>% 
@@ -1573,7 +1596,7 @@ fall_stock_area_plt <-
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
                          "Series" = "#1f78b4"))+
-    theme_minimal() +
+    theme_bw() +
     theme(legend.title = element_blank()) +
     ylab(expression(paste("Area (",km^{2}, ")")))+
     ggtitle(fall_title)
@@ -1585,7 +1608,7 @@ if (interactive){
   fall_stock_area_plt
 }
 
-
+}
 ```
 
 
@@ -1597,12 +1620,12 @@ if (interactive){
 ```{r ecosystem_hab_area, fig.height=4, eval = T}
 ecosystem_hab_area_df <- 
   ecosystem_habitat_area %>% 
-    dplyr::filter(threshold == !!threshold) %>% 
+    dplyr::filter(threshold == !!threshold, area == "unit") %>% 
     dplyr::select(season, Time = year, Value = value) %>% 
   tidyr::spread(.,season, Value)  
 
-
-
+if (any(names(ecosystem_hab_area_df) == c("fall"))){
+  
 fall_ecosystem_area <- ecosystem_hab_area_df %>% 
   dplyr::select(Value = fall, Time) %>% 
   dplyr::distinct() %>% 
@@ -1642,6 +1665,9 @@ fall_ecosystem_area %<>%
                 `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
 
+}
+
+if (any(names(ecosystem_hab_area_df) == c("spring"))){
 
 spring_ecosystem_area <- ecosystem_hab_area_df %>% 
   dplyr::select(Value = spring, Time) %>% 
@@ -1681,73 +1707,77 @@ spring_ecosystem_area %<>%
   dplyr::select(-Data, -RSI, -Regime.Number,
                 `Regime mean` = Regime.Mean) %>% 
   dplyr::select(which(sapply(.,var)!=0))
-
-```
-
-
-```{r spring-hab-area-plt, fig.height=4}
-spring_ecosystem_area_plt <- 
-  spring_ecosystem_area %>% 
-  tidyr::gather(.,Var,Value, - Time) %>% 
-  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-  
-  ggplot(aes(x = Time, 
-            y = Value, color = Var, group = Var,
-                 tooltip = tooltip,
-                 data_id = Time)) +
-  geom_line()+
-  {if(interactive) geom_point_interactive(size = 0)
-    else geom_line()} +
-    scale_color_manual(values = 
-                         c("Regime mean" = "#b2df8a",
-                         "Trend" = "#a6cee3",
-                         "Series" = "#1f78b4"))+
-    theme_minimal() +
-    theme(legend.title = element_blank()) +
-    ylab(expression(paste("Area (",km^{2}, ")")))+
-    ggtitle(spring_title)
-
-if (interactive){
-  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-} else {
-  spring_ecosystem_area_plt
 }
-
 ```
 
-```{r fall-hab-area-plt, fig.height=4}
-fall_ecosystem_area_plt <- 
-  fall_ecosystem_area %>% 
-  tidyr::gather(.,Var,Value, - Time) %>% 
-  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+
+```{r spring-ecosystem-area-plt, fig.height=4}
+if (any(names(ecosystem_hab_area_df) == c("spring"))){
   
-  ggplot(aes(x = Time, 
-            y = Value, color = Var, group = Var,
-                 tooltip = tooltip,
-                 data_id = Time)) +
-  geom_line()+
-  {if(interactive) geom_point_interactive(size = 0)
-    else geom_line()} +
-    scale_color_manual(values = 
-                         c("Regime mean" = "#b2df8a",
-                         "Trend" = "#a6cee3",
-                         "Series" = "#1f78b4"))+
-    theme_minimal() +
-    theme(legend.title = element_blank()) +
-    ylab(expression(paste("Area (",km^{2}, ")")))+
-    ggtitle(fall_title)
+  spring_ecosystem_area_plt <- 
+    spring_ecosystem_area %>% 
+    tidyr::gather(.,Var,Value, - Time) %>% 
+    mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+    
+    ggplot(aes(x = Time, 
+              y = Value, color = Var, group = Var,
+                   tooltip = tooltip,
+                   data_id = Time)) +
+    geom_line()+
+    {if(interactive) geom_point_interactive(size = 0)
+      else geom_line()} +
+      scale_color_manual(values = 
+                           c("Regime mean" = "#b2df8a",
+                           "Trend" = "#a6cee3",
+                           "Series" = "#1f78b4"))+
+      theme_bw() +
+      theme(legend.title = element_blank()) +
+      ylab(expression(paste("Area (",km^{2}, ")")))+
+      ggtitle(spring_title)
+  
+  if (interactive){
+    girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
+           height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  } else {
+    spring_ecosystem_area_plt
+  }
 
-if (interactive){
-  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-} else {
-  fall_ecosystem_area_plt
 }
-
-
 ```
 
+```{r fall-ecosystem-area-plt, fig.height=4}
+if (any(names(ecosystem_hab_area_df) == c("fall"))){
+
+  fall_ecosystem_area_plt <- 
+    fall_ecosystem_area %>% 
+    tidyr::gather(.,Var,Value, - Time) %>% 
+    mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+    
+    ggplot(aes(x = Time, 
+              y = Value, color = Var, group = Var,
+                   tooltip = tooltip,
+                   data_id = Time)) +
+    geom_line()+
+    {if(interactive) geom_point_interactive(size = 0)
+      else geom_line()} +
+      scale_color_manual(values = 
+                           c("Regime mean" = "#b2df8a",
+                           "Trend" = "#a6cee3",
+                           "Series" = "#1f78b4"))+
+      theme_bw() +
+      theme(legend.title = element_blank()) +
+      ylab(expression(paste("Area (",km^{2}, ")")))+
+      ggtitle(fall_title)
+  
+  if (interactive){
+    girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
+           height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  } else {
+    fall_ecosystem_area_plt
+  }
+
+}
+```
 
 ## Minimum Population Size {-#minimum-population-size}
 
@@ -1758,7 +1788,8 @@ if (interactive){
 ```{r sae_processing, eval = T}
 do_transform <- T
 
-fall_sae_processed <- fall_sae %>% 
+if (nrow(fall_sae) != 0){
+  fall_sae_processed <- fall_sae %>% 
   dplyr::select(-svspp) %>% 
   dplyr::rename(Time = year) %>% 
   dplyr::select(-ztotal) %>%
@@ -1773,22 +1804,25 @@ fall_sae_processed <- fall_sae %>%
   dplyr::select(-treatment) %>% 
   mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
          tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
+}
 
-spring_sae_processed <- spring_sae %>% 
-  dplyr::select(-svspp) %>% 
-  dplyr::rename(Time = year) %>% 
-  dplyr::select(-ztotal) %>%
-    mutate(total = ifelse(ciflag < 0 , NA, total),
-         lowerci =ifelse(ciflag < 0 , NA, lowerci),
-         upperci =ifelse(ciflag < 0 , NA, upperci)) %>% 
-  mutate(Treatment = as.factor(treatment),
-          total_log10 = log10(total),
-         upperci_log10 = log10(upperci),
-         lowerci_log10 = log10(lowerci),
-         biomass = ifelse(biomass == "yes","Biomass","Abundance")) %>% 
-  dplyr::select(-treatment) %>% 
-  mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
-         tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
+if (nrow(spring_sae) != 0){
+  spring_sae_processed <- spring_sae %>% 
+    dplyr::select(-svspp) %>% 
+    dplyr::rename(Time = year) %>% 
+    dplyr::select(-ztotal) %>%
+      mutate(total = ifelse(ciflag < 0 , NA, total),
+           lowerci =ifelse(ciflag < 0 , NA, lowerci),
+           upperci =ifelse(ciflag < 0 , NA, upperci)) %>% 
+    mutate(Treatment = as.factor(treatment),
+            total_log10 = log10(total),
+           upperci_log10 = log10(upperci),
+           lowerci_log10 = log10(lowerci),
+           biomass = ifelse(biomass == "yes","Biomass","Abundance")) %>% 
+    dplyr::select(-treatment) %>% 
+    mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
+           tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
+}
 ```
 
 
@@ -1797,90 +1831,96 @@ spring_sae_processed <- spring_sae %>%
 {{SpringHabitatAreaStart}}
 {{SpringHabitatAreaEnd}}
 
-```{r spring_sae_plt, fig.height = 6, eval = T}
-if (do_transform){
-  
-biomass_plt <- spring_sae_processed %>% 
-    filter(biomass == "Biomass") %>% 
-    ggplot(aes(x = Time, 
-            y = total_log10, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci_log10,
-                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-
-     theme_minimal() +
-     guides(color = F, fill = F) +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Biomass (log10 kg)") +
-     xlab("")
-
-abundance_plt <- spring_sae_processed %>% 
-    filter(biomass == "Abundance") %>% 
-    ggplot(aes(x = Time, 
-            y = total_log10, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci_log10,
-                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-     theme_minimal() +
-     theme(legend.position = "bottom") +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Abundance (log10 N)")
-
-  } else {
+```{r spring_sae_plt, fig.height = adjust_for_facet, eval = T}
+if (nrow(spring_sae) != 0){
+  if (do_transform){
     
-biomass_plt <- spring_sae_processed %>% 
-    filter(biomass == "Biomass") %>% 
-    ggplot(aes(x = Time, 
-            y = total, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci,
-                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-     theme_minimal() +
-     guides(color = F, fill = F) +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Biomass (kg)") +
-     xlab("")
-
-abundance_plt <- spring_sae_processed %>% 
-    filter(biomass == "Abundance") %>% 
-    ggplot(aes(x = Time, 
-            y = total, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci,
-                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-     theme_minimal() +
-     theme(legend.position = "bottom") +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Abundance (N)")
-  }
-
-if (interactive){
-  title <- cowplot::ggdraw() +
-    cowplot::draw_label("Spring biomass & abundance",x = 0.25)
-
-  girafe_options(girafe(code = print(title + biomass_plt +
-                                       abundance_plt + plot_layout(nrow = 3)),
-                        width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+  biomass_plt <- spring_sae_processed %>% 
+      filter(biomass == "Biomass") %>% 
+      ggplot(aes(x = Time, 
+              y = total_log10, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time,
+                         ymax = upperci_log10,
+                       ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
   
-} else {
-  title <- cowplot::ggdraw() +
-    cowplot::draw_label("Spring biomass & abundance",x = 0.25)
-
-  cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
+       theme_bw() +
+       guides(color = F, fill = F) +
+       {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Biomass (log10 kg)") +
+       xlab("")
+  
+  abundance_plt <- spring_sae_processed %>% 
+      filter(biomass == "Abundance") %>% 
+      ggplot(aes(x = Time, 
+              y = total_log10, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time, ymax = upperci_log10,
+                       ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
+       theme_bw() +
+       {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       theme(legend.position = "bottom") +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Abundance (log10 N)")
+  
+    } else {
+      
+  biomass_plt <- spring_sae_processed %>% 
+      filter(biomass == "Biomass") %>% 
+      ggplot(aes(x = Time, 
+              y = total, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time, ymax = upperci,
+                       ymin = lowerci, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
+       theme_bw() +
+       guides(color = F, fill = F) +
+       {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Biomass (kg)") +
+       xlab("")
+  
+  abundance_plt <- spring_sae_processed %>% 
+      filter(biomass == "Abundance") %>% 
+      ggplot(aes(x = Time, 
+              y = total, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time, ymax = upperci,
+                       ymin = lowerci, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
+       theme_bw() +
+       {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       theme(legend.position = "bottom") +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Abundance (N)")
+    }
+  
+  if (interactive){
+    title <- cowplot::ggdraw() +
+      cowplot::draw_label("Spring biomass & abundance",x = 0.25)
+  
+    girafe_options(girafe(code = print(title + biomass_plt +
+                                         abundance_plt + plot_layout(nrow = 3)),
+                          width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+    
+  } else {
+    title <- cowplot::ggdraw() +
+      cowplot::draw_label("Spring biomass & abundance",x = 0.25)
+  
+    cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
+  }
 }
-
 ```
 
 
@@ -1888,91 +1928,97 @@ if (interactive){
 {{FallHabitatAreaStart}}
 {{FallHabitatAreaEnd}}
 
-```{r fall_sae_plt, fig.height = 6, eval = T}
-if (do_transform){
-  
-biomass_plt <- fall_sae_processed %>% 
-    filter(biomass == "Biomass") %>% 
-    ggplot(aes(x = Time, 
-            y = total_log10, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci_log10,
-                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-
-     theme_minimal() +
-     guides(color = F, fill = F) +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Biomass (log10 kg)") +
-     xlab("")
-
-abundance_plt <- fall_sae_processed %>% 
-    filter(biomass == "Abundance") %>% 
-    ggplot(aes(x = Time, 
-            y = total_log10, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci_log10,
-                     ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-     theme_minimal() +
-     theme(legend.position = "bottom") +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Abundance (log10 N)")
-
-  } else {
+```{r fall_sae_plt, fig.height = adjust_for_facet, eval = T}
+if (nrow(fall_sae) != 0){
+  if (do_transform){
     
-biomass_plt <- fall_sae_processed %>% 
-    filter(biomass == "Biomass") %>% 
-    ggplot(aes(x = Time, 
-            y = total, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci,
-                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-     theme_minimal() +
-     guides(color = F, fill = F) +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Biomass (kg)") +
-     xlab("")
-
-abundance_plt <- fall_sae_processed %>% 
-    filter(biomass == "Abundance") %>% 
-    ggplot(aes(x = Time, 
-            y = total, group = Treatment)) +
-     geom_line(aes(color = Treatment)) +
-       geom_ribbon(aes(x = Time, ymax = upperci,
-                     ymin = lowerci, fill = Treatment), alpha = 0.1) +
-     {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-                                                 color = Treatment))
-       else geom_point(aes(color = Treatment)) } +
-     theme_minimal() +
-     theme(legend.position = "bottom") +
-     scale_x_continuous(expand = c(0.01, 0.01)) +
-     ylab("Abundance (N)")
-  }
-
-if (interactive){
-  title <- cowplot::ggdraw() +
-    cowplot::draw_label("Fall biomass & abundance",x = 0.25)
-  girafe_options(girafe(code = print(title + biomass_plt +
-                                       abundance_plt + plot_layout(nrow = 3)),
-                        width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+  biomass_plt <- fall_sae_processed %>% 
+      filter(biomass == "Biomass") %>% 
+      ggplot(aes(x = Time, 
+              y = total_log10, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time,
+                         ymax = upperci_log10,
+                       ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
   
-} else {
-  title <- cowplot::ggdraw() +
-    cowplot::draw_label("Fall biomass & abundance",x = 0.25)
-
-  cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
+       theme_bw() +
+       guides(color = F, fill = F) +
+       {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Biomass (log10 kg)") +
+       xlab("")
+  
+  abundance_plt <- fall_sae_processed %>% 
+      filter(biomass == "Abundance") %>% 
+      ggplot(aes(x = Time, 
+              y = total_log10, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time, ymax = upperci_log10,
+                       ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
+       theme_bw() +
+       {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       theme(legend.position = "bottom") +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Abundance (log10 N)")
+  
+    } else {
+      
+  biomass_plt <- fall_sae_processed %>% 
+      filter(biomass == "Biomass") %>% 
+      ggplot(aes(x = Time, 
+              y = total, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time, ymax = upperci,
+                       ymin = lowerci, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
+       theme_bw() +
+       guides(color = F, fill = F) +
+       {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Biomass (kg)") +
+       xlab("")
+  
+  abundance_plt <- fall_sae_processed %>% 
+      filter(biomass == "Abundance") %>% 
+      ggplot(aes(x = Time, 
+              y = total, group = Treatment)) +
+       geom_line(aes(color = Treatment)) +
+         geom_ribbon(aes(x = Time, ymax = upperci,
+                       ymin = lowerci, fill = Treatment), alpha = 0.1) +
+       {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
+                                                   color = Treatment))
+         else geom_point(aes(color = Treatment)) } +
+       theme_bw() +
+       {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
+       theme(legend.position = "bottom") +
+       scale_x_continuous(expand = c(0.01, 0.01)) +
+       ylab("Abundance (N)")
+    }
+  
+  if (interactive){
+    title <- cowplot::ggdraw() +
+      cowplot::draw_label("Fall biomass & abundance",x = 0.25)
+  
+    girafe_options(girafe(code = print(title + biomass_plt +
+                                         abundance_plt + plot_layout(nrow = 3)),
+                          width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+    
+  } else {
+    title <- cowplot::ggdraw() +
+      cowplot::draw_label("Fall biomass & abundance",x = 0.25)
+  
+    cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
+  }
 }
-
 ```
-
 
 # Methods {#methods}
 

@@ -31,8 +31,14 @@ create_template <- function(stock_name,
 
   ## Select the stock and format stock area and common name
   clean_names <- readr::read_csv(here::here("data-raw","clean_names.csv")) %>%
-    dplyr::filter(stock_name == !!stock_name) 
+    dplyr::filter(stringr::str_detect(stock_name, !!stock_name)) 
   
+  if (nrow(clean_names) > 1){
+    clean_names <- 
+      clean_names %>% tidyr::separate(.,stock_name, c("stock_name","sub_area"), "_") %>% 
+      dplyr::slice(1)
+  }
+    
   if(length(clean_names) < 1){
     stop(sprintf("%s is not found. Check spelling or add %s as a new stock to '%s'", stock_name, stock_name, path.expand("data/stock_data/stock_list.csv")))
   }

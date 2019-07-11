@@ -32,7 +32,7 @@ crop_to_strata <- function(r, stock_name, stock_season, common_name, season_, ma
   
   s1 <- read.csv(here::here('data','stock_data','stock_list.csv'),
                  stringsAsFactors = F) %>% 
-    dplyr::filter(stock_name == !!stock_name)
+    dplyr::filter(stringr::str_detect(stock_name, !!stock_name)) 
   
   if (nrow(s1) == 0) stop("No strata in query. Check common name spelling.")
   
