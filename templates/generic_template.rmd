@@ -100,9 +100,9 @@ fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"),
 
 #Adjust knitr fig height if a facet plot is needed
 if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
- adjust_for_facet  <- 8
+ adjust_for_facet  <- 9
 } else if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
-  adjust_for_facet  <- 8
+  adjust_for_facet  <- 9
 } else {
   adjust_for_facet  <- 6
 }
