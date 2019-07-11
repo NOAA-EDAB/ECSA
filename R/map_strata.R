@@ -86,6 +86,7 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
                                             STRATA %in% strata_spring ~ "spring",
                                             STRATA %in% strata_fall ~ "fall",
                                             TRUE ~ NA_character_)) %>% 
+    # dplyr::filter(!is.na(SEASON)) %>% 
     dplyr::select(SEASON, both, fall, spring, geometry)
   
   #For export
@@ -96,10 +97,13 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
   if (!get_sf){
   #For plotting
   strata_plot <- strata_int %>% 
-    dplyr::select(SEASON, geometry) 
+    dplyr::select(SEASON, geometry) %>% 
+    dplyr::filter(!is.na(SEASON))
+
   
   p1 <- ggplot2::ggplot() +
-    ggplot2::geom_sf(data = strata_plot, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey40") +
+    ggplot2::geom_sf(data = strata_int, fill = "white", size = 0.05, color = "grey40") +
+    ggplot2::geom_sf(data = strata_plot, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey30") +
     ggplot2::geom_sf(data = ne_countries, color = "grey60", size = 0.25) +
     ggplot2::geom_sf(data = ne_states, color = "grey60", size = 0.05) +
     viridis::scale_fill_viridis(discrete = TRUE) +
