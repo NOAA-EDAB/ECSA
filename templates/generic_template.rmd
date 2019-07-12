@@ -125,18 +125,18 @@ interactive <- F
 
 {{READMEStart}}
 
-Welcome to the newest iteration of the Ecosystem Context for Stock Advice product for {{STOCK_SUBAREA}} {{COMMON_NAME}}. You are looking at an intermediate draft that still needs some work. Check out github.com/noaa-edab/ecsa for more information on the build process that moves raw data -> stock-name_draft.rmd/Google Doc template -> stock-name.rmd/.html/.pdf final series of documents. 
+Welcome to the newest iteration of the Ecosystem Context for Stock Advice product for {{STOCK_SUBAREA}}{{COMMON_NAME}}. You are looking at an intermediate draft that still needs some work. Check out github.com/noaa-edab/ecsa for more information on the build process that moves raw data -> stock-name_draft.rmd/Google Doc template -> stock-name.rmd/.html/.pdf final series of documents. 
 
 Do:
 
 * Look at the figures and develop text on how the patterns in the data might be informative to both the assessment and future advice for this stock. 
 * Modify the text between the double curly-bracket "mustaches". Anything in these sections will be harvested for the final report. 
-* Add citations! If you have a citation to add, put it at the end of the section in .bib format. 
-* Look at the methods section. For convenience, it is a [google doc](https://drive.google.com/open?id=1bTZs3YL1nc9QzUe3d1mKUjRH9XIfa6ESU8zO9jM5mzk) and will be added to the end of the final document. 
+* Add citations! If you have a citation to add, put it at the end of the section in BibTeX format (.bib; e.g., [here](https://www2.cs.arizona.edu/~collberg/Teaching/07.231/BibTeX/bibtex.html)). 
+* Look at the methods section for completion and questions. For convenience, it is a [google doc](https://drive.google.com/open?id=1bTZs3YL1nc9QzUe3d1mKUjRH9XIfa6ESU8zO9jM5mzk) and will be added to the end of the final document. 
 
 Don't:
 
-* Alter the text in the mustaches! These are highly technical bookmarks that allow us to scrape the text from this google doc into a Rmarkdown file that will be rendered into both .pdf and .html reports. 
+* Alter the text in the mustaches! These are highly technical bookmarks that allow us to scrape the text from this google doc into a Rmarkdown (.rmd) file that will be rendered into both .pdf and .html reports. 
 * Add new sections. If you want to add a new section, let scott.large@noaa.gov know and he will help you modify the .rmd at a later date.
 
 {{READMEEnd}}
