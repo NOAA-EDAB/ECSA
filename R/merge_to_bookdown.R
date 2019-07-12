@@ -40,8 +40,8 @@ merge_to_bookdown <- function(stock_name,
   }
     
 
-  stock_name <- "smooth-dogfish"
-  # stock_file <- sprintf("%s.rmd", here::here("docs", stock_name))
+  # stock_name <- "scup"
+  # # stock_file <- sprintf("%s.rmd", here::here("docs", stock_name))
   
   ### Load the necessary files
   ## Download the edited google doc 
@@ -65,17 +65,28 @@ merge_to_bookdown <- function(stock_name,
   ## Download the draft rmd
   rmd_text <- readr::read_file(sprintf("%s_draft.rmd", here::here("docs", stock_name)))
 
-  ## Get the new YAML
-  
-  clean_names <- readr::read_csv(here::here("data-raw","clean_names.csv")) %>%
-    dplyr::filter(stock_name == !!stock_name) %>% 
+  ## Get the stock name, common name, and subarea
+  clean_names <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
+                                 col_types = readr::cols(
+                                   common_name = readr::col_character(),
+                                   sci_name = readr::col_character(),
+                                   cc_name = readr::col_character(),
+                                   stock_name = readr::col_character(),
+                                   species_code = readr::col_character(),
+                                   svspp = readr::col_double(),
+                                   stock_season = readr::col_character(),
+                                   strata = readr::col_double())) %>% 
+    dplyr::filter(stock_name == !!stock_name) %>%
+    dplyr::select(stock_name, common_name, stock_subarea) %>% 
+    dplyr::distinct(.keep_all = TRUE) %>% 
     dplyr::mutate(stock_subarea = ifelse(is.na(stock_subarea), "",
-                                          stock_subarea))
+                                         sprintf("%s ", stock_subarea)))
   
+  ## Get the new YAML
   yml <- yaml::read_yaml(here::here("templates/_bookdown_template.yml"))
   yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, yml$title)
   yml$title <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, yml$title)
-  
+
   
   ### Replace the text
   
@@ -96,13 +107,12 @@ merge_to_bookdown <- function(stock_name,
   for(i in 1:length(text_list)) {
     new_text <- gsub(pattern[i], text_list[[i]], new_text)
   }
-  
+  # cat(new_text)
 ## Adding the custom YAML  screws something up...
 #  new_text <- gsub("---(.*?)---", sprintf("---\r\n%s\r\n---", yaml::as.yaml(yml)), new_text)
 
   
   ##Create .Rmd file to be written to book
-
   file_name <- sprintf("%s.rmd", stock_name)
   folder_name <- sprintf("%s",output_dir)
 
@@ -118,8 +128,9 @@ merge_to_bookdown <- function(stock_name,
   }
   
   # writes generic template after species specific substitutions to .rmd
+  ## BUG: Somehow .rmd files are being created with extra spaces...
   file_connection <- file(sprintf("%s/%s", folder_name, file_name))
-  writeLines(new_text, file_connection)
+  writeLines(new_text, file_connection, sep = "")
   close(file_connection)
   
   message(sprintf("ECSA template written to %s",
