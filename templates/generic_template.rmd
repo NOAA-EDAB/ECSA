@@ -76,6 +76,7 @@ source(here::here("R/create_buttons.R"))
 source(here::here("R/STARS_v18.R"))
 source(here::here("R/gls_summary.R"))
 source(here::here("R/plot_sae.R"))
+source(here::here("R/fit_regime_and_trend.R"))
 
 
 
@@ -188,106 +189,26 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 {{BottomTemperatureEnd}}
 
 ```{r bot_temp_process}
+
 spring_bottom_temp <- 
-  stars_to_series(r = "bot_temp_spring_spdf.rdata",
-                stock_name = stock_name, 
+  fit_regime_and_trend(r = "bot_temp_spring_spdf.rdata",
+                stock_name = stock_name,
                 common_name = common_name,
                 stock_season = stock_season,
                 data_season = "spring",
-                measure_name = "bottom_temp") %>% 
-  dplyr::filter(Time >= 1968) %>% 
-  mutate(season = "Spring") %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-
-STARS_in <- spring_bottom_temp$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_bottom_temp$`selection summary`$pval[1] < 0.05){
-  spring_mod <- spring_bottom_temp$model
-  
-  spring_bottom_temp <- spring_bottom_temp$fit %>% 
-    dplyr::select(Time = time, 
-                  Series = series,
-                  Trend = fit)
-  
-  summ_ <- gls_summary(mod = spring_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-
-  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-
-} else {
-    spring_bottom_temp <- spring_bottom_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    spring_title <- "Spring"
-}
-
-spring_bottom_temp %<>%  
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-spring_min <- min(spring_bottom_temp$Time)
+                measure_name = "bottom_temp")
+spring_min <- min(spring_bottom_temp$df$Time)
+spring_title <- spring_bottom_temp$plot_title
 
 fall_bottom_temp <- 
-  stars_to_series(r = "bot_temp_fall_spdf.rdata",
-               stock_name = stock_name,
-               common_name = common_name,
-               stock_season = stock_season,
-               data_season = "fall",
-                measure_name = "bottom_temp") %>% 
-  dplyr::filter(Time >= 1968) %>% 
-  mutate(season = "fall") %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-
-
-STARS_in <- fall_bottom_temp$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_bottom_temp$`selection summary`$pval[1] < 0.05){
-
-  fall_mod <- fall_bottom_temp$model
-  
-  fall_bottom_temp <- fall_bottom_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = fall_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
-    fall_bottom_temp <- fall_bottom_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    fall_tile <- "Fall"
-}
-
-
-fall_bottom_temp %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-fall_min <- min(fall_bottom_temp$Time)
+  fit_regime_and_trend(r = "bot_temp_fall_spdf.rdata",
+                stock_name = stock_name,
+                common_name = common_name,
+                stock_season = stock_season,
+                data_season = "fall",
+                measure_name = "bottom_temp")
+fall_min <- min(fall_bottom_temp$df$Time)
+fall_title <- fall_bottom_temp$plot_title
 
 if (fall_min > spring_min) {
   plot_min <- spring_min
@@ -300,7 +221,7 @@ if (fall_min > spring_min) {
 ```{r bot_temp_spring_plt, fig.height=3}
 
 spring_bottom_temp_plt <- 
-  spring_bottom_temp %>% 
+  spring_bottom_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -331,7 +252,7 @@ if (interactive){
 
 ```{r bot_temp_fall_plt, fig.height=3}
 fall_bottom_temp_plt <- 
-  fall_bottom_temp %>% 
+  fall_bottom_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -368,105 +289,26 @@ if (interactive){
 {{SurfaceTemperatureEnd}}
 
 ```{r surf_temp_process}
+
 spring_surface_temp <- 
-  stars_to_series(r = "surf_temp_spring_spdf.rdata",
+  fit_regime_and_trend(r = "surf_temp_spring_spdf.rdata",
                 stock_name = stock_name,
                 common_name = common_name,
                 stock_season = stock_season,
                 data_season = "spring",
-                measure_name = "surface_temp") %>% 
-  dplyr::filter(Time >= 1968) %>% 
-  mutate(season = "Spring") %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-
-STARS_in <- spring_surface_temp$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_surface_temp$`selection summary`$pval[1] < 0.05){
-  spring_mod <- spring_surface_temp$model
-
-  spring_surface_temp <- spring_surface_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = spring_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-
-  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-  
-} else {
-    spring_surface_temp <- spring_surface_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    spring_title <- "Spring"
-}
-
-spring_surface_temp %<>%  
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-spring_min <- min(spring_surface_temp$Time)
+                measure_name = "surface_temp")
+spring_min <- min(spring_surface_temp$df$Time)
+spring_title <- spring_surface_temp$plot_title
 
 fall_surface_temp <- 
-  stars_to_series(r = "surf_temp_fall_spdf.rdata",
+  fit_regime_and_trend(r = "surf_temp_fall_spdf.rdata",
                 stock_name = stock_name,
                 common_name = common_name,
                 stock_season = stock_season,
                 data_season = "fall",
-                measure_name = "surface_temp") %>% 
-  dplyr::filter(Time >= 1968) %>% 
-  mutate(season = "fall") %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-
-
-STARS_in <- fall_surface_temp$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_surface_temp$`selection summary`$pval[1] < 0.05){
-  fall_mod <- fall_surface_temp$model
-  
-  fall_surface_temp <- fall_surface_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = fall_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
-    fall_surface_temp <- fall_surface_temp$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    fall_title <- "Fall"
-}
-
-
-fall_surface_temp %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-fall_min <- min(fall_surface_temp$Time)
+                measure_name = "surface_temp")
+fall_min <- min(fall_surface_temp$df$Time)
+fall_title <- fall_surface_temp$plot_title
 
 if (fall_min > spring_min) {
   plot_min <- spring_min
@@ -479,7 +321,7 @@ if (fall_min > spring_min) {
 ```{r surf_temp_spring_plt, fig.height=3}
 
 spring_surface_temp_plt <- 
-  spring_surface_temp %>% 
+  spring_surface_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -510,7 +352,7 @@ if (interactive){
 ```{r surf_temp_fall_plt, fig.height=3}
 
 fall_surface_temp_plt <- 
-  fall_surface_temp %>% 
+  fall_surface_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -556,105 +398,26 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 
 
 ```{r bot_sal_process}
+
 spring_bottom_sal <- 
-  stars_to_series(r = "bot_sal_spring_spdf.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
+  fit_regime_and_trend(r = "bot_sal_spring_spdf.rdata",
+                stock_name = stock_name,
+                common_name = common_name,
                 stock_season = stock_season,
                 data_season = "spring",
-                measure_name = "bottom_sal") %>% 
-  mutate(season = "Spring") %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T)
-
-STARS_in <- spring_bottom_sal$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_bottom_sal$`selection summary`$pval[1] < 0.05){
-  spring_mod <- spring_bottom_sal$model
-
-  spring_bottom_sal <- spring_bottom_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = spring_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-  
-} else {
-    spring_bottom_sal <- spring_bottom_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    
-  spring_title <- "Spring"
-}
-
-spring_bottom_sal %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-spring_min <- min(spring_bottom_sal$Time)
+                measure_name = "bottom_sal")
+spring_min <- min(spring_bottom_sal$df$Time)
+spring_title <- spring_bottom_sal$plot_title
 
 fall_bottom_sal <- 
-  stars_to_series(r = "bot_sal_fall_spdf.rdata",
-               stock_name = stock_name, 
-               common_name = common_name, 
-               stock_season = stock_season,
-               data_season = "fall",
-                measure_name = "bottom_sal") %>% 
-  mutate(season = "fall") %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-
-
-STARS_in <- fall_bottom_sal$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_bottom_sal$`selection summary`$pval[1] < 0.05){
-fall_mod <- fall_bottom_sal$model
-
-  fall_bottom_sal <- fall_bottom_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = fall_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-  
-} else {
-    fall_bottom_sal <- fall_bottom_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-  
-    fall_title <- "Fall"
-  
-}
-
-fall_bottom_sal %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-fall_min <- min(fall_bottom_sal$Time)
+  fit_regime_and_trend(r = "bot_sal_fall_spdf.rdata",
+                stock_name = stock_name,
+                common_name = common_name,
+                stock_season = stock_season,
+                data_season = "fall",
+                measure_name = "bottom_sal")
+fall_min <- min(fall_bottom_sal$df$Time)
+fall_title <- fall_bottom_sal$plot_title
 
 if (fall_min > spring_min) {
   plot_min <- spring_min
@@ -667,7 +430,7 @@ if (fall_min > spring_min) {
 ```{r bot_sal_spring_plt, fig.height=3}
 
 spring_bottom_sal_plt <- 
-  spring_bottom_sal %>% 
+  spring_bottom_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -698,7 +461,7 @@ if (interactive){
 ```{r bot_sal_fall_plt, fig.height=3}
 
 fall_bottom_sal_plt <- 
-  fall_bottom_sal %>% 
+  fall_bottom_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -736,102 +499,24 @@ if (interactive){
 
 ```{r surf_sal_process}
 spring_surface_sal <- 
-  stars_to_series(r = "surf_sal_spring_spdf.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
+  fit_regime_and_trend(r = "surf_sal_spring_spdf.rdata",
+                stock_name = stock_name,
+                common_name = common_name,
                 stock_season = stock_season,
                 data_season = "spring",
-                measure_name = "surface_sal") %>% 
-  mutate(season = "Spring") %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-STARS_in <- spring_surface_sal$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_surface_sal$`selection summary`$pval[1] < 0.05){
-  spring_mod <- spring_surface_sal$model
-  
-  
-  spring_surface_sal <- spring_surface_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-
-
-  summ_ <- gls_summary(mod = spring_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
-    spring_surface_sal <- spring_surface_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-      spring_title <- "Spring"
-
-}
-
-spring_surface_sal %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-spring_min <- min(spring_surface_sal$Time)
+                measure_name = "surface_sal")
+spring_min <- min(spring_surface_sal$df$Time)
+spring_title <- spring_surface_sal$plot_title
 
 fall_surface_sal <- 
-  stars_to_series(r = "surf_sal_fall_spdf.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
+  fit_regime_and_trend(r = "surf_sal_fall_spdf.rdata",
+                stock_name = stock_name,
+                common_name = common_name,
                 stock_season = stock_season,
                 data_season = "fall",
-                measure_name = "surface_sal") %>% 
-  mutate(season = "fall") %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T) 
-
-STARS_in <- fall_surface_sal$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_surface_sal$`selection summary`$pval[1] < 0.05){
-  fall_mod <- fall_surface_sal$model
-  
-  fall_surface_sal <- fall_surface_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  
-  summ_ <- gls_summary(mod = fall_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
-    fall_surface_sal <- fall_surface_sal$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    fall_title <- "Fall"
-}
-
-fall_surface_sal %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-fall_min <- min(fall_surface_sal$Time)
+                measure_name = "surface_sal")
+fall_min <- min(fall_surface_sal$df$Time)
+fall_title <- fall_surface_sal$plot_title
 
 if (fall_min > spring_min) {
   plot_min <- spring_min
@@ -843,7 +528,7 @@ if (fall_min > spring_min) {
 
 ```{r surf_sal_spring_plt, fig.height=3}
 spring_surface_sal_plt <- 
-  spring_surface_sal %>% 
+  spring_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -873,7 +558,7 @@ if (interactive){
 
 ```{r surf_sal_fall_plt, fig.height=3}
 fall_surface_sal_plt <- 
-  fall_surface_sal %>% 
+  fall_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -917,99 +602,27 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 
 ```{r chl_processing}
 spring_chl <- 
-stars_to_series(r = "chlorophyll_conc.rdata",
+  fit_regime_and_trend(r = "chlorophyll_conc.rdata",
               stock_name = stock_name, 
               common_name = common_name, 
               stock_season = stock_season,
               data_season = "spring",
                 measure_name = "biomass",
-                process_to_season = "spring")$spring %>% 
-  mutate(season = "Spring") %>% 
-    dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T)
+                process_to_season = "spring")
+spring_min <- min(spring_chl$df$Time)
+spring_title <- spring_chl$plot_title
 
-STARS_in <- spring_chl$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_chl$`selection summary`$pval[1] < 0.05){
-  spring_chl <- spring_chl$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = spring_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-
-  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
-    spring_chl <- spring_chl$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    spring_title <- "Spring"
-}
-
-spring_chl %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-spring_min <- min(spring_chl$Time)
 
 fall_chl <- 
-stars_to_series(r = "chlorophyll_conc.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "fall",
+  fit_regime_and_trend(r = "chlorophyll_conc.rdata",
+              stock_name = stock_name, 
+              common_name = common_name, 
+              stock_season = stock_season,
+              data_season = "fall",
                 measure_name = "biomass",
-                process_to_season = "fall")$fall %>% 
-  mutate(season = "fall") %>% 
-    dplyr::distinct() %>% 
-  ecotrend::glsMs(Mean ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T)
-
-STARS_in <- fall_chl$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_chl$`selection summary`$pval[1] < 0.05){
-  fall_mod <- fall_chl$model
-  
-  fall_chl <- fall_chl$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = fall_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
-  
-  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-  
-} else {
-    fall_chl <- fall_chl$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-  fall_title <- "Fall"
-}
-
-fall_chl %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-fall_min <- min(fall_chl$Time)
+                process_to_season = "fall")
+fall_min <- min(fall_chl$df$Time)
+fall_title <- fall_chl$plot_title
 
 
 
@@ -1023,7 +636,7 @@ if (fall_min > spring_min) {
 
 ```{r chl_spring_plt, fig.height=3}
 spring_chl_plt <- 
-  spring_chl %>% 
+  spring_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -1053,7 +666,7 @@ if (interactive){
 
 ```{r chl_fal_plt, fig.height=3}
 fall_chl_plt <- 
-  fall_chl %>% 
+  fall_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
   ggplot(aes(x = Time, 
@@ -1097,18 +710,21 @@ if (interactive){
 {{CopepodEnd}}
 
 ```{r zoo_cope_spring, fig.height=5}
-spring_cope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "spring",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+spring_cope <- 
+  fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
+                        data_season = "spring",
+                        measure_name = "zoo",
+                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "spring") %>% 
   left_join(.,zoo_lookup, by = "Grouping") %>% 
   dplyr::filter(copepod == "y") %>% 
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
+
+spring_min <- min(spring_cope$Time)
 
 if (interactive){
   buttons <- create_buttons(spring_cope)
@@ -1175,18 +791,21 @@ spring_cope_plt
 
 
 ```{r zoo_cope_fall, fig.height=5}
-fall_cope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "fall",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+fall_cope <- 
+  fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
+                        data_season = "fall",
+                        measure_name = "zoo",
+                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "fall") %>% 
   left_join(.,zoo_lookup, by = "Grouping") %>% 
   dplyr::filter(copepod == "y") %>% 
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
+
+fall_min <- min(fall_cope$Time)
 
 if (interactive){
   buttons <- create_buttons(fall_cope)
@@ -1259,18 +878,21 @@ fall_cope_plt
 
 
 ```{r zoo_spring_noncope, fig.height=5}
-spring_noncope <- stars_to_series(r <- "zoo_spring_rasters_1yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "spring",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+spring_noncope <- 
+  fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
+                        data_season = "spring",
+                        measure_name = "zoo",
+                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "spring") %>% 
   left_join(.,zoo_lookup, by = "Grouping") %>% 
   dplyr::filter(copepod == "n") %>% 
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
+
+spring_min <- min(spring_noncope$Time)
 
 if (interactive){
 
@@ -1336,18 +958,21 @@ spring_noncope_plt
 ```
 
 ```{r zoo_fall_noncope, fig.height=5}
-fall_noncope <- stars_to_series(r <- "zoo_fall_rasters_1yr.rdata",
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
-                data_season = "fall",
-                measure_name = "zoo",
-                group_regex = "[^A-Z_](.*)(?=_)") %>% 
+fall_noncope <- 
+  fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
+                        data_season = "fall",
+                        measure_name = "zoo",
+                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
   mutate(season = "fall") %>% 
   left_join(.,zoo_lookup, by = "Grouping") %>% 
   dplyr::filter(copepod == "n") %>% 
   dplyr::select(-Grouping, -season, -copepod) %>%
   tidyr::spread(full_name, Mean)
+
+fall_min <- min(fall_noncope$Time)
 
 if (interactive){
 
@@ -1431,24 +1056,23 @@ The probability of occurrence was estimated using random forest classification m
 ```{r occ_prob, fig.height=4}
 
 spring_occ_prob <- 
-  stars_to_series(r = paste0("spring_",sixcode,"_occ_prob.rdata"),
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
+  fit_regime_and_trend(r =  paste0("spring_",sixcode,"_occ_prob.rdata"),
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
                 data_season = "spring",
-                measure_name = "occurrence") %>% 
-  dplyr::select(Spring = Mean,
-                Time)
+                measure_name = "occurrence")$df %>% 
+  dplyr::select(Time, Spring = Series)
 
 fall_occ_prob <- 
-  stars_to_series(r = paste0("fall_",sixcode,"_occ_prob.rdata"),
-                stock_name = stock_name, 
-                common_name = common_name, 
-                stock_season = stock_season,
+  fit_regime_and_trend(r =  paste0("fall_",sixcode,"_occ_prob.rdata"),
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
                 data_season = "fall",
-                measure_name = "occurrence") %>% 
-  dplyr::select(Fall = Mean,
-                Time)
+                measure_name = "occurrence")$df %>% 
+  dplyr::select(Time, Fall = Series)
+
 
 occ_prob <- spring_occ_prob %>% 
   left_join(.,fall_occ_prob, by  = "Time") %>% 
@@ -1499,15 +1123,13 @@ if (interactive){
 ```{r stock_hab_area, fig.height=4, eval = T}
 threshold <- 0.5
 
-
-
 stock_hab_area_df <- 
   stock_habitat_area %>% 
     dplyr::filter(threshold == !!threshold) %>% 
     dplyr::select(season, Time = year, Value = value) %>% 
   tidyr::spread(.,season, Value)  
 
-if (any(stock_season %in% "fall")){
+if (any(stock_season %in% c("fall","both"))){
 
 fall_stock_area <- stock_hab_area_df %>% 
   dplyr::select(Value = fall, Time) %>% 
@@ -1550,7 +1172,7 @@ fall_stock_area %<>%
 
 }
 
-if (any(stock_season %in% "spring")){
+if (any(stock_season %in% c("spring","both"))){
   
 spring_stock_area <- stock_hab_area_df %>% 
   dplyr::select(Value = spring, Time) %>% 
@@ -1596,20 +1218,20 @@ spring_stock_area %<>%
 
 
 ```{r spring-hab-area-plt, fig.height=4}
-if (any(stock_season %in% "spring")){
-  
-spring_stock_area_plt <- 
+if (any(stock_season %in% c("spring","both"))){
+spring_stock_area_df <- 
   spring_stock_area %>% 
   tidyr::gather(.,Var,Value, - Time) %>% 
-  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>"))
   
-  ggplot(aes(x = Time, 
+spring_stock_area_plt <- ggplot(data = spring_stock_area_df,
+         aes(x = Time, 
             y = Value, color = Var, group = Var,
                  tooltip = tooltip,
                  data_id = Time)) +
   geom_line()+
   {if(interactive) geom_point_interactive(size = 0)
-    else geom_line()} +
+    else geom_point(data = spring_stock_area_df[spring_stock_area_df$Var == "Series",],aes(color = Var))} +
     scale_color_manual(values = 
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
@@ -1630,19 +1252,20 @@ if (interactive){
 ```
 
 ```{r fall-hab-area-plt, fig.height=4}
-if (any(stock_season %in% "fall")){
-fall_stock_area_plt <- 
+if (any(stock_season %in% c("fall","both"))){
+fall_stock_area_df <- 
   fall_stock_area %>% 
   tidyr::gather(.,Var,Value, - Time) %>% 
-  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+  mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>"))
   
-  ggplot(aes(x = Time, 
+fall_stock_area_plt <- ggplot(data = fall_stock_area_df,
+         aes(x = Time, 
             y = Value, color = Var, group = Var,
                  tooltip = tooltip,
                  data_id = Time)) +
   geom_line()+
   {if(interactive) geom_point_interactive(size = 0)
-    else geom_line()} +
+    else geom_point(data = fall_stock_area_df[fall_stock_area_df$Var == "Series",],aes(color = Var))} +
     scale_color_manual(values = 
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
@@ -1670,166 +1293,202 @@ if (interactive){
 
 {{EcosystemAreaEnd}}
 
-```{r ecosystem_hab_area, fig.height=4, eval = T}
+```{r ecosystem_hab_area_fall, fig.height=4, eval = T}
 ecosystem_hab_area_df <- 
   ecosystem_habitat_area %>% 
-    dplyr::filter(threshold == !!threshold, area == "unit") %>% 
-    dplyr::select(season, Time = year, Value = value) %>% 
-  tidyr::spread(.,season, Value)  
+    dplyr::filter(threshold == !!threshold) %>% 
+    dplyr::select(season, Time = year, Value = value, area) 
 
-if (any(names(ecosystem_hab_area_df) == c("fall"))){
+if (any(stringr::str_detect(unique(ecosystem_hab_area_df$season), "fall"))){
   
-fall_ecosystem_area <- ecosystem_hab_area_df %>% 
-  dplyr::select(Value = fall, Time) %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Value ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T)
+subareas <- ecosystem_hab_area_df %>% 
+  filter(season == "fall") %>% 
+  pull(area) %>% 
+  unique()
 
-STARS_in <- fall_ecosystem_area$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (fall_ecosystem_area$`selection summary`$pval[1] < 0.05){
-  fall_mod <- fall_ecosystem_area$model
+fall_output <- NULL
+for (i in subareas){
   
-  fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
-  
-  summ_ <- gls_summary(mod = fall_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
+  fall_ecosystem_area <- ecosystem_hab_area_df %>% 
+    dplyr::filter(season == "fall", area == i) %>% 
+    dplyr::select(Value, Time) %>% 
+    dplyr::distinct() %>% 
+    ecotrend::glsMs(Value ~ Time,
+                  data = .,
+                  diagnostic = T,
+                  fit_model  = T)
 
-  fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
+  STARS_in <- fall_ecosystem_area$fit %>% 
+    dplyr::select(-fit) %>% 
+    as.matrix()
+  
+  if (fall_ecosystem_area$`selection summary`$pval[1] < 0.05){
+    fall_mod <- fall_ecosystem_area$model
+    
     fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    fall_title <- "Fall"
-}
-
-fall_ecosystem_area %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-
-}
-
-if (any(names(ecosystem_hab_area_df) == c("spring"))){
-
-spring_ecosystem_area <- ecosystem_hab_area_df %>% 
-  dplyr::select(Value = spring, Time) %>% 
-  dplyr::distinct() %>% 
-  ecotrend::glsMs(Value ~ Time,
-                data = .,
-                diagnostic = T,
-                fit_model  = T)
-
-STARS_in <- spring_ecosystem_area$fit %>% 
-  dplyr::select(-fit) %>% 
-  as.matrix()
-
-if (spring_ecosystem_area$`selection summary`$pval[1] < 0.05){
-  spring_mod <- spring_ecosystem_area$model
+        dplyr::select(Time = time, 
+                  Series = series,
+                  Trend = fit)
+    
+    summ_ <- gls_summary(mod = fall_mod)
+    trend <- summ_$Value[1]
+    lci <- summ_$Value[2]
+    uci <- summ_$Value[3]
   
-  spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series,
-                Trend = fit)
+    fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
+  } else {
+      fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
+        dplyr::select(Time = time, 
+                  Series = series)
+      fall_title <- "Fall"
+  }
   
-  summ_ <- gls_summary(mod = spring_mod)
-  trend <- summ_$Value[1]
-  lci <- summ_$Value[2]
-  uci <- summ_$Value[3]
+  fall_ecosystem_area %<>%
+    left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
+    dplyr::select(-Data, -RSI, -Regime.Number,
+                  `Regime mean` = Regime.Mean) %>% 
+    dplyr::select(which(sapply(.,var)!=0)) %>% 
+    mutate(subarea = i)
+  
+  assign('fall_output', rbind(fall_ecosystem_area, fall_output))
 
-  spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-} else {
-    spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
-      dplyr::select(Time = time, 
-                Series = series)
-    spring_title <- "Spring"
+  }
+  
 }
-
-spring_ecosystem_area %<>%
-  left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-  dplyr::select(-Data, -RSI, -Regime.Number,
-                `Regime mean` = Regime.Mean) %>% 
-  dplyr::select(which(sapply(.,var)!=0))
-}
+  
 ```
 
 
-```{r spring-ecosystem-area-plt, fig.height=4}
-if (any(names(ecosystem_hab_area_df) == c("spring"))){
+```{r ecosystem_hab_area_spring, fig.height=4, eval = T}
+
+if (any(stringr::str_detect(unique(ecosystem_hab_area_df$season), "spring"))){
   
-  spring_ecosystem_area_plt <- 
-    spring_ecosystem_area %>% 
-    tidyr::gather(.,Var,Value, - Time) %>% 
-    mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
+subareas <- ecosystem_hab_area_df %>% 
+  filter(season == "spring") %>% 
+  pull(area) %>% 
+  unique()
+
+spring_output <- NULL
+for (i in subareas){
+  
+  spring_ecosystem_area <- ecosystem_hab_area_df %>% 
+    dplyr::filter(season == "spring", area == i) %>% 
+    dplyr::select(Value, Time) %>% 
+    dplyr::distinct() %>% 
+    ecotrend::glsMs(Value ~ Time,
+                  data = .,
+                  diagnostic = T,
+                  fit_model  = T)
+
+  STARS_in <- spring_ecosystem_area$fit %>% 
+    dplyr::select(-fit) %>% 
+    as.matrix()
+  
+  if (spring_ecosystem_area$`selection summary`$pval[1] < 0.05){
+    spring_mod <- spring_ecosystem_area$model
     
-    ggplot(aes(x = Time, 
-              y = Value, color = Var, group = Var,
-                   tooltip = tooltip,
-                   data_id = Time)) +
-    geom_line()+
-    {if(interactive) geom_point_interactive(size = 0)
-      else geom_line()} +
-      scale_color_manual(values = 
+    spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
+        dplyr::select(Time = time, 
+                  Series = series,
+                  Trend = fit)
+    
+    summ_ <- gls_summary(mod = spring_mod)
+    trend <- summ_$Value[1]
+    lci <- summ_$Value[2]
+    uci <- summ_$Value[3]
+  
+    spring_title <- sprintf("spring Trend: %s CI: (%s, %s)", trend, lci, uci)
+  } else {
+      spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
+        dplyr::select(Time = time, 
+                  Series = series)
+      spring_title <- "spring"
+  }
+  
+  spring_ecosystem_area %<>%
+    left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
+    dplyr::select(-Data, -RSI, -Regime.Number,
+                  `Regime mean` = Regime.Mean) %>% 
+    dplyr::select(which(sapply(.,var)!=0)) %>% 
+    mutate(subarea = i)
+  
+  assign('spring_output', rbind(spring_ecosystem_area, spring_output))
+
+  }
+  
+}
+  
+```
+
+```{r spring-ecosystem-area-plt, fig.height=4}
+spring_ecosystem_area_df <- 
+  spring_output %>% 
+      tidyr::gather(.,Var, Value, -subarea, -Time) %>%
+        mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) 
+
+
+spring_ecosystem_area_plt <- 
+  ggplot(data = spring_ecosystem_area_df, 
+         aes(x = Time, 
+          y = Value, group = Var)) +
+   geom_line(aes(color = Var)) +
+   {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
+                                               color = Var))
+     else geom_point(data = spring_ecosystem_area_df[spring_ecosystem_area_df$Var == "Series",],aes(color = Var)) } +
+        scale_color_manual(values = 
                            c("Regime mean" = "#b2df8a",
                            "Trend" = "#a6cee3",
                            "Series" = "#1f78b4"))+
-      theme_bw() +
-      theme(legend.title = element_blank()) +
-      ylab(expression(paste("Area (",km^{2}, ")")))+
-      ggtitle(spring_title)
-  
-  if (interactive){
-    girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
-           height_svg = 2.5),opts_hover(css = "r:2pt;") )
-  } else {
-    spring_ecosystem_area_plt
-  }
+   theme_bw() +
+   guides(color = F, fill = F) +
+   {if (length(unique(spring_output$subarea)) > 1) facet_wrap(subarea~., scales = "free_y")} +
+   scale_x_continuous(expand = c(0.01, 0.01)) +
+   ylab(expression(paste("Area (",km^{2}, ")")))+
+   xlab("")
 
+if (interactive){
+  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  spring_ecosystem_area_plt
 }
+
+
 ```
 
 ```{r fall-ecosystem-area-plt, fig.height=4}
-if (any(names(ecosystem_hab_area_df) == c("fall"))){
+fall_ecosystem_area_df <- 
+  fall_output %>% 
+      tidyr::gather(.,Var, Value, -subarea, -Time) %>%
+        mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) 
 
-  fall_ecosystem_area_plt <- 
-    fall_ecosystem_area %>% 
-    tidyr::gather(.,Var,Value, - Time) %>% 
-    mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-    
-    ggplot(aes(x = Time, 
-              y = Value, color = Var, group = Var,
-                   tooltip = tooltip,
-                   data_id = Time)) +
-    geom_line()+
-    {if(interactive) geom_point_interactive(size = 0)
-      else geom_line()} +
-      scale_color_manual(values = 
+
+fall_ecosystem_area_plt <- 
+  ggplot(data = fall_ecosystem_area_df, 
+         aes(x = Time, 
+          y = Value, group = Var)) +
+   geom_line(aes(color = Var)) +
+   {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
+                                               color = Var))
+     else geom_point(data = fall_ecosystem_area_df[fall_ecosystem_area_df$Var == "Series",],aes(color = Var)) } +
+        scale_color_manual(values = 
                            c("Regime mean" = "#b2df8a",
                            "Trend" = "#a6cee3",
                            "Series" = "#1f78b4"))+
-      theme_bw() +
-      theme(legend.title = element_blank()) +
-      ylab(expression(paste("Area (",km^{2}, ")")))+
-      ggtitle(fall_title)
-  
-  if (interactive){
-    girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
-           height_svg = 2.5),opts_hover(css = "r:2pt;") )
-  } else {
-    fall_ecosystem_area_plt
-  }
+   theme_bw() +
+   guides(color = F, fill = F) +
+   {if (length(unique(fall_output$subarea)) > 1) facet_wrap(subarea~., scales = "free_y")} +
+   scale_x_continuous(expand = c(0.01, 0.01)) +
+   ylab(expression(paste("Area (",km^{2}, ")")))+
+   xlab("")
 
+if (interactive){
+  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+} else {
+  fall_ecosystem_area_plt
 }
+
 ```
 
 ## Minimum Population Size {-#minimum-population-size}
