@@ -1,6 +1,5 @@
 ---
 title: {{STOCK_NAME}}
-#date: "`r format(Sys.time(), '%B %d, %Y')`"
 always_allow_html: yes
 output: 
         html_document:
@@ -123,6 +122,25 @@ stock_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv"),
 interactive <- F
 ```
 
+{{READMEStart}}
+
+Welcome to the newest iteration of the Ecosystem Context for Stock Advice product for {{STOCK_SUBAREA}}{{COMMON_NAME}}. You are looking at an intermediate draft that still needs some work. Check out github.com/noaa-edab/ecsa for more information on the build process that moves raw data -> stock-name_draft.rmd/Google Doc template -> stock-name.rmd/.html/.pdf final series of documents. 
+
+Do:
+
+* Change editing mode to "Suggesting" (upper right corner of the Google Docs window, below the "share" button)
+* Look at the figures and develop text on how the patterns in the data might be informative to both the assessment and future advice for this stock. 
+* Modify the text between the double curly-bracket "mustaches". Anything in these sections will be harvested for the final report. 
+* Add citations! If you have a citation to add, put it at the end of the section in BibTeX format (.bib; e.g., [here](https://www2.cs.arizona.edu/~collberg/Teaching/07.231/BibTeX/bibtex.html)). 
+* Look at the methods section for completion and questions. For convenience, it is a [google doc](https://drive.google.com/open?id=1bTZs3YL1nc9QzUe3d1mKUjRH9XIfa6ESU8zO9jM5mzk) and will be added to the end of the final document. 
+
+Don't:
+
+* Alter the text in the mustaches! These are highly technical bookmarks that allow us to scrape the text from this google doc into a Rmarkdown (.rmd) file that will be rendered into both .pdf and .html reports. 
+* Add new sections. If you want to add a new section, let scott.large@noaa.gov know and he will help you modify the .rmd at a later date.
+
+{{READMEEnd}}
+
 
 # Introduction
 
@@ -157,12 +175,16 @@ _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 # Temperature
 
 {{TemperatureStart}}
+
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the `r common_name` stock areas are shown below.
+
 {{TemperatureEnd}}
 
 ## Bottom Temperature {-#bottom-temperature}
 
 {{BottomTemperatureStart}}
+
+
 {{BottomTemperatureEnd}}
 
 ```{r bot_temp_process}
@@ -341,6 +363,8 @@ if (interactive){
 ## Surface Temperature {-#surface-temperature}
 
 {{SurfaceTemperatureStart}}
+
+
 {{SurfaceTemperatureEnd}}
 
 ```{r surf_temp_process}
@@ -518,12 +542,16 @@ if (interactive){
 # Salinity
 
 {{SalinityStart}}
+
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the `r common_name` stock areas are shown below.
+
 {{SalinityEnd}}
 
 ## Bottom Salinity
 
 {{BottomSalinityStart}}
+
+
 {{BottomSalinityEnd}}
 
 
@@ -701,6 +729,8 @@ if (interactive){
 ## Surface Salinity {-#surface-salinity}
 
 {{SurfaceSalinityStart}}
+
+
 {{SurfaceSalinityEnd}}
 
 
@@ -873,12 +903,16 @@ if (interactive){
 # Chlorophyll
 
 {{ChlorophyllStart}}
+
+
 {{ChlorophyllEnd}}
 
 ## Chlorophyll concentration in the stock area {-#chlorophyll-concentration-in-the-stock-area}
 
 {{ChlorophyllConcStart}}
+
 The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](https://noaa-edab.github.io/ECSA/#sec:methodschl)). Chlorophyll concentrations in the spring and fall `r common_name` stock areas are shown below.
+
 {{ChlorophyllConcEnd}}
 
 ```{r chl_processing}
@@ -1050,12 +1084,16 @@ if (interactive){
 # Zooplankton
 
 {{ZooplanktonStart}}
+
+
 {{ZooplanktonEnd}}
 
 
 ## Copepod abundance {-#copepod-abundance}
 
 {{CopepodStart}}
+
+
 {{CopepodEnd}}
 
 ```{r zoo_cope_spring, fig.height=5}
@@ -1215,6 +1253,8 @@ fall_cope_plt
 ## Non-copepod zooplankton abundance
 
 {{NonCopepodStart}}
+
+
 {{NonCopepodEnd}}
 
 
@@ -1376,12 +1416,16 @@ fall_noncope_plt
 # Habitat and abundance
 
 {{HabitatStart}}
+
+
 {{HabitatEnd}}
 
 ## Occurrence probability {-#occurrence-probability}
 
 {{OccurrenceStart}}
+
 The probability of occurrence was estimated using random forest classification models (see [methods](#methods)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition.
+
 {{OccurrenceEnd}}
 
 ```{r occ_prob, fig.height=4}
@@ -1440,12 +1484,16 @@ if (interactive){
 ## Habitat area {-#habitat-area}
 
 {{HabitatAreaStart}}
+
+
 {{HabitatAreaEnd}}
 
 
 ### Stock area  {-#stock-area}
 
 {{StockAreaStart}}
+
+
 {{StockAreaEnd}}
 
 ```{r stock_hab_area, fig.height=4, eval = T}
@@ -1618,6 +1666,8 @@ if (interactive){
 ### Ecosystem {-#ecosystem}
 
 {{EcosystemAreaStart}}
+
+
 {{EcosystemAreaEnd}}
 
 ```{r ecosystem_hab_area, fig.height=4, eval = T}
@@ -1785,6 +1835,8 @@ if (any(names(ecosystem_hab_area_df) == c("fall"))){
 ## Minimum Population Size {-#minimum-population-size}
 
 {{MinPopulationStart}}
+
+
 {{MinPopulationEnd}}
 
 
@@ -1832,6 +1884,8 @@ if (nrow(spring_sae) != 0){
 ### Spring numbers and biomass {-#spring-numbers-and-biomass}
 
 {{SpringHabitatAreaStart}}
+
+
 {{SpringHabitatAreaEnd}}
 
 ```{r spring_sae_plt, fig.height = adjust_for_facet, eval = T}
@@ -1928,7 +1982,10 @@ if (nrow(spring_sae) != 0){
 
 
 ### Fall numbers and biomass {-#fall-numbers-and-biomass}
+
 {{FallHabitatAreaStart}}
+
+
 {{FallHabitatAreaEnd}}
 
 ```{r fall_sae_plt, fig.height = adjust_for_facet, eval = T}

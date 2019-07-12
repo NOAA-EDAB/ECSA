@@ -102,7 +102,7 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
 
   
   p1 <- ggplot2::ggplot() +
-    ggplot2::geom_sf(data = strata_int, fill = "white", size = 0.05, color = "grey40") +
+    ggplot2::geom_sf(data = strata_int, fill = "white", alpha = 0.9, size = 0.01, color = "grey30") +
     ggplot2::geom_sf(data = strata_plot, ggplot2::aes(fill = SEASON), size = 0.05, color = "grey30") +
     ggplot2::geom_sf(data = ne_countries, color = "grey60", size = 0.25) +
     ggplot2::geom_sf(data = ne_states, color = "grey60", size = 0.05) +

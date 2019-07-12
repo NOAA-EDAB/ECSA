@@ -5,5 +5,5 @@
 *.pdf
 *.docx
 !template.html
-
 other
+.httr-oauth
