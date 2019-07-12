@@ -30,20 +30,30 @@ create_template <- function(stock_name,
   library(readr)
 
   ## Select the stock and format stock area and common name
-  clean_names <- readr::read_csv(here::here("data-raw","clean_names.csv")) %>%
+  clean_names <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
+                                 col_types = readr::cols(
+                                   common_name = readr::col_character(),
+                                   sci_name = readr::col_character(),
+                                   cc_name = readr::col_character(),
+                                   stock_name = readr::col_character(),
+                                   species_code = readr::col_character(),
+                                   svspp = readr::col_double(),
+                                   stock_season = readr::col_character(),
+                                   strata = readr::col_double())) %>% 
     dplyr::mutate(stock_subarea = ifelse(is.na(stock_subarea), "",
-                                         stock_subarea)) %>% 
-    dplyr::filter(stringr::str_detect(stock_name, !!stock_name)) 
+                                         sprintf("%s ", stock_subarea)),
+                  pattern = sprintf("^%s$", !!stock_name)) %>% 
+    dplyr::filter(stringr::str_detect(stock_name, pattern)) 
   
   if (nrow(clean_names) > 1){
     clean_names <- 
       clean_names %>% 
-      tidyr::separate(.,stock_name, c("stock_name","sub_area"), "_") %>% 
+      tidyr::separate(.,stock_name, c("name","area"), "_", remove = FALSE) %>% 
       dplyr::slice(1) 
   }
     
-  if(length(clean_names) < 1){
-    stop(sprintf("%s is not found. Check spelling or add %s as a new stock to '%s'", stock_name, stock_name, path.expand("data/stock_data/stock_list.csv")))
+  if(nrow(clean_names) < 1){
+    stop(sprintf("'%s' is not found. Check spelling or add '%s' as a new stock to '%s'", stock_name, stock_name, path.expand("data/stock_data/stock_list.csv")))
   }
 
   #Create .Rmd file to be written to book
