@@ -46,6 +46,7 @@ MP,131,Butterfish                      Peprilus triacanthus,Unit,"Spring, Fall",
 ,135,Bluefish                     Pomatomus saltatrix,Unit,Fall,"Inshore strata 2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 45, 46 "
 MP,141,Black sea bass                           Centropristis striata,North,Spring,"Offshore 1-12, 25"
 ,141,Black sea bass                           Centropristis striata,South,Spring,Offshore 61-76 
+,141,Black sea bass                           Centropristis striata,Unit,Spring,"Offshore 1-12, 25, 61-76"
 MP,143,Scup                            Stenotomus chrysops,Unit,Spring,"Offshore 1-12, 23, 25, and 61-76"
 ,143,Scup                            Stenotomus chrysops,Unit,Fall,"Offshore 1-12, 23, 25, 61-76; Inshore 1-61"
 JB add,155,Acadian redfish                           Sebastes fasciatus,Unit,"Spring, Fall","Offshore 24, 26-30, 36-40"
@@ -59,12 +60,3 @@ MP,197,Monkfish                         Lophius americanus,South,"Spring, Fall",
 ,306,Northern shrimp            Pandalus borealis,Unit,Fall,"Offshore 24, 26-28, 37-40"
 MP,502,Northern shortfin squid                                        Ilex illecebrosus,Unit,"Spring, Fall","Offshore 1-40, 61-76"
 MP,503,Longfin inshore squid              Doryteuthis pealeii,Unit,"Spring, Fall","Offshore 1-23, 25-26, 61-76; Inshore 2-46, 58-61, 65-66 "
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-other,,,,,
-other,,,,,
-other,,,,,
-other,,,,,
-other,,,,,
