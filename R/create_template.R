@@ -24,7 +24,8 @@
 create_template <- function(stock_name, 
                             output_dir = here::here("docs"),
                             send_to_google_doc = FALSE,
-                            overwrite = FALSE) {
+                            overwrite = FALSE,
+                            make_interactive = FALSE) {
   
   `%>%` <- magrittr::`%>%`
   library(readr)
@@ -58,6 +59,7 @@ create_template <- function(stock_name,
 
   #Create .Rmd file to be written to book
   dat <- readLines(here::here("templates","generic_template.rmd"))
+  dat <- gsub("\\{\\{INTERACTIVE\\}\\}", make_interactive, dat)
   dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
   dat <- gsub("\\{\\{STOCK_NAME\\}\\}", clean_names$stock_name, dat)
   dat <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, dat)

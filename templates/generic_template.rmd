@@ -52,6 +52,7 @@ stock_code <- "{{SPECIES_CODE}}"
 stock_name <- "{{STOCK_NAME}}"
 cc_name <- "{{CC_NAME}}"
 common_name <- "{{COMMON_NAME}}"
+interactive <- as.logical("{{INTERACTIVE}}")
 
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   
@@ -120,7 +121,7 @@ stock_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv"),
   filter(species.code == sixcode)
 
 #Set interactive to F when pushing a draft document to google drive. Otherwise, the ggiraph figures will render as interactive. Interactive figures should only be used during the creation of the final bookdown document. 
-interactive <- F
+
 ```
 
 {{READMEStart}}
@@ -1420,6 +1421,8 @@ for (i in subareas){
   
 ```
 
+### Spring ecosystem area {-#spring-ecosystem-area}
+
 ```{r spring-ecosystem-area-plt, fig.height=4}
 spring_ecosystem_area_df <- 
   spring_output %>% 
@@ -1455,6 +1458,8 @@ if (interactive){
 
 
 ```
+
+### Fall ecosystem area {-#Fall-ecosystem-area}
 
 ```{r fall-ecosystem-area-plt, fig.height=4}
 fall_ecosystem_area_df <- 
