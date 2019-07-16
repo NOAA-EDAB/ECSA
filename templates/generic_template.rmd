@@ -163,7 +163,7 @@ map_strata(stock_name = stock_name,
 
 #### A note on figures {-#a-note-on-figures}
 
-Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by green and light blue lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
+Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by light blue and green lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
 
 _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 
@@ -306,7 +306,7 @@ fall_surface_temp <-
                 stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "surface_temp")
-fall_min <- min(fall_surface_temp$df$Time)
+fall_title <- fall_surface_temp$plot_title
 ```
 
 
