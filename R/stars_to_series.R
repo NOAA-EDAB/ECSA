@@ -49,6 +49,7 @@ stars_to_series <- function(r,
     }
   }
   
+
   message(paste("Data choice:", r, "\nStock area:",stock_season))
     
   cube_in <- try(

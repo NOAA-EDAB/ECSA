@@ -8,21 +8,17 @@ output:
 
 ```{r, include = FALSE}
 ## Load packages
-# library(ecsa)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(plotly)
 library(DT)
 library(jpeg)
 library(patchwork)
 library(ggthemes)
 library(AICcmodavg)
-library(stringr)
 library(ecotrend)
 library(magrittr)
 library(raster)
 library(stars)
-library(dplyr)
 library(here)
 library(zoo)
 library(gt)
@@ -58,16 +54,6 @@ interactive <- as.logical("{{INTERACTIVE}}")
 strata <- all_stock_season %>%   
   dplyr::filter(stringr::str_detect(stock_name, !!stock_name))
 
-if (length(unique(strata$stock_name)) > 1)  {
-  strata %<>% 
-    tidyr::separate(., stock_name, c("stock_name","sub_area"), "_")
-
-}
-  
-
-
-
-
 source(here::here("R/map_strata.R"))
 source(here::here("R/get_strata.R"))
 source(here::here("R/crop_to_strata.R"))
@@ -83,21 +69,28 @@ source(here::here("R/fit_regime_and_trend.R"))
 
 svspp <- strata %>% pull(svspp) %>% unique()
 sixcode <- strata %>% pull(species_code) %>% unique()
+subarea <- strata %>% pull(stock_subarea) %>% unique()
+
+if (is.na(subarea)){
+  subarea <- "unit"
+}
 
 #Specific analytical treatments were selected beforehand for each stock. These data are in data-raw/treatment_selection.csv. We import here and filter the below SAE data by treatment selection. 
 treatment_selection <- 
   read.csv(here::here("data-raw/treatment-selection.csv"),
                        stringsAsFactors = F) %>% 
-  filter(svspp == !!svspp)
+  filter(svspp == !!svspp, stock == subarea) 
 
 #Load swept area estimate data. Filter by svspp code and treatment selection
 spring_sae <- read.csv(here::here("data-raw/spring_sae_tb_sum.csv"),
                        stringsAsFactors = F) %>% 
-  filter(svspp == !!svspp, treatment %in% unique(treatment_selection$treat))
+  filter(svspp == !!svspp,
+         stocks == subarea)
 
 fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"),
                      stringsAsFactors = F) %>% 
-  filter(svspp == !!svspp, treatment %in% unique(treatment_selection$treat))
+  filter(svspp == !!svspp,
+         stocks == subarea)
 
 #Adjust knitr fig height if a facet plot is needed
 if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
@@ -198,7 +191,6 @@ spring_bottom_temp <-
                 stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "bottom_temp")
-spring_min <- min(spring_bottom_temp$df$Time)
 spring_title <- spring_bottom_temp$plot_title
 
 fall_bottom_temp <- 
@@ -208,18 +200,23 @@ fall_bottom_temp <-
                 stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "bottom_temp")
-fall_min <- min(fall_bottom_temp$df$Time)
 fall_title <- fall_bottom_temp$plot_title
 
-if (fall_min > spring_min) {
-  plot_min <- spring_min
-} else {
-  plot_min <- fall_min
+#Only show plots based on what seasons are available. If strata are available for spring and fall, show both plots. Otherwise just one.
+
+# Spring is print_plot[1] and fall is print_plot[2]
+
+if (any(stock_season == "both") | all(stock_season == c('spring','fall'))){
+  print_plot <- c(T,T)
+} else if (stock_season == "spring") {
+  print_plot <- c(T,F)
+} else if (stock_season == "fall"){
+  print_plot <- c(F,T)
 }
 ```
 
 
-```{r bot_temp_spring_plt, fig.height=3}
+```{r bot_temp_spring_plt, fig.height=3, eval = print_plot[1]}
 
 spring_bottom_temp_plt <- 
   spring_bottom_temp$df %>% 
@@ -251,7 +248,7 @@ if (interactive){
 ```
 
 
-```{r bot_temp_fall_plt, fig.height=3}
+```{r bot_temp_fall_plt, fig.height=3, eval = print_plot[2]}
 fall_bottom_temp_plt <- 
   fall_bottom_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -298,7 +295,6 @@ spring_surface_temp <-
                 stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "surface_temp")
-spring_min <- min(spring_surface_temp$df$Time)
 spring_title <- spring_surface_temp$plot_title
 
 fall_surface_temp <- 
@@ -309,17 +305,10 @@ fall_surface_temp <-
                 data_season = "fall",
                 measure_name = "surface_temp")
 fall_min <- min(fall_surface_temp$df$Time)
-fall_title <- fall_surface_temp$plot_title
-
-if (fall_min > spring_min) {
-  plot_min <- spring_min
-} else {
-  plot_min <- fall_min
-}
 ```
 
 
-```{r surf_temp_spring_plt, fig.height=3}
+```{r surf_temp_spring_plt, fig.height=3, eval = print_plot[1]}
 
 spring_surface_temp_plt <- 
   spring_surface_temp$df %>% 
@@ -350,7 +339,7 @@ if (interactive){
 
 ```
 
-```{r surf_temp_fall_plt, fig.height=3}
+```{r surf_temp_fall_plt, fig.height=3, eval = print_plot[2]}
 
 fall_surface_temp_plt <- 
   fall_surface_temp$df %>% 
@@ -407,7 +396,6 @@ spring_bottom_sal <-
                 stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "bottom_sal")
-spring_min <- min(spring_bottom_sal$df$Time)
 spring_title <- spring_bottom_sal$plot_title
 
 fall_bottom_sal <- 
@@ -417,18 +405,12 @@ fall_bottom_sal <-
                 stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "bottom_sal")
-fall_min <- min(fall_bottom_sal$df$Time)
 fall_title <- fall_bottom_sal$plot_title
 
-if (fall_min > spring_min) {
-  plot_min <- spring_min
-} else {
-  plot_min <- fall_min
-}
 ```
 
 
-```{r bot_sal_spring_plt, fig.height=3}
+```{r bot_sal_spring_plt, fig.height=3, eval = print_plot[1]}
 
 spring_bottom_sal_plt <- 
   spring_bottom_sal$df %>% 
@@ -459,7 +441,7 @@ if (interactive){
 ```
 
 
-```{r bot_sal_fall_plt, fig.height=3}
+```{r bot_sal_fall_plt, fig.height=3, eval = print_plot[2]}
 
 fall_bottom_sal_plt <- 
   fall_bottom_sal$df %>% 
@@ -506,7 +488,6 @@ spring_surface_sal <-
                 stock_season = stock_season,
                 data_season = "spring",
                 measure_name = "surface_sal")
-spring_min <- min(spring_surface_sal$df$Time)
 spring_title <- spring_surface_sal$plot_title
 
 fall_surface_sal <- 
@@ -516,18 +497,12 @@ fall_surface_sal <-
                 stock_season = stock_season,
                 data_season = "fall",
                 measure_name = "surface_sal")
-fall_min <- min(fall_surface_sal$df$Time)
 fall_title <- fall_surface_sal$plot_title
 
-if (fall_min > spring_min) {
-  plot_min <- spring_min
-} else {
-  plot_min <- fall_min
-}
 ```
 
 
-```{r surf_sal_spring_plt, fig.height=3}
+```{r surf_sal_spring_plt, fig.height=3, eval = print_plot[1]}
 spring_surface_sal_plt <- 
   spring_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -557,7 +532,7 @@ if (interactive){
 ```
 
 
-```{r surf_sal_fall_plt, fig.height=3}
+```{r surf_sal_fall_plt, fig.height=3, eval = print_plot[2]}
 fall_surface_sal_plt <- 
   fall_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -610,7 +585,6 @@ spring_chl <-
               data_season = "spring",
                 measure_name = "biomass",
                 process_to_season = "spring")
-spring_min <- min(spring_chl$df$Time)
 spring_title <- spring_chl$plot_title
 
 
@@ -622,20 +596,11 @@ fall_chl <-
               data_season = "fall",
                 measure_name = "biomass",
                 process_to_season = "fall")
-fall_min <- min(fall_chl$df$Time)
 fall_title <- fall_chl$plot_title
-
-
-
-if (fall_min > spring_min) {
-  plot_min <- spring_min
-} else {
-  plot_min <- fall_min
-}
 ```
 
 
-```{r chl_spring_plt, fig.height=3}
+```{r chl_spring_plt, fig.height=3, eval = print_plot[1]}
 spring_chl_plt <- 
   spring_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -665,7 +630,7 @@ if (interactive){
 ```
 
 
-```{r chl_fal_plt, fig.height=3}
+```{r chl_fal_plt, fig.height=3, eval = print_plot[2]}
 fall_chl_plt <- 
   fall_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -710,7 +675,7 @@ if (interactive){
 
 {{CopepodEnd}}
 
-```{r zoo_cope_spring, fig.height=5}
+```{r zoo_cope_processing}
 spring_cope <- 
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
                         stock_name = stock_name, 
@@ -727,6 +692,24 @@ spring_cope <-
 
 spring_min <- min(spring_cope$Time)
 
+fall_cope <- 
+  fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
+                        data_season = "fall",
+                        measure_name = "zoo",
+                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "fall") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "y") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
+
+fall_min <- min(fall_cope$Time)
+```
+
+```{r, zoo_cope_spring, fig.height=5, eval = print_plot[1]}
 if (interactive){
   buttons <- create_buttons(spring_cope)
 
@@ -791,22 +774,7 @@ spring_cope_plt
 ```
 
 
-```{r zoo_cope_fall, fig.height=5}
-fall_cope <- 
-  fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
-                        stock_name = stock_name, 
-                        common_name = common_name, 
-                        stock_season = stock_season,
-                        data_season = "fall",
-                        measure_name = "zoo",
-                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "fall") %>% 
-  left_join(.,zoo_lookup, by = "Grouping") %>% 
-  dplyr::filter(copepod == "y") %>% 
-  dplyr::select(-Grouping, -season, -copepod) %>%
-  tidyr::spread(full_name, Mean)
-
-fall_min <- min(fall_cope$Time)
+```{r zoo_cope_fall, fig.height=5, fig.height=5, eval = print_plot[2]}
 
 if (interactive){
   buttons <- create_buttons(fall_cope)
@@ -878,7 +846,7 @@ fall_cope_plt
 {{NonCopepodEnd}}
 
 
-```{r zoo_spring_noncope, fig.height=5}
+```{r zoo_noncope_processing}
 spring_noncope <- 
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
                         stock_name = stock_name, 
@@ -895,6 +863,25 @@ spring_noncope <-
 
 spring_min <- min(spring_noncope$Time)
 
+fall_noncope <- 
+  fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
+                        stock_name = stock_name, 
+                        common_name = common_name, 
+                        stock_season = stock_season,
+                        data_season = "fall",
+                        measure_name = "zoo",
+                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
+  mutate(season = "fall") %>% 
+  left_join(.,zoo_lookup, by = "Grouping") %>% 
+  dplyr::filter(copepod == "n") %>% 
+  dplyr::select(-Grouping, -season, -copepod) %>%
+  tidyr::spread(full_name, Mean)
+
+fall_min <- min(fall_noncope$Time)
+
+```
+
+```{r zoo_spring_noncope, fig.height=5, eval = print_plot[1]}
 if (interactive){
 
 buttons <- create_buttons(spring_noncope)
@@ -958,23 +945,7 @@ spring_noncope_plt
 }
 ```
 
-```{r zoo_fall_noncope, fig.height=5}
-fall_noncope <- 
-  fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
-                        stock_name = stock_name, 
-                        common_name = common_name, 
-                        stock_season = stock_season,
-                        data_season = "fall",
-                        measure_name = "zoo",
-                        group_regex = "[^A-Z_](.*)(?=_)") %>% 
-  mutate(season = "fall") %>% 
-  left_join(.,zoo_lookup, by = "Grouping") %>% 
-  dplyr::filter(copepod == "n") %>% 
-  dplyr::select(-Grouping, -season, -copepod) %>%
-  tidyr::spread(full_name, Mean)
-
-fall_min <- min(fall_noncope$Time)
-
+```{r zoo_fall_noncope, fig.height=5, eval = print_plot[2]}
 if (interactive){
 
 buttons <- create_buttons(fall_noncope)
@@ -1050,7 +1021,7 @@ fall_noncope_plt
 
 {{OccurrenceStart}}
 
-The probability of occurrence was estimated using random forest classification models (see [methods](#methods)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition.
+The probability of occurrence was estimated using random forest classification models (see [methods](#methods)). The mean annual probabilities were extracted for the spring and/or fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition.
 
 {{OccurrenceEnd}}
 
@@ -1074,10 +1045,17 @@ fall_occ_prob <-
                 measure_name = "occurrence")$df %>% 
   dplyr::select(Time, Fall = Series)
 
+if (all(print_plot)){
+  occ_prob <- spring_occ_prob %>% 
+    left_join(.,fall_occ_prob, by  = "Time") %>% 
+    dplyr::select(Time, Spring, Fall)
+} else if (print_plot[1]){
+  occ_prob <- spring_occ_prob %>% 
+    dplyr::select(Time, Spring)
+} else if (print_plot[2])
+  occ_prob <- fall_occ_prob %>% 
+    dplyr::select(Time, Fall)
 
-occ_prob <- spring_occ_prob %>% 
-  left_join(.,fall_occ_prob, by  = "Time") %>% 
-  dplyr::select(Time, Spring, Fall)
 
 occ_prob_plt <- 
   occ_prob %>% 
@@ -1128,7 +1106,7 @@ stock_hab_area_df <-
   stock_habitat_area %>% 
     dplyr::filter(threshold == !!threshold) %>% 
     dplyr::select(season, Time = year, Value = value) %>% 
-  tidyr::spread(.,season, Value)  
+    tidyr::spread(.,season, Value)  
 
 if (any(stock_season %in% c("fall","both"))){
 
@@ -1218,8 +1196,7 @@ spring_stock_area %<>%
 ```
 
 
-```{r spring-hab-area-plt, fig.height=4}
-if (any(stock_season %in% c("spring","both"))){
+```{r spring-hab-area-plt, fig.height=4, eval = print_plot[1]}
 spring_stock_area_df <- 
   spring_stock_area %>% 
   tidyr::gather(.,Var,Value, - Time) %>% 
@@ -1232,7 +1209,7 @@ spring_stock_area_plt <- ggplot(data = spring_stock_area_df,
                  data_id = Time)) +
   geom_line()+
   {if(interactive) geom_point_interactive(size = 0)
-    else geom_point(data = spring_stock_area_df[spring_stock_area_df$Var == "Series",],aes(color = Var))} +
+    else geom_line(data = spring_stock_area_df[spring_stock_area_df$Var == "Series",],aes(color = Var))} +
     scale_color_manual(values = 
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
@@ -1248,12 +1225,9 @@ if (interactive){
 } else {
   spring_stock_area_plt
 }
-
-}
 ```
 
-```{r fall-hab-area-plt, fig.height=4}
-if (any(stock_season %in% c("fall","both"))){
+```{r fall-hab-area-plt, fig.height=4, eval = print_plot[2]}
 fall_stock_area_df <- 
   fall_stock_area %>% 
   tidyr::gather(.,Var,Value, - Time) %>% 
@@ -1266,7 +1240,7 @@ fall_stock_area_plt <- ggplot(data = fall_stock_area_df,
                  data_id = Time)) +
   geom_line()+
   {if(interactive) geom_point_interactive(size = 0)
-    else geom_point(data = fall_stock_area_df[fall_stock_area_df$Var == "Series",],aes(color = Var))} +
+    else geom_line(data = fall_stock_area_df[fall_stock_area_df$Var == "Series",],aes(color = Var))} +
     scale_color_manual(values = 
                          c("Regime mean" = "#b2df8a",
                          "Trend" = "#a6cee3",
@@ -1282,8 +1256,6 @@ if (interactive){
 } else {
   fall_stock_area_plt
 }
-
-}
 ```
 
 
@@ -1294,7 +1266,7 @@ if (interactive){
 
 {{EcosystemAreaEnd}}
 
-```{r ecosystem_hab_area_fall, fig.height=4, eval = T}
+```{r ecosystem_hab_area_fall}
 ecosystem_hab_area_df <- 
   ecosystem_habitat_area %>% 
     dplyr::filter(threshold == !!threshold) %>% 
@@ -1360,7 +1332,7 @@ for (i in subareas){
 ```
 
 
-```{r ecosystem_hab_area_spring, fig.height=4, eval = T}
+```{r ecosystem_hab_area_spring}
 
 if (any(stringr::str_detect(unique(ecosystem_hab_area_df$season), "spring"))){
   
@@ -1421,9 +1393,8 @@ for (i in subareas){
   
 ```
 
-### Spring ecosystem area {-#spring-ecosystem-area}
 
-```{r spring-ecosystem-area-plt, fig.height=4}
+```{r spring-ecosystem-area-plt, fig.height=4, eval = print_plot[1]}
 spring_ecosystem_area_df <- 
   spring_output %>% 
       tidyr::gather(.,Var, Value, -subarea, -Time) %>%
@@ -1436,8 +1407,8 @@ spring_ecosystem_area_plt <-
           y = Value, group = Var)) +
    geom_line(aes(color = Var)) +
    {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-                                               color = Var))
-     else geom_point(data = spring_ecosystem_area_df[spring_ecosystem_area_df$Var == "Series",],aes(color = Var)) } +
+                                               color = Var), size = 0)
+     else geom_line(data = spring_ecosystem_area_df[spring_ecosystem_area_df$Var == "Series",],aes(color = Var)) } +
         scale_color_manual(values = 
                            c("Regime mean" = "#b2df8a",
                            "Trend" = "#a6cee3",
@@ -1446,6 +1417,7 @@ spring_ecosystem_area_plt <-
    guides(color = F, fill = F) +
    {if (length(unique(spring_output$subarea)) > 1) facet_wrap(subarea~., scales = "free_y")} +
    scale_x_continuous(expand = c(0.01, 0.01)) +
+    ggtitle("Spring ecosystem area")+
    ylab(expression(paste("Area (",km^{2}, ")")))+
    xlab("")
 
@@ -1459,9 +1431,8 @@ if (interactive){
 
 ```
 
-### Fall ecosystem area {-#Fall-ecosystem-area}
 
-```{r fall-ecosystem-area-plt, fig.height=4}
+```{r fall-ecosystem-area-plt, fig.height=4, eval = print_plot[2]}
 fall_ecosystem_area_df <- 
   fall_output %>% 
       tidyr::gather(.,Var, Value, -subarea, -Time) %>%
@@ -1474,8 +1445,8 @@ fall_ecosystem_area_plt <-
           y = Value, group = Var)) +
    geom_line(aes(color = Var)) +
    {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-                                               color = Var))
-     else geom_point(data = fall_ecosystem_area_df[fall_ecosystem_area_df$Var == "Series",],aes(color = Var)) } +
+                                               color = Var), size = 0)
+     else geom_line(data = fall_ecosystem_area_df[fall_ecosystem_area_df$Var == "Series",],aes(color = Var)) } +
         scale_color_manual(values = 
                            c("Regime mean" = "#b2df8a",
                            "Trend" = "#a6cee3",
@@ -1485,6 +1456,7 @@ fall_ecosystem_area_plt <-
    {if (length(unique(fall_output$subarea)) > 1) facet_wrap(subarea~., scales = "free_y")} +
    scale_x_continuous(expand = c(0.01, 0.01)) +
    ylab(expression(paste("Area (",km^{2}, ")")))+
+    ggtitle("Fall ecosystem area")+
    xlab("")
 
 if (interactive){
@@ -1504,11 +1476,17 @@ if (interactive){
 {{MinPopulationEnd}}
 
 
-```{r sae_processing, eval = T}
+```{r sae_processing}
 do_transform <- T
 
 if (nrow(fall_sae) != 0){
-  fall_sae_processed <- fall_sae %>% 
+  
+fall_treatment <- treatment_selection %>% 
+  filter(season == "fall") 
+  
+  
+  fall_sae_processed <- fall_sae %>%
+  dplyr::semi_join(.,fall_treatment, by = c("biomass","treatment")) %>%
   dplyr::select(-svspp) %>% 
   dplyr::rename(Time = year) %>% 
   dplyr::select(-ztotal) %>%
@@ -1526,7 +1504,12 @@ if (nrow(fall_sae) != 0){
 }
 
 if (nrow(spring_sae) != 0){
+  
+spring_treatment <- treatment_selection %>% 
+  filter(season == "spring")
+  
   spring_sae_processed <- spring_sae %>% 
+    dplyr::semi_join(.,spring_treatment, by = c("biomass","treatment")) %>%
     dplyr::select(-svspp) %>% 
     dplyr::rename(Time = year) %>% 
     dplyr::select(-ztotal) %>%
@@ -1544,15 +1527,12 @@ if (nrow(spring_sae) != 0){
 }
 ```
 
-
-### Spring numbers and biomass {-#spring-numbers-and-biomass}
-
 {{SpringHabitatAreaStart}}
 
 
 {{SpringHabitatAreaEnd}}
 
-```{r spring_sae_plt, fig.height = adjust_for_facet, eval = T}
+```{r spring_sae_plt, fig.height = adjust_for_facet, eval = print_plot[1]}
 if (nrow(spring_sae) != 0){
   if (do_transform){
     
@@ -1569,7 +1549,7 @@ if (nrow(spring_sae) != 0){
          else geom_point(aes(color = Treatment)) } +
   
        theme_bw() +
-       guides(color = F, fill = F) +
+       theme(legend.position = "bottom") +
        {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
        scale_x_continuous(expand = c(0.01, 0.01)) +
        ylab("Biomass (log10 kg)") +
@@ -1644,15 +1624,12 @@ if (nrow(spring_sae) != 0){
 }
 ```
 
-
-### Fall numbers and biomass {-#fall-numbers-and-biomass}
-
 {{FallHabitatAreaStart}}
 
 
 {{FallHabitatAreaEnd}}
 
-```{r fall_sae_plt, fig.height = adjust_for_facet, eval = T}
+```{r fall_sae_plt, fig.height = adjust_for_facet, eval = print_plot[2]}
 if (nrow(fall_sae) != 0){
   if (do_transform){
     
@@ -1669,7 +1646,7 @@ if (nrow(fall_sae) != 0){
          else geom_point(aes(color = Treatment)) } +
   
        theme_bw() +
-       guides(color = F, fill = F) +
+       theme(legend.position = "bottom") +
        {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
        scale_x_continuous(expand = c(0.01, 0.01)) +
        ylab("Biomass (log10 kg)") +

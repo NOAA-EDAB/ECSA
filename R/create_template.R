@@ -47,13 +47,12 @@ create_template <- function(stock_name,
     dplyr::filter(stringr::str_detect(stock_name, pattern)) 
   
   if (nrow(clean_names) > 1){
-    clean_names <- 
-      clean_names %>% 
-      tidyr::separate(.,stock_name, c("name","area"), "_", remove = FALSE) %>% 
-      dplyr::slice(1) 
-  }
-    
-  if(nrow(clean_names) < 1){
+    #This splits out a stock area from the stock name. If there's no stock area associated with the name, then
+    #this step returns a warning (hence the use of suppressWarnings())
+     suppressWarnings( clean_names %<>% 
+        tidyr::separate(.,stock_name, c("name","area"), "_", remove = FALSE) %>% 
+        dplyr::slice(1) )
+  } else if (nrow(clean_names) < 1){
     stop(sprintf("'%s' is not found. Check spelling or add '%s' as a new stock to '%s'", stock_name, stock_name, path.expand("data/stock_data/stock_list.csv")))
   }
 
