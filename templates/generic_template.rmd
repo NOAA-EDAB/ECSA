@@ -1745,7 +1745,3 @@ if (nrow(fall_sae) != 0){
 
 # Methods {#methods}
 
-<!-- Generic methods will be attached to the document after editing. To view, please go to `r googledrive::drive_link("EDABranch_Drive/Products/ECSA/generic_methods.Rmd")` -->
-
-
-
