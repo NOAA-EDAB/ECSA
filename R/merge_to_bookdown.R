@@ -41,7 +41,7 @@ merge_to_bookdown <- function(stock_name,
     
 
   # stock_name <- "scup"
-  # # stock_file <- sprintf("%s.rmd", here::here("docs", stock_name))
+  # stock_file <- sprintf("%s.rmd", here::here("docs", stock_name))
   
   ### Load the necessary files
   ## Download the edited google doc 
@@ -53,6 +53,10 @@ merge_to_bookdown <- function(stock_name,
   )
   # docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
   docs_text <- readr::read_file(tmp_txt)
+  ## remove readme
+  docs_text <- gsub(".*\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\r\n", "", docs_text)
+  ## Fix the methods links
+  docs_text <- gsub("#methods(.*?)\\)", "[methods](#methods\\1))", docs_text)
   
   ## Download the methods google doc  
   # methods_txt <- tempfile(pattern = stock_name, fileext = ".txt")
@@ -65,7 +69,9 @@ merge_to_bookdown <- function(stock_name,
   
   ## Download the draft rmd
   rmd_text <- readr::read_file(sprintf("%s_draft.rmd", here::here("docs", stock_name)))
-
+  ## remove readme
+  rmd_text <- gsub("\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\r\n", "", rmd_text)
+  
   ## Get the stock name, common name, and subarea
   clean_names <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
                                  col_types = readr::cols(
@@ -101,8 +107,7 @@ merge_to_bookdown <- function(stock_name,
   
   ## Pattern used to find and replace sections
   pattern <- sprintf("\\{\\{%sStart\\}\\}(.*?)\\{\\{%sEnd\\}\\}", names(text_list), names(text_list))
-  #text_list[1:21] <- "This text be test"
-  
+
   ## 
   new_text <- rmd_text
   for(i in 1:length(text_list)) {
@@ -112,6 +117,10 @@ merge_to_bookdown <- function(stock_name,
  new_text <- gsub("---(.*?)---",
   sprintf("---\n%s---", yaml::as.yaml(yml)), new_text)
 
+  # new_text <- paste("---\n", yaml::as.yaml(yml), "---",
+  #                   new_text,
+  #                   collapse = " ")
+  
   
   ##Create .Rmd file to be written to book
   file_name <- sprintf("%s.rmd", stock_name)
@@ -128,13 +137,15 @@ merge_to_bookdown <- function(stock_name,
     stop(sprintf("\nEasy, Cowboy!\n%s already exists. If you want to do this, change 'overwrite = TRUE'", file_name))
   }
   
+  methods <- paste(readr::read_lines(here::here("templates/generic_methods.Rmd"), skip = 10), collapse = " ")
+  new_text <- paste(new_text, methods, collapse = " ")
+  
   # writes generic template after species specific substitutions to .rmd
-  ## BUG: Somehow .rmd files are being created with extra spaces...
   file_connection <- file(sprintf("%s/%s", folder_name, file_name))
   writeLines(new_text, file_connection, sep = "")
+  # writeLines(new_tt, file_connection, sep = "")
   
-  methods <- readr::read_lines(here::here("templates/generic_methods.Rmd"), skip = 10)
-  readr::write_lines(methods, file_connection, append = TRUE)
+  # readr::write_lines(methods, file_connection, append = TRUE)
   close(file_connection)
   
   message(sprintf("ECSA template written to %s",
