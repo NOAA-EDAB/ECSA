@@ -5,7 +5,7 @@ title:
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: ""
 always_allow_html: yes
-bibliography: ["`r here::here('ECSA_bibliography.bib')`"]
+bibliography: "docs/ECSA_bibliography.bib"
 link-citations: true
 site: "bookdown::bookdown_site"
 output:
