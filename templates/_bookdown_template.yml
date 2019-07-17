@@ -7,13 +7,17 @@ author: ""
 always_allow_html: yes
 bibliography: "docs/ECSA_bibliography.bib"
 link-citations: true
-site: "bookdown::bookdown_site"
-download: ["pdf"]
+site: bookdown::bookdown_site
+biblio-style: apalike
+link-citations: yes
+github-repo: NOAA-EDAB/ECSA
 output:
   bookdown::gitbook:
     lib_dir: book_assets
     split_by: none
     config:
+      toc:
+        collapse: yes
       position: static
   bookdown::pdf_book:
     keep_tex: yes
