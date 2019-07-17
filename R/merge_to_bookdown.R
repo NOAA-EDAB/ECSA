@@ -51,16 +51,16 @@ merge_to_bookdown <- function(stock_name,
     path = tmp_txt,
     overwrite = TRUE
   )
-  docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
-
+  # docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
+  docs_text <- readr::read_file(tmp_txt)
   ## Download the methods google doc  
-  methods_txt <- tempfile(pattern = stock_name, fileext = ".txt")
-  googledrive::drive_download(
-    sprintf("EDABranch_Drive/Products/ECSA/%s", methods_gdoc_path),
-    path = methods_txt,
-    overwrite = TRUE
-  )
-  methods_text <- readr::read_file(methods_txt)
+  # methods_txt <- tempfile(pattern = stock_name, fileext = ".txt")
+  # googledrive::drive_download(
+  #   sprintf("EDABranch_Drive/Products/ECSA/%s", methods_gdoc_path),
+  #   path = methods_txt,
+  #   overwrite = TRUE
+  # )
+  # methods_text <- readr::read_file(methods_txt)
   
   ## Download the draft rmd
   rmd_text <- readr::read_file(sprintf("%s_draft.rmd", here::here("docs", stock_name)))
@@ -86,7 +86,7 @@ merge_to_bookdown <- function(stock_name,
   yml <- yaml::read_yaml(here::here("templates/_bookdown_template.yml"))
   yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, yml$title)
   yml$title <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, yml$title)
-
+  yml$bibliography <- here::here("docs/ECSA_bibliography.bib")
   
   ### Replace the text
   
@@ -109,7 +109,8 @@ merge_to_bookdown <- function(stock_name,
   }
   # cat(new_text)
 ## Adding the custom YAML  screws something up...
-#  new_text <- gsub("---(.*?)---", sprintf("---\r\n%s\r\n---", yaml::as.yaml(yml)), new_text)
+ new_text <- gsub("---(.*?)---",
+  sprintf("---%s---", yaml::as.yaml(yml)), new_text)
 
   
   ##Create .Rmd file to be written to book
