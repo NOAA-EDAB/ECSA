@@ -51,7 +51,7 @@ merge_to_bookdown <- function(stock_name,
     path = tmp_txt,
     overwrite = TRUE
   )
-  docs_text <- readr::read_file(tmp_txt)
+  docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
 
   ## Download the methods google doc  
   methods_txt <- tempfile(pattern = stock_name, fileext = ".txt")
