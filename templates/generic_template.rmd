@@ -22,6 +22,7 @@ library(stars)
 library(here)
 library(zoo)
 library(gt)
+library(kableExtra)
 library(ggiraph)
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')

@@ -8,13 +8,12 @@ always_allow_html: yes
 bibliography: "docs/ECSA_bibliography.bib"
 link-citations: true
 site: "bookdown::bookdown_site"
+download: ["pdf"]
 output:
   bookdown::gitbook:
-    lib_dir: assets
-    css: css/style.css
+    lib_dir: book_assets
+    split_by: none
     config:
-      toolbar:
       position: static
-    download: null
   bookdown::pdf_book:
     keep_tex: yes
