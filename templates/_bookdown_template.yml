@@ -10,10 +10,11 @@ link-citations: true
 site: "bookdown::bookdown_site"
 output:
   bookdown::gitbook:
-    lib_dir: "book_assets"
-    split_by: "none"
+    lib_dir: assets
+    css: css/style.css
     config:
-      toc:
-        collapse: yes
-        after: |
-          <li><a href="https://bookdown.org" target="_blank">Published with bookdown</a></li>
+      toolbar:
+      position: static
+    download: null
+  bookdown::pdf_book:
+    keep_tex: yes

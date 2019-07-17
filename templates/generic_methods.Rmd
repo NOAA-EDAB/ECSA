@@ -141,10 +141,13 @@ tab <- '
 '
 df<-readr::read_delim(tab, delim="|")
 df<-df[-c(1,2,3) ,c("Variables","Notes","References")]
-knitr::kable(
-  df, booktabs = TRUE,
-  caption = 'Habitat descriptors used in occupancy model parameterization.'
-)
+  knitr::kable(
+    df, booktabs = TRUE,
+    caption = 'Habitat descriptors used in occupancy model parameterization.') %>% 
+    kableExtra::kable_styling(full_width = F) %>% 
+    column_spec(1, width  = "10em") %>% 
+    column_spec(2, width = "20em") %>% 
+    column_spec(3, width = "15em")
 ```
 
 ## Diet composition {#sec:methodsdiet}
@@ -166,7 +169,7 @@ The dates of survey data collection varied by year. To date correct temperature 
 
 ### {#fig:doc_correction}
 
-```{r doc_correction, fig.align = "center", echo = F, fig.width=6, fig.cap = "**Figure A1**: Spring (a) and fall (b) linear slope coefficients used to date correct surface temperature to standard spring and fall dates; same for spring (c) and fall (d) bottom temperature correction."}
+```{r doc_correction, fig.align = "center", echo = F, fig.width=6, fig.cap = "Spring (a) and fall (b) linear slope coefficients used to date correct surface temperature to standard spring and fall dates; same for spring (c) and fall (d) bottom temperature correction."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
 a <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_a.jpg'))
 b <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_b.jpg'))
@@ -189,7 +192,7 @@ A series of random draws of training and test sets were taken to evaluate the pr
 
 #### {#fig:cross_val}
 
-```{r cross_val, fig.align="center", fig.cap = "**Figure A2**: Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F}
+```{r cross_val, fig.align="center", fig.cap = "Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F}
 knitr::include_graphics(here::here("images/ECSA_crossval_temp_oi.png"))
 ```
 
@@ -198,7 +201,7 @@ knitr::include_graphics(here::here("images/ECSA_crossval_temp_oi.png"))
 The distribution of errors from the optimal interpolation test sets were evaluated spatially to determine where the larger errors occurred and what ecosystem features they are associated with.
 
 ### {#fig:oi_mae}
-```{r oi_mae, fig.align = "center", echo = F, fig.width=5.75, fig.cap = "**Figure A3**: Mean absolute error by 0.1 degree latitude and longitude intervals for spring (a) and fall (b) surface temperature; same data for spring (c) and fall (d) bottom temperature. Red indicates a positive error where blue indicates negative."}
+```{r oi_mae, fig.align = "center", echo = F, fig.width=5.75, fig.cap = "Mean absolute error by 0.1 degree latitude and longitude intervals for spring (a) and fall (b) surface temperature; same data for spring (c) and fall (d) bottom temperature. Red indicates a positive error where blue indicates negative."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
 a <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_a.jpg'))
 b <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_b.jpg'))
@@ -222,7 +225,7 @@ Sea surface temperature estimated in this study were compared to the [OISST data
 
 ### {#fig:oi_compare}
 
-```{r oi_compare, fig.align="center", fig.cap = "**Figure A4**: Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data.", echo = F}
+```{r oi_compare, fig.align="center", fig.cap = "Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data.", echo = F}
 knitr::include_graphics(here::here("images/ECSA_oi_compare.png"))
 ```
 
