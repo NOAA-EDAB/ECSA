@@ -137,15 +137,14 @@ merge_to_bookdown <- function(stock_name,
     stop(sprintf("\nEasy, Cowboy!\n%s already exists. If you want to do this, change 'overwrite = TRUE'", file_name))
   }
   
-  methods <- paste(readr::read_lines(here::here("templates/generic_methods.Rmd"), skip = 10), collapse = " ")
-  new_text <- paste(new_text, methods, collapse = " ")
+
   
   # writes generic template after species specific substitutions to .rmd
   file_connection <- file(sprintf("%s/%s", folder_name, file_name))
   writeLines(new_text, file_connection, sep = "")
-  # writeLines(new_tt, file_connection, sep = "")
   
-  # readr::write_lines(methods, file_connection, append = TRUE)
+  methods <- readr::read_lines(here::here("templates/generic_methods.Rmd"), skip = 10)
+  readr::write_lines(methods, file_connection, append = TRUE)
   close(file_connection)
   
   message(sprintf("ECSA template written to %s",

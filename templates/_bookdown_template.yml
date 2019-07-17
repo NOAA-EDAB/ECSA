@@ -9,7 +9,6 @@ bibliography: "docs/ECSA_bibliography.bib"
 link-citations: true
 site: bookdown::bookdown_site
 biblio-style: apalike
-link-citations: yes
 github-repo: NOAA-EDAB/ECSA
 output:
   bookdown::gitbook:
