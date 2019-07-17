@@ -110,7 +110,7 @@ merge_to_bookdown <- function(stock_name,
   # cat(new_text)
 ## Adding the custom YAML  screws something up...
  new_text <- gsub("---(.*?)---",
-  sprintf("---%s---", yaml::as.yaml(yml)), new_text)
+  sprintf("---\n%s---", yaml::as.yaml(yml)), new_text)
 
   
   ##Create .Rmd file to be written to book
