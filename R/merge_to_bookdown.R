@@ -53,6 +53,7 @@ merge_to_bookdown <- function(stock_name,
   )
   # docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
   docs_text <- readr::read_file(tmp_txt)
+  
   ## Download the methods google doc  
   # methods_txt <- tempfile(pattern = stock_name, fileext = ".txt")
   # googledrive::drive_download(
@@ -107,8 +108,7 @@ merge_to_bookdown <- function(stock_name,
   for(i in 1:length(text_list)) {
     new_text <- gsub(pattern[i], text_list[[i]], new_text)
   }
-  # cat(new_text)
-## Adding the custom YAML  screws something up...
+  
  new_text <- gsub("---(.*?)---",
   sprintf("---\n%s---", yaml::as.yaml(yml)), new_text)
 
@@ -132,6 +132,9 @@ merge_to_bookdown <- function(stock_name,
   ## BUG: Somehow .rmd files are being created with extra spaces...
   file_connection <- file(sprintf("%s/%s", folder_name, file_name))
   writeLines(new_text, file_connection, sep = "")
+  
+  methods <- readr::read_lines(here::here("templates/generic_methods.Rmd"), skip = 10)
+  readr::write_lines(methods, file_connection, append = TRUE)
   close(file_connection)
   
   message(sprintf("ECSA template written to %s",

@@ -8,8 +8,6 @@ knitr::opts_chunk$set(echo = F, message = F ,warning = F, fig.align = 'center')
 interactive <- F
 ```
 
-# Methods {#methods}
-
 ## Surface and Bottom Temperature and Salinity {#methodstempsalin}
 
 ### Study System
@@ -260,5 +258,5 @@ create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here
 4. These steps are repeated for additional species.
 
 
-`r if (interactive) '# References {-}'`
+# References {-}
 
