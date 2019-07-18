@@ -1,4 +1,22 @@
-rmd_files: [""]
-delete_merged_file: false
-output_dir: ""
-book_filename: ""
+title:
+    | 
+    | Ecosystem Context for Stock Assessments:
+    | {{STOCK_SUBAREA}}{{COMMON_NAME}}
+#date: "`r format(Sys.time(), '%B %d, %Y')`"
+author: ""
+always_allow_html: yes
+bibliography: "docs/ECSA_bibliography.bib"
+link-citations: true
+site: bookdown::bookdown_site
+biblio-style: apalike
+github-repo: NOAA-EDAB/ECSA
+output:
+  bookdown::gitbook:
+    lib_dir: book_assets
+    split_by: none
+    config:
+      toc:
+        collapse: yes
+      position: static
+  bookdown::pdf_book:
+    keep_tex: yes

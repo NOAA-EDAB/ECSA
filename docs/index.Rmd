@@ -1,5 +1,5 @@
 ---
-title: "Index"
+title: "Ecosystem Context for Stock Advice"
 output: html_document
 ---
 
@@ -7,3 +7,48 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Introduction
+These reports provides contextual ecosystem information for the following stocks found on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the relevant stock areas based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of each stock, including: surface and bottom temperature and salinity, chlorophyll concentration, indices of habitat, diet composition, and abundance of key zooplankton prey of larval fish. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE, results=TRUE}
+library(dplyr)
+## Select the stock and format stock area and common name
+all_pages <- list.files(here::here("docs/"), pattern = ".html")
+
+
+draft_pages <- grep(pattern = ".*_draft.html", all_pages, value = TRUE)
+bad_pages <- c("chlorophyll.html", "habitat-and-abundance.html", "index.html", "introduction.html", "methods.html", "salinity.html", "temperature.html", "zooplankton.html")
+
+good_pages <- data.frame(URL = all_pages[!all_pages %in% c(draft_pages, bad_pages)],
+                         stringsAsFactors = FALSE) %>% 
+  dplyr::mutate(stock_name = gsub("\\.html$", "\\1", URL))
+
+
+## Select the stock and format stock area and common name
+clean_names <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
+                               col_types = readr::cols(
+                                 common_name = readr::col_character(),
+                                 sci_name = readr::col_character(),
+                                 cc_name = readr::col_character(),
+                                 stock_name = readr::col_character(),
+                                 species_code = readr::col_character(),
+                                 svspp = readr::col_double(),
+                                 stock_season = readr::col_character(),
+                                 strata = readr::col_double())) %>%
+  dplyr::select(common_name,
+                sci_name,
+                stock_name,
+                stock_subarea) %>%
+  dplyr::distinct(.keep_all = FALSE) %>%
+  dplyr::mutate(stock_subarea = ifelse(is.na(stock_subarea), "",
+                                       sprintf("%s ", stock_subarea)),
+                full_name = dplyr::case_when(grepl("\\bnorth\\b", stock_subarea) ~ sprintf("northern component of the %s (<i>%s</i>) stock", common_name, sci_name),
+                                             grepl("\\bsouth\\b", stock_subarea) ~ sprintf("southern component of the %s (<i>%s</i>) stock", common_name, sci_name),
+                                             TRUE ~  sprintf("%s%s (<i>%s</i>)", stock_subarea, common_name, sci_name)),
+                `Available reports` = sprintf('<a href="https://noaa-edab.github.io/ECSA/%s.html" target="_blank">%s</a>', stock_name, full_name)) %>% 
+  dplyr::filter(stock_name %in% good_pages$stock_name) %>% 
+  dplyr::arrange(stock_name) %>% 
+  dplyr::select(`Available reports`)
+
+knitr::kable(clean_names)
+```

@@ -1,8 +1,9 @@
 library(dplyr)
 library(readr)
 library(tidyr)
+library(magrittr)
 
-## stock strata list from Jessica Blaylock
+## stock strata list from Jessica Blaylock (October 4, 2018)
 sdat <- readr::read_csv(here::here("data-raw/stocks-strata_10042018.csv"),
                  col_types = cols(
                    group = col_character(),
@@ -85,6 +86,36 @@ menhaden <- read.csv(here::here("data-raw/menhaden_strata_raw.csv"), stringsAsFa
                 stock_season = season)
 
 stock_list %<>% bind_rows(menhaden)
+
+
+stock_list <- stock_list %>%
+  dplyr::mutate(stock_subarea = dplyr::case_when(grepl("_sne-ma$", stock_name) ~ "southern New England/mid-Atlantic ",
+                                                 grepl("_cc$", stock_name) ~ "Cape Cod ",
+                                                 grepl("_sne$", stock_name) ~ "southern New England ",
+                                                 grepl("_gom-ngb$", stock_name) ~ "Gulf of Maine/northern Georges Bank ",
+                                                 grepl("_sgb-ma$", stock_name) ~ "southern Georges Bank/mid-Atlantic ",
+                                                 grepl("_gb$", stock_name) ~ "Georges Bank ",
+                                                 grepl("_gom-ngb$", stock_name) ~ "Gulf of Maine/northern Georges Bank ",
+                                                 grepl("_gom$", stock_name) ~ "Gulf of Maine ",
+                                                 grepl("_gom-gb$", stock_name) ~ "Gulf of Maine/Georges Bank ",
+                                                 grepl("_north$", stock_name) ~ "north ",
+                                                 grepl("_south$", stock_name) ~ "south ",
+                                                 TRUE ~ ""),
+                common_name = gsub("^atlantic", "Atlantic", common_name),
+                common_name = gsub("^american", "American", common_name),
+                common_name = gsub("^acadian", "Acadian", common_name)) %>% 
+  dplyr::select(common_name,
+                sci_name,
+                cc_name,
+                stock_name,
+                species_code,
+                svspp,
+                stock_season,
+                strata,
+                stock_subarea)# %>% 
+# dplyr::filter(stock_name == !!stock_name) %>%
+  # dplyr::select(-stock_season) %>%
+  # dplyr::distinct(.keep_all = TRUE)
 
 write.csv(here::here("data/stock_data/stock_list.csv"), x = stock_list, row.names = FALSE)
 
