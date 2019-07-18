@@ -4,7 +4,7 @@ title: |
   | Black sea bass
 author: ''
 always_allow_html: yes
-bibliography: C:/Users/sean.hardison/Documents/git/ecsa/docs/ECSA_bibliography.bib
+bibliography: /Users/seanhardison/Documents/git/ECSA/docs/ECSA_bibliography.bib
 link-citations: yes
 site: bookdown::bookdown_site
 biblio-style: apalike
@@ -21,314 +21,156 @@ output:
     keep_tex: yes
 ---
 
-
-
 ```{r, include = FALSE}
-
 ## Load packages
-
 library(tidyverse)
-
 library(plotly)
-
 library(DT)
-
 library(jpeg)
-
 library(patchwork)
-
 library(ggthemes)
-
 library(AICcmodavg)
-
 library(ecotrend)
-
 library(magrittr)
-
 library(raster)
-
 library(stars)
-
 library(here)
-
 library(zoo)
-
 library(gt)
-
-library(ggiraph)
-
 library(kableExtra)
+library(ggiraph)
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
 
-
-
 ## Read in stock area vectors
 
-
-
 all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
-
                                  col_types = readr::cols(
-
                                    common_name = readr::col_character(),
-
                                    sci_name = readr::col_character(),
-
                                    cc_name = readr::col_character(),
-
                                    stock_name = readr::col_character(),
-
                                    species_code = readr::col_character(),
-
                                    svspp = readr::col_double(),
-
                                    stock_season = readr::col_character(),
-
                                    strata = readr::col_double()))
 
 
-
-
-
 #zooplankton lookup table
-
 zoo_lookup <- read.csv(here::here("data-raw/zooplankton_lookup.csv"), stringsAsFactors = F)
 
-
-
 ## Put all mustaches here
-
 stock_code <- "141"
-
 stock_name <- "black-sea-bass"
-
 cc_name <- "black-sea-bass"
-
 common_name <- "black sea bass"
-
 interactive <- as.logical("TRUE")
 
-
-
 #Get stock strata and unique identifiers
-
 strata <- all_stock_season %>%   
-
   dplyr::filter(stock_name == !!stock_name)
 
-
-
 source(here::here("R/map_strata.R"))
-
 source(here::here("R/get_strata.R"))
-
 source(here::here("R/crop_to_strata.R"))
-
 source(here::here("R/stars_to_series.R"))
-
 source(here::here("R/tab_plotly.R"))
-
 source(here::here("R/create_buttons.R"))
-
 source(here::here("R/STARS_v18.R"))
-
 source(here::here("R/gls_summary.R"))
-
 source(here::here("R/plot_sae.R"))
-
 source(here::here("R/fit_regime_and_trend.R"))
 
 
 
-
-
-
-
 svspp <- strata %>% pull(svspp) %>% unique()
-
 sixcode <- strata %>% pull(species_code) %>% unique()
-
 subarea <- strata %>% pull(stock_subarea) %>% unique()
 
-
-
 if (is.na(subarea)){
-
   subarea <- "unit"
-
 }
-
-
 
 #Specific analytical treatments were selected beforehand for each stock. These data are in data-raw/treatment_selection.csv. We import here and filter the below SAE data by treatment selection. 
-
 treatment_selection <- 
-
   read.csv(here::here("data-raw/treatment-selection.csv"),
-
                        stringsAsFactors = F) %>% 
-
   filter(svspp == !!svspp, stock == subarea) 
 
-
-
 #Load swept area estimate data. Filter by svspp code and treatment selection
-
 spring_sae <- read.csv(here::here("data-raw/spring_sae_tb_sum.csv"),
-
                        stringsAsFactors = F) %>% 
-
   filter(svspp == !!svspp,
-
          stocks == subarea)
-
-
 
 fall_sae <- read.csv(here::here("data-raw/fall_sae_tb_sum.csv"),
-
                      stringsAsFactors = F) %>% 
-
   filter(svspp == !!svspp,
-
          stocks == subarea)
 
-
-
 #Adjust knitr fig height if a facet plot is needed
-
 if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
-
  adjust_for_facet  <- 9
-
 } else if (nrow(spring_sae) > 0 & length(unique(spring_sae$stocks)) > 1){
-
   adjust_for_facet  <- 9
-
 } else {
-
   adjust_for_facet  <- 6
-
 }
 
-
-
 #Get available seasons for stocks
-
 stock_season <- strata %>% pull(stock_season) %>% unique()
 
-
-
 #Get estimates for ecosystem and stock habitat area
-
 stock_habitat_area <- read.csv(here::here("data-raw/sum_ocl_byunit_sprfall.csv"),
-
                                    stringsAsFactors = F) %>% 
-
   filter(species.code == sixcode)
-
-
 
 ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv"),
-
                                stringsAsFactors = F)  %>% 
-
   filter(species.code == sixcode)
-
-
 
 #Set interactive to F when pushing a draft document to google drive. Otherwise, the ggiraph figures will render as interactive. Interactive figures should only be used during the creation of the final bookdown document. 
 
-
-
 ```
 
-
-
-
-
-
-
 # Introduction
-
-
-
 
 
 This report provides contextual ecosystem information for black sea bass (*Centropristis striata*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the black sea bass stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of black sea bass, including: surface and bottom temperature and salinity, chlorophyll concentration, indices of habitat, diet composition, and abundance of key zooplankton prey of larval black sea bass. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 
-
-
-
 ### Summary {-#summary}
-
-
-
 
 
 The thermal environment for black sea bass during spring has not changed significantly with the only perceivable trend seen in the bottom temperature associated with the southern end or component of the stock. However, there is stronger evidence of environmental change with both salinity and chlorophyll concentration, with salinity increasing and chlorophyll decreasing. It should be kept in mind that the stronger signals of thermal change are associated with summer and fall conditions on the NE Shelf. The area of spring occupancy habitat has increased for black sea bass, with the most dramatic increases in habitat area associated with the northern subarea. The habitat informed estimates of stock biomass suggest a recent increase stock size, noting that most of that increase can be attributed to biomass located in the northern stock subarea.  
 
 
-
-
-
  
-
-
 
 ### Stock area {-#stock-area}
 
-
-
 ```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for black sea bass (*Centropristis striata*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
-
 map_strata(stock_name = stock_name,
-
            common_name = common_name,
-
            stock_season = stock_season,
-
            strata = strata,
-
            overwrite = FALSE,
-
            save_plot = FALSE)
-
 ```
-
-
 
 #### A note on figures {-#a-note-on-figures}
 
-
-
-Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by green and light blue lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
-
-
+Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by light blue and green lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
 
 _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
-
-
 
 # Temperature
 
 
-
-
-
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the black sea bass stock areas are shown below.
-
-
-
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see methods). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the black sea bass stock areas are shown below.
 
 
 ## Bottom Temperature {-#bottom-temperature}
-
-
-
-
-
 
 
 
@@ -338,213 +180,104 @@ Spring bottom temperature over the black sea bass stock area is without trend.
 
 
 
-
-
-
-
-
 ```{r bot_temp_process}
 
-
-
 spring_bottom_temp <- 
-
   fit_regime_and_trend(r = "bot_temp_spring_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "spring",
-
                 measure_name = "bottom_temp")
-
 spring_title <- spring_bottom_temp$plot_title
 
-
-
 fall_bottom_temp <- 
-
   fit_regime_and_trend(r = "bot_temp_fall_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "fall",
-
                 measure_name = "bottom_temp")
-
 fall_title <- fall_bottom_temp$plot_title
-
-
 
 #Only show plots based on what seasons are available. If strata are available for spring and fall, show both plots. Otherwise just one.
 
-
-
 # Spring is print_plot[1] and fall is print_plot[2]
 
-
-
 if (any(stock_season == "both") | all(stock_season == c('spring','fall'))){
-
   print_plot <- c(T,T)
-
 } else if (stock_season == "spring") {
-
   print_plot <- c(T,F)
-
 } else if (stock_season == "fall"){
-
   print_plot <- c(F,T)
-
 }
-
 ```
-
-
-
 
 
 ```{r bot_temp_spring_plt, fig.height=3, eval = print_plot[1]}
 
-
-
 spring_bottom_temp_plt <- 
-
   spring_bottom_temp$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
-    ylab("Temperature (?C)") +
-
+    ylab("Temperature (°C)") +
     ggtitle(spring_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_bottom_temp_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_bottom_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_bottom_temp_plt
-
 }
 
-
-
 ```
-
-
-
 
 
 ```{r bot_temp_fall_plt, fig.height=3, eval = print_plot[2]}
-
 fall_bottom_temp_plt <- 
-
   fall_bottom_temp$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
-    ylab("Temperature (?C)") +
-
+    ylab("Temperature (°C)") +
     ggtitle(fall_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_bottom_temp_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_bottom_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_bottom_temp_plt
-
 }
-
-
 
 ```
 
 
-
-
-
 ## Surface Temperature {-#surface-temperature}
-
-
-
 
 
 Spring surface temperature over the black sea bass stock area is without trend.
@@ -552,201 +285,98 @@ Spring surface temperature over the black sea bass stock area is without trend.
 
 
 
-
-
-
-
-
 ```{r surf_temp_process}
 
-
-
 spring_surface_temp <- 
-
   fit_regime_and_trend(r = "surf_temp_spring_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "spring",
-
                 measure_name = "surface_temp")
-
 spring_title <- spring_surface_temp$plot_title
 
-
-
 fall_surface_temp <- 
-
   fit_regime_and_trend(r = "surf_temp_fall_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "fall",
-
                 measure_name = "surface_temp")
-
-fall_min <- min(fall_surface_temp$df$Time)
-
+fall_title <- fall_surface_temp$plot_title
 ```
-
-
-
 
 
 ```{r surf_temp_spring_plt, fig.height=3, eval = print_plot[1]}
 
-
-
 spring_surface_temp_plt <- 
-
   spring_surface_temp$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
-    ylab("Temperature (?C)") +
-
+    ylab("Temperature (°C)") +
     ggtitle(spring_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_surface_temp_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_surface_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_surface_temp_plt
-
 }
 
-
-
 ```
-
-
 
 ```{r surf_temp_fall_plt, fig.height=3, eval = print_plot[2]}
 
-
-
 fall_surface_temp_plt <- 
-
   fall_surface_temp$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
-    ylab("Temperature (?C)") +
-
+    ylab("Temperature (°C)") +
     ggtitle(fall_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_surface_temp_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_surface_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_surface_temp_plt
-
 }
-
 ```
-
-
-
-
 
 
 
 # Salinity
 
 
-
-
-
 An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the black sea bass stock areas are shown below.
 
 
-
-
-
-## Bottom Salinity
-
-
-
+## Bottom Salinity {-#bottom-salinity}
 
 
 Spring bottom salinity over the black sea bass stock area has trended significantly upwards as seen in other parts of the NE Shelf. Over much of the shelf, a more distinct change point in salinity is seen with the last ten years or so. This feature is not seen in the data for the black sea bass stock area.
@@ -755,190 +385,92 @@ Spring bottom salinity over the black sea bass stock area has trended significan
 
 
 
-
-
-
-
-
-
 ```{r bot_sal_process}
 
-
-
 spring_bottom_sal <- 
-
   fit_regime_and_trend(r = "bot_sal_spring_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "spring",
-
                 measure_name = "bottom_sal")
-
 spring_title <- spring_bottom_sal$plot_title
 
-
-
 fall_bottom_sal <- 
-
   fit_regime_and_trend(r = "bot_sal_fall_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "fall",
-
                 measure_name = "bottom_sal")
-
 fall_title <- fall_bottom_sal$plot_title
 
-
-
 ```
-
-
-
 
 
 ```{r bot_sal_spring_plt, fig.height=3, eval = print_plot[1]}
 
-
-
 spring_bottom_sal_plt <- 
-
   spring_bottom_sal$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab("Salinity (PSU)") +
-
     ggtitle(spring_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_bottom_sal_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_bottom_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_bottom_sal_plt
-
 }
-
 ```
-
-
-
 
 
 ```{r bot_sal_fall_plt, fig.height=3, eval = print_plot[2]}
 
-
-
 fall_bottom_sal_plt <- 
-
   fall_bottom_sal$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab("Salinity (PSU)") +
-
     ggtitle(fall_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_bottom_sal_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_bottom_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_bottom_sal_plt
-
 }
-
 ```
 
 
-
-
-
 ## Surface Salinity {-#surface-salinity}
-
-
-
 
 
 Spring surface salinity over the black sea bass stock area has trended significantly upwards as seen in other parts of the NE Shelf. Over much of the shelf, a more distinct change point in salinity is seen with the last ten years or so. This feature is not seen in the data for the black sea bass stock area.
@@ -947,184 +479,88 @@ Spring surface salinity over the black sea bass stock area has trended significa
 
 
 
-
-
-
-
-
-
 ```{r surf_sal_process}
-
 spring_surface_sal <- 
-
   fit_regime_and_trend(r = "surf_sal_spring_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "spring",
-
                 measure_name = "surface_sal")
-
 spring_title <- spring_surface_sal$plot_title
 
-
-
 fall_surface_sal <- 
-
   fit_regime_and_trend(r = "surf_sal_fall_spdf.rdata",
-
                 stock_name = stock_name,
-
                 common_name = common_name,
-
                 stock_season = stock_season,
-
                 data_season = "fall",
-
                 measure_name = "surface_sal")
-
 fall_title <- fall_surface_sal$plot_title
 
-
-
 ```
-
-
-
 
 
 ```{r surf_sal_spring_plt, fig.height=3, eval = print_plot[1]}
-
 spring_surface_sal_plt <- 
-
   spring_surface_sal$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab("Salinity (PSU)") +
-
     ggtitle(spring_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_surface_sal_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_surface_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_surface_sal_plt
-
 }
-
 ```
-
-
-
 
 
 ```{r surf_sal_fall_plt, fig.height=3, eval = print_plot[2]}
-
 fall_surface_sal_plt <- 
-
   fall_surface_sal$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab("Salinity (PSU)") +
-
     ggtitle(fall_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_surface_sal_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_surface_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_surface_sal_plt
-
 }
-
 ```
 
-
-
 # Chlorophyll
-
-
-
-
-
 
 
 
@@ -1132,1371 +568,682 @@ if (interactive){
 ## Chlorophyll concentration in the stock area {-#chlorophyll-concentration-in-the-stock-area}
 
 
-
-
-
 The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#methodschl)). Chlorophyll concentrations in the spring and fall black sea bass stock areas are shown below. Spring chlorophyll concentration over the black sea bass stock area has trended significantly downwards as seen in other parts of the NE Shelf. Over much of the shelf, a more distinct change point in chlorophyll is seen with the last five years or so. This feature is not seen in the data for the black sea bass stock area.
 
 
 
 
-
-
-
-
-
 ```{r chl_processing}
-
 spring_chl <- 
-
   fit_regime_and_trend(r = "chlorophyll_conc.rdata",
-
               stock_name = stock_name, 
-
               common_name = common_name, 
-
               stock_season = stock_season,
-
               data_season = "spring",
-
                 measure_name = "biomass",
-
                 process_to_season = "spring")
-
 spring_title <- spring_chl$plot_title
 
 
-
-
-
 fall_chl <- 
-
   fit_regime_and_trend(r = "chlorophyll_conc.rdata",
-
               stock_name = stock_name, 
-
               common_name = common_name, 
-
               stock_season = stock_season,
-
               data_season = "fall",
-
                 measure_name = "biomass",
-
                 process_to_season = "fall")
-
 fall_title <- fall_chl$plot_title
-
 ```
-
-
-
 
 
 ```{r chl_spring_plt, fig.height=3, eval = print_plot[1]}
-
 spring_chl_plt <- 
-
   spring_chl$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab(expression(paste("Chlorophyll (mg ", m^{-3}, ")")))+
-
     ggtitle(spring_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_chl_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_chl_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_chl_plt
-
 }
-
 ```
-
-
-
 
 
 ```{r chl_fal_plt, fig.height=3, eval = print_plot[2]}
-
 fall_chl_plt <- 
-
   fall_chl$df %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab(expression(paste("Chlorophyll (mg ", m^{-3}, ")")))+
-
     ggtitle(fall_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_chl_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_chl_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_chl_plt
-
 }
-
 ```
 
 
-
-
-
 # Zooplankton
-
-
-
 
 
 There is little information on the diet of black sea bass larvae, though it is likely they feed on copepods and other zooplankton [@tucker1989energy].
 
 
 
-
-
-
-
 ## Copepod abundance {-#copepod-abundance}
-
-
-
 
 
 The most notably change in spring copepods has been the decline in abundance of *Pseudocalanus* spp.. This taxa is an important prey component of the diet of many larval fishes, so it may also contribute to the early life history of black sea bass. 
 
 
-
-
-
 ```{r zoo_cope_processing}
-
 spring_cope <- 
-
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
-
                         stock_name = stock_name, 
-
                         common_name = common_name, 
-
                         stock_season = stock_season,
-
                         data_season = "spring",
-
                         measure_name = "zoo",
-
                         group_regex = "[^A-Z_](.*)(?=_)") %>% 
-
   mutate(season = "spring") %>% 
-
   left_join(.,zoo_lookup, by = "Grouping") %>% 
-
   dplyr::filter(copepod == "y") %>% 
-
   dplyr::select(-Grouping, -season, -copepod) %>%
-
   tidyr::spread(full_name, Mean)
-
-
 
 spring_min <- min(spring_cope$Time)
 
-
-
 fall_cope <- 
-
   fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
-
                         stock_name = stock_name, 
-
                         common_name = common_name, 
-
                         stock_season = stock_season,
-
                         data_season = "fall",
-
                         measure_name = "zoo",
-
                         group_regex = "[^A-Z_](.*)(?=_)") %>% 
-
   mutate(season = "fall") %>% 
-
   left_join(.,zoo_lookup, by = "Grouping") %>% 
-
   dplyr::filter(copepod == "y") %>% 
-
   dplyr::select(-Grouping, -season, -copepod) %>%
-
   tidyr::spread(full_name, Mean)
 
-
-
 fall_min <- min(fall_cope$Time)
-
 ```
 
-
-
 ```{r, zoo_cope_spring, fig.height=5, eval = print_plot[1]}
-
 if (interactive){
-
   buttons <- create_buttons(spring_cope)
 
-
-
 spring_cope_plt <-
-
   tab_plotly(spring_cope, add_smoother = F, showlegend = F) %>% 
-
   layout(title = "Spring copepod abundance",
-
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-
          xaxis = list(title = "", mirror = TRUE, showline = TRUE),
-
          updatemenus = 
-
         
-
         list(
-
            list(
-
             buttons = list(buttons[[1]],buttons[[2]],buttons[[3]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.2
-
                       ),
-
           list(
-
            buttons = list(buttons[[4]],buttons[[5]],buttons[[6]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.3
-
                       ),
-
           list(
-
            buttons = list(buttons[[7]],buttons[[8]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.4
-
                       )
-
                      )
-
                     )
 
-
-
 spring_cope_plt
-
   
-
 } else {
-
   spring_cope %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
     ggplot() +
-
     geom_line(aes(x = Time, y = Value, group = Var)) +
-
     facet_wrap(Var~., scales = "free_y") +
-
     theme_bw() +
-
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-
     theme(strip.text = element_text(face = "italic"),
-
           strip.background = element_blank()) +
-
     ggtitle("Spring copepod abundance")
-
 }
 
 
-
-
-
 ```
-
-
-
 
 
 ```{r zoo_cope_fall, fig.height=5, fig.height=5, eval = print_plot[2]}
 
-
-
 if (interactive){
-
   buttons <- create_buttons(fall_cope)
 
-
-
 fall_cope_plt <-
-
   tab_plotly(fall_cope, add_smoother = F, showlegend = F) %>% 
-
   layout(title = "Fall copepod abundance",
-
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-
          xaxis = list(title = "", mirror = TRUE, showline = TRUE),
-
          updatemenus = 
-
         
-
         list(
-
            list(
-
             buttons = list(buttons[[1]],buttons[[2]],buttons[[3]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.2
-
                       ),
-
           list(
-
            buttons = list(buttons[[4]],buttons[[5]],buttons[[6]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.3
-
                       ),
-
           list(
-
            buttons = list(buttons[[7]],buttons[[8]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.4
-
                       )
-
                      )
-
                     )
 
-
-
 fall_cope_plt
-
   
-
 } else {
-
   fall_cope %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
     ggplot() +
-
     geom_line(aes(x = Time, y = Value, group = Var)) +
-
     facet_wrap(Var~., scales = "free_y") +
-
     theme_bw() +
-
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-
         theme(strip.text = element_text(face = "italic"),
-
           strip.background = element_blank()) +
-
     ggtitle("Fall copepod abundance")
-
 }
-
-
 
 ```
 
-
-
-## Non-copepod zooplankton abundance
-
-
-
+## Non-copepod zooplankton abundance {-#non-copepod-zooplankton-abundance}
 
 
 The non-copepod taxa of the zooplankton community were highly variable. The bio-volume of zooplankton in the stock appear to be trending in a correlated fashion.
 
 
 
-
-
-
-
 ```{r zoo_noncope_processing}
-
 spring_noncope <- 
-
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
-
                         stock_name = stock_name, 
-
                         common_name = common_name, 
-
                         stock_season = stock_season,
-
                         data_season = "spring",
-
                         measure_name = "zoo",
-
                         group_regex = "[^A-Z_](.*)(?=_)") %>% 
-
   mutate(season = "spring") %>% 
-
   left_join(.,zoo_lookup, by = "Grouping") %>% 
-
   dplyr::filter(copepod == "n") %>% 
-
   dplyr::select(-Grouping, -season, -copepod) %>%
-
   tidyr::spread(full_name, Mean)
-
-
 
 spring_min <- min(spring_noncope$Time)
 
-
-
 fall_noncope <- 
-
   fit_regime_and_trend(r = "zoo_fall_rasters_1yr.rdata",
-
                         stock_name = stock_name, 
-
                         common_name = common_name, 
-
                         stock_season = stock_season,
-
                         data_season = "fall",
-
                         measure_name = "zoo",
-
                         group_regex = "[^A-Z_](.*)(?=_)") %>% 
-
   mutate(season = "fall") %>% 
-
   left_join(.,zoo_lookup, by = "Grouping") %>% 
-
   dplyr::filter(copepod == "n") %>% 
-
   dplyr::select(-Grouping, -season, -copepod) %>%
-
   tidyr::spread(full_name, Mean)
-
-
 
 fall_min <- min(fall_noncope$Time)
 
-
-
 ```
 
-
-
 ```{r zoo_spring_noncope, fig.height=5, eval = print_plot[1]}
-
 if (interactive){
-
-
 
 buttons <- create_buttons(spring_noncope)
 
-
-
 spring_noncope_plt <-
-
   tab_plotly(spring_noncope, add_smoother = F, showlegend = F) %>% 
-
   layout(title = "Spring non-copepod zoo. abundance",
-
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-
          showlegend = F,
-
          updatemenus = 
-
         
-
         list(
-
            list(
-
             buttons = list(buttons[[1]],buttons[[2]],buttons[[3]],buttons[[4]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.2
-
                       ),
-
           list(
-
            buttons = list(buttons[[5]],buttons[[6]],buttons[[7]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.3
-
                       ),
-
           list(
-
            buttons = list(buttons[[8]],buttons[[9]],buttons[[10]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.4
-
                       )
-
                      )
-
                     )
-
-
 
 spring_noncope_plt
 
-
-
 } else {
-
   
-
   spring_noncope %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
     ggplot() +
-
     geom_line(aes(x = Time, y = Value, group = Var)) +
-
     facet_wrap(Var~., scales = "free_y") +
-
     theme_bw() +
-
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-
         theme(strip.text = element_text(face = "italic"),
-
           strip.background = element_blank()) +
-
     ggtitle("Spring non-copepod zoo. abundance")
-
 }
-
 ```
 
-
-
 ```{r zoo_fall_noncope, fig.height=5, eval = print_plot[2]}
-
 if (interactive){
-
-
 
 buttons <- create_buttons(fall_noncope)
 
-
-
 fall_noncope_plt <-
-
   tab_plotly(fall_noncope, add_smoother = F, showlegend = F) %>% 
-
   layout(title = "Fall non-copepod zoo. abundance",
-
          yaxis = list(title = "Abundance (log num m<sup>-3</sup>)",
-
                       hoverformat = '.3f', mirror = TRUE, showline = TRUE),
-
          showlegend = F,
-
          updatemenus = 
-
         
-
         list(
-
            list(
-
             buttons = list(buttons[[1]],buttons[[2]],buttons[[3]],buttons[[4]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.2
-
                       ),
-
           list(
-
            buttons = list(buttons[[5]],buttons[[6]],buttons[[7]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.3
-
                       ),
-
           list(
-
            buttons = list(buttons[[8]],buttons[[9]],buttons[[10]]),
-
                       type = "buttons",
-
                       direction = "right",
-
                       xanchor = "center",
-
                       yanchor = "top",
-
                       pad = list("r"= 0, "t"= 10, "b" = 10),
-
                       x = 0.5,
-
                       y = -0.4
-
                       )
-
                      )
-
                     )
-
-
 
 fall_noncope_plt
 
-
-
 } else {
-
   
-
   fall_noncope %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
     ggplot() +
-
     geom_line(aes(x = Time, y = Value, group = Var)) +
-
     facet_wrap(Var~., scales = "free_y") +
-
     theme_bw() +
-
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
-
         theme(strip.text = element_text(face = "italic"),
-
           strip.background = element_blank()) +
-
     ggtitle("Fall non-copepod zoo. abundance")
-
 }
-
 ```
-
-
-
 
 
 # Habitat and abundance
 
 
 
-
-
-
-
 ## Occurrence probability {-#occurrence-probability}
-
-
-
 
 
 The probability of occurrence was estimated using random forest classification models (see [methods](#methodsocc)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. Occupancy probability has increased in the stock area from level of approximately 0.15 to nearly 0.25 over the past two decades. 
 
 
-
-
-
 ```{r occ_prob, fig.height=4}
 
-
-
 spring_occ_prob <- 
-
   fit_regime_and_trend(r =  paste0("spring_",sixcode,"_occ_prob.rdata"),
-
                         stock_name = stock_name, 
-
                         common_name = common_name, 
-
                         stock_season = stock_season,
-
                 data_season = "spring",
-
                 measure_name = "occurrence")$df %>% 
-
   dplyr::select(Time, Spring = Series)
 
-
-
 fall_occ_prob <- 
-
   fit_regime_and_trend(r =  paste0("fall_",sixcode,"_occ_prob.rdata"),
-
                         stock_name = stock_name, 
-
                         common_name = common_name, 
-
                         stock_season = stock_season,
-
                 data_season = "fall",
-
                 measure_name = "occurrence")$df %>% 
-
   dplyr::select(Time, Fall = Series)
 
-
-
 if (all(print_plot)){
-
   occ_prob <- spring_occ_prob %>% 
-
     left_join(.,fall_occ_prob, by  = "Time") %>% 
-
     dplyr::select(Time, Spring, Fall)
-
 } else if (print_plot[1]){
-
   occ_prob <- spring_occ_prob %>% 
-
     dplyr::select(Time, Spring)
-
 } else if (print_plot[2]){
-
   occ_prob <- fall_occ_prob %>% 
-
     dplyr::select(Time, Fall)
-
 }
-
   
 
 
-
-
-
 occ_prob_plt <- 
-
   occ_prob %>% 
-
     tidyr::gather(Var, Value, -Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) %>% 
-
   ggplot(aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(size = 1)} +
-
     scale_color_manual(values = 
-
                          c("Fall" = "#a6cee3",
-
                          "Spring" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab("Occupancy probability")+
-
     ggtitle("Occupancy probability")
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(occ_prob_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(occ_prob_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   occ_prob_plt
-
 }
-
 ```
 
-
-
 ## Habitat area {-#habitat-area}
-
-
-
 
 
 The area of the Northeast Shelf with an estimated occurrence probability for black sea bass of 0.5 was determined for the stock area and the ecosystem. The area of habitat with the stock area generally ranged from 7,000-15,000 km^2^ with a notable peaks in habitat of over 20,000 km^2^. The area of habitat over the NE Shelf ecosystem tended to be larger and ranged from  10,000-17,000 km^2^, suggesting a moderate fraction of the occupancy habitat is outside the stock area during the spring time frame.
 
 
 
-
-
-
-
 ### Ecosystem area  {-#ecosystem-area}
 
 
-
 ```{r ecosystem_hab_area, fig.height=4, eval = T}
-
 threshold <- 0.5
 
-
-
 ecosystem_hab_area_df <- 
-
   ecosystem_habitat_area %>% 
-
     dplyr::filter(threshold == !!threshold) %>% 
-
     dplyr::select(season, Time = year, Value = value) %>% 
-
     tidyr::spread(.,season, Value)  
-
-
 
 if (any(stock_season %in% c("fall","both"))){
 
-
-
 fall_ecosystem_area <- ecosystem_hab_area_df %>% 
-
   dplyr::select(Value = fall, Time) %>% 
-
   dplyr::distinct() %>% 
-
   ecotrend::glsMs(Value ~ Time,
-
                 data = .,
-
                 diagnostic = T,
-
                 fit_model  = T)
-
-
 
 STARS_in <- fall_ecosystem_area$fit %>% 
-
   dplyr::select(-fit) %>% 
-
   as.matrix()
-
-
 
 if (fall_ecosystem_area$`selection summary`$pval[1] < 0.05){
-
   fall_mod <- fall_ecosystem_area$model
-
   
-
   fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
-
       dplyr::select(Time = time, 
-
                 Series = series,
-
                 Trend = fit)
-
   
-
   summ_ <- gls_summary(mod = fall_mod)
-
   trend <- summ_$Value[1]
-
   lci <- summ_$Value[2]
-
   uci <- summ_$Value[3]
-
-
 
   fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-
 } else {
-
     fall_ecosystem_area <- fall_ecosystem_area$fit %>% 
-
       dplyr::select(Time = time, 
-
                 Series = series)
-
     fall_title <- "Fall"
-
 }
-
-
 
 fall_ecosystem_area %<>%
-
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-
   dplyr::select(-Data, -RSI, -Regime.Number,
-
                 `Regime mean` = Regime.Mean) %>% 
-
   dplyr::select(which(sapply(.,var)!=0))
 
-
-
 }
-
-
 
 if (any(stock_season %in% c("spring","both"))){
-
   
-
 spring_ecosystem_area <- ecosystem_hab_area_df %>% 
-
   dplyr::select(Value = spring, Time) %>% 
-
   dplyr::distinct() %>% 
-
   ecotrend::glsMs(Value ~ Time,
-
                 data = .,
-
                 diagnostic = T,
-
                 fit_model  = T)
 
-
-
 STARS_in <- spring_ecosystem_area$fit %>% 
-
   dplyr::select(-fit) %>% 
-
   as.matrix()
 
-
-
 if (spring_ecosystem_area$`selection summary`$pval[1] < 0.05){
-
   spring_mod <- spring_ecosystem_area$model
-
   
-
   spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
-
       dplyr::select(Time = time, 
-
                 Series = series,
-
                 Trend = fit)
-
   
-
   summ_ <- gls_summary(mod = spring_mod)
-
   trend <- summ_$Value[1]
-
   lci <- summ_$Value[2]
-
   uci <- summ_$Value[3]
 
-
-
   spring_title <- sprintf("Spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-
 } else {
-
     spring_ecosystem_area <- spring_ecosystem_area$fit %>% 
-
       dplyr::select(Time = time, 
-
                 Series = series)
-
     spring_title <- "Spring"
-
 }
-
-
 
 spring_ecosystem_area %<>%
-
   left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-
   dplyr::select(-Data, -RSI, -Regime.Number,
-
                 `Regime mean` = Regime.Mean) %>% 
-
   dplyr::select(which(sapply(.,var)!=0))
-
 }
 
-
-
 ```
-
-
-
 
 
 ```{r spring-hab-area-plt, fig.height=4, eval = print_plot[1]}
-
 spring_ecosystem_area_df <- 
-
   spring_ecosystem_area %>% 
-
   tidyr::gather(.,Var,Value, - Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>"))
-
   
-
 spring_ecosystem_area_plt <- 
-
   ggplot(data = spring_ecosystem_area_df,
-
          aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(data = spring_ecosystem_area_df[spring_ecosystem_area_df$Var == "Series",],aes(color = Var))} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab(expression(paste("Area (",km^{2}, ")")))+
-
     ggtitle(spring_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_ecosystem_area_plt
-
 }
-
 ```
-
-
 
 ```{r fall-hab-area-plt, fig.height=4, eval = print_plot[2]}
-
 fall_ecosystem_area_df <- 
-
   fall_ecosystem_area %>% 
-
   tidyr::gather(.,Var,Value, - Time) %>% 
-
   mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>"))
-
   
-
 fall_ecosystem_area_plt <- ggplot(data = fall_ecosystem_area_df,
-
          aes(x = Time, 
-
             y = Value, color = Var, group = Var,
-
                  tooltip = tooltip,
-
                  data_id = Time)) +
-
   geom_line(size = 1)+
-
   {if(interactive) geom_point_interactive(size = 0)
-
     else geom_line(data = fall_ecosystem_area_df[fall_ecosystem_area_df$Var == "Series",],aes(color = Var))} +
-
     scale_color_manual(values = 
-
                          c("Regime mean" = "#b2df8a",
-
                          "Trend" = "#a6cee3",
-
                          "Series" = "#1f78b4"))+
-
     theme_bw() +
-
     theme(legend.title = element_blank(),
-
           legend.position = "bottom") +
-
     ylab(expression(paste("Area (",km^{2}, ")")))+
-
     ggtitle(fall_title)
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_ecosystem_area_plt
-
 }
-
 ```
-
-
-
 
 
 ### Stock {-#stock}
@@ -2504,930 +1251,457 @@ if (interactive){
 
 
 
-
-
-
-
-
 ```{r stock_hab_area_fall}
-
 stock_hab_area_df <- 
-
   stock_habitat_area %>% 
-
     dplyr::filter(threshold == !!threshold) %>% 
-
     dplyr::select(season, Time = year, Value = value, area) 
 
-
-
 if (any(stringr::str_detect(unique(stock_hab_area_df$season), "fall"))){
-
   
-
 subareas <- stock_hab_area_df %>% 
-
   filter(season == "fall") %>% 
-
   pull(area) %>% 
-
   unique()
 
-
-
 fall_output <- NULL
-
 for (i in subareas){
-
   
-
   fall_stock_area <- stock_hab_area_df %>% 
-
     dplyr::filter(season == "fall", area == i) %>% 
-
     dplyr::select(Value, Time) %>% 
-
     dplyr::distinct() %>% 
-
     ecotrend::glsMs(Value ~ Time,
-
                   data = .,
-
                   diagnostic = T,
-
                   fit_model  = T)
 
-
-
   STARS_in <- fall_stock_area$fit %>% 
-
     dplyr::select(-fit) %>% 
-
     as.matrix()
-
   
-
   if (fall_stock_area$`selection summary`$pval[1] < 0.05){
-
     fall_mod <- fall_stock_area$model
-
     
-
     fall_stock_area <- fall_stock_area$fit %>% 
-
         dplyr::select(Time = time, 
-
                   Series = series,
-
                   Trend = fit)
-
     
-
     summ_ <- gls_summary(mod = fall_mod)
-
     trend <- summ_$Value[1]
-
     lci <- summ_$Value[2]
-
     uci <- summ_$Value[3]
-
   
-
     fall_title <- sprintf("Fall Trend: %s CI: (%s, %s)", trend, lci, uci)
-
   } else {
-
       fall_stock_area <- fall_stock_area$fit %>% 
-
         dplyr::select(Time = time, 
-
                   Series = series)
-
       fall_title <- "Fall"
-
   }
-
   
-
   fall_stock_area %<>%
-
     left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-
     dplyr::select(-Data, -RSI, -Regime.Number,
-
                   `Regime mean` = Regime.Mean) %>% 
-
     dplyr::select(which(sapply(.,var)!=0)) %>% 
-
     mutate(subarea = i)
-
   
-
   assign('fall_output', rbind(fall_stock_area, fall_output))
 
-
-
   }
-
   
-
 }
-
   
-
 ```
-
-
-
 
 
 ```{r stock_hab_area_spring}
 
-
-
 if (any(stringr::str_detect(unique(stock_hab_area_df$season), "spring"))){
-
   
-
 subareas <- stock_hab_area_df %>% 
-
   filter(season == "spring") %>% 
-
   pull(area) %>% 
-
   unique()
 
-
-
 spring_output <- NULL
-
 for (i in subareas){
-
   
-
   spring_stock_area <- stock_hab_area_df %>% 
-
     dplyr::filter(season == "spring", area == i) %>% 
-
     dplyr::select(Value, Time) %>% 
-
     dplyr::distinct() %>% 
-
     ecotrend::glsMs(Value ~ Time,
-
                   data = .,
-
                   diagnostic = T,
-
                   fit_model  = T)
 
-
-
   STARS_in <- spring_stock_area$fit %>% 
-
     dplyr::select(-fit) %>% 
-
     as.matrix()
-
   
-
   if (spring_stock_area$`selection summary`$pval[1] < 0.05){
-
     spring_mod <- spring_stock_area$model
-
     
-
     spring_stock_area <- spring_stock_area$fit %>% 
-
         dplyr::select(Time = time, 
-
                   Series = series,
-
                   Trend = fit)
-
     
-
     summ_ <- gls_summary(mod = spring_mod)
-
     trend <- summ_$Value[1]
-
     lci <- summ_$Value[2]
-
     uci <- summ_$Value[3]
-
   
-
     spring_title <- sprintf("spring Trend: %s CI: (%s, %s)", trend, lci, uci)
-
   } else {
-
       spring_stock_area <- spring_stock_area$fit %>% 
-
         dplyr::select(Time = time, 
-
                   Series = series)
-
       spring_title <- "spring"
-
   }
-
   
-
   spring_stock_area %<>%
-
     left_join(.,STARS(mat.in = STARS_in),by = "Time") %>% 
-
     dplyr::select(-Data, -RSI, -Regime.Number,
-
                   `Regime mean` = Regime.Mean) %>% 
-
     dplyr::select(which(sapply(.,var)!=0)) %>% 
-
     mutate(subarea = i)
-
   
-
   assign('spring_output', rbind(spring_stock_area, spring_output))
 
-
-
   }
-
   
-
 }
-
   
-
 ```
-
-
-
 
 
 ```{r spring-stock-area-plt, fig.height=3, eval = print_plot[1]}
-
 spring_stock_area_df <- 
-
   spring_output %>% 
-
       tidyr::gather(.,Var, Value, -subarea, -Time) %>%
-
         mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) 
-
-
-
 
 
 spring_stock_area_plt <- 
-
   ggplot(data = spring_stock_area_df, 
-
          aes(x = Time, 
-
           y = Value, group = Var)) +
-
    geom_line(aes(color = Var), size = 1) +
-
    {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-
                                                color = Var), size = 0)
-
      else geom_line(data = spring_stock_area_df[spring_stock_area_df$Var == "Series",],aes(color = Var), size = 1) } +
-
         scale_color_manual(values = 
-
                            c("Regime mean" = "#b2df8a",
-
                            "Trend" = "#a6cee3",
-
                            "Series" = "#1f78b4"))+
-
    theme_bw() +
-
    theme(legend.position = "bottom",
-
          legend.title = element_blank()) +
-
    {if (length(unique(spring_output$subarea)) > 1) facet_wrap(subarea~., scales = "free_y")} +
-
    scale_x_continuous(expand = c(0.01, 0.01)) +
-
     ggtitle("Spring stock area")+
-
    ylab(expression(paste("Area (",km^{2}, ")")))+
-
    xlab("")
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(spring_stock_area_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(spring_stock_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   spring_stock_area_plt
-
 }
 
 
-
-
-
 ```
-
-
-
 
 
 ```{r fall-stock-area-plt, fig.height=3, eval = print_plot[2]}
-
 fall_stock_area_df <- 
-
   fall_output %>% 
-
       tidyr::gather(.,Var, Value, -subarea, -Time) %>%
-
         mutate(tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(Value,3),"</td></tr></table>")) 
 
 
-
-
-
 fall_stock_area_plt <- 
-
   ggplot(data = fall_stock_area_df, 
-
          aes(x = Time, 
-
           y = Value, group = Var)) +
-
    geom_line(aes(color = Var), size = 1) +
-
    {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-
                                                color = Var), size = 0)
-
      else geom_line(data = fall_stock_area_df[fall_stock_area_df$Var == "Series",],aes(color = Var), size = 1) } +
-
         scale_color_manual(values = 
-
                            c("Regime mean" = "#b2df8a",
-
                            "Trend" = "#a6cee3",
-
                            "Series" = "#1f78b4"))+
-
    theme_bw() +
-
    theme(legend.position = "bottom",
-
          legend.title = element_blank()) +
-
    {if (length(unique(fall_output$subarea)) > 1) facet_wrap(subarea~., scales = "free_y")} +
-
    scale_x_continuous(expand = c(0.01, 0.01)) +
-
    ylab(expression(paste("Area (",km^{2}, ")")))+
-
     ggtitle("Fall stock area")+
-
    xlab("")
 
-
-
 if (interactive){
-
-  girafe_options(girafe(code = print(fall_stock_area_plt), width = 0.9,
-
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
-
+  girafe_options(girafe(code = print(fall_stock_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
-
   fall_stock_area_plt
-
 }
-
-
 
 ```
 
-
-
 ## Minimum Population Size {-#minimum-population-size}
-
-
-
 
 
 Estimates of the biomass for the minimum population size of black sea bass was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see [methods](#methodsocc)). The procedure provides eight population size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. Of the eight treatment options, the biomass estimate was based on the NNN option. The spring biomass suggest the stock has increased in recent years.
 
 
 
-
-
-
-
 ```{r sae_processing}
-
 do_transform <- F
 
-
-
 if (nrow(fall_sae) != 0){
-
   
-
 fall_treatment <- treatment_selection %>% 
-
   filter(season == "fall") 
-
   
-
   
-
   fall_sae_processed <- fall_sae %>%
-
   dplyr::semi_join(.,fall_treatment, by = c("biomass","treatment")) %>%
-
   dplyr::select(-svspp) %>% 
-
   dplyr::rename(Time = year) %>% 
-
   dplyr::select(-ztotal) %>%
-
   mutate(lowerci =ifelse(ciflag < 0 , NA, lowerci),
-
          upperci =ifelse(ciflag < 0 , NA, upperci)) %>% 
-
   mutate(Treatment = as.factor(treatment),
-
           total_log10 = log10(total),
-
          upperci_log10 = log10(upperci),
-
          lowerci_log10 = log10(lowerci),
-
          biomass = ifelse(biomass == "yes","Biomass","Abundance")) %>% 
-
   dplyr::select(-treatment) %>% 
-
   mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
-
          tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
-
 }
-
-
 
 if (nrow(spring_sae) != 0){
-
   
-
 spring_treatment <- treatment_selection %>% 
-
   filter(season == "spring")
-
   
-
   spring_sae_processed <- spring_sae %>% 
-
     dplyr::semi_join(.,spring_treatment, by = c("biomass","treatment")) %>%
-
     dplyr::select(-svspp) %>% 
-
     dplyr::rename(Time = year) %>% 
-
     dplyr::select(-ztotal) %>%
-
       mutate(lowerci =ifelse(ciflag < 0 , NA, lowerci),
-
            upperci =ifelse(ciflag < 0 , NA, upperci)) %>% 
-
     mutate(Treatment = as.factor(treatment),
-
             total_log10 = log10(total),
-
            upperci_log10 = log10(upperci),
-
            lowerci_log10 = log10(lowerci),
-
            biomass = ifelse(biomass == "yes","Biomass","Abundance")) %>% 
-
     dplyr::select(-treatment) %>% 
-
     mutate(tooltip_log10 = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total_log10,3),"</td></tr></table>"),
-
            tooltip = paste0("<table><tr><td>Year:</td><td>",Time,"</td></tr><tr><td>Value:  </td><td>",round(total,3),"</td></tr></table>"))
-
 }
-
 ```
-
-
-
-
-
 
 
 
 
 ```{r spring_sae_plt, fig.height = adjust_for_facet, eval = print_plot[1]}
-
 if (nrow(spring_sae) != 0){
-
   if (do_transform){
-
     
-
   biomass_plt <- spring_sae_processed %>% 
-
       filter(biomass == "Biomass") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total_log10, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time,
-
                          ymax = upperci_log10,
-
                        ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
   
-
        theme_bw() +
-
        theme(legend.position = "bottom") +
-
        {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Biomass (log10 kg)") +
-
        xlab("")
-
   
-
   abundance_plt <- spring_sae_processed %>% 
-
       filter(biomass == "Abundance") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total_log10, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time, ymax = upperci_log10,
-
                        ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
        theme_bw() +
-
        {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        theme(legend.position = "bottom") +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Abundance (log10 N)")
-
   
-
     } else {
-
       
-
   biomass_plt <- spring_sae_processed %>% 
-
       filter(biomass == "Biomass") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time, ymax = upperci,
-
                        ymin = lowerci, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
        theme_bw() +
-
        theme(legend.position = "bottom") +
-
        {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Biomass (kg)") +
-
        xlab("")
-
   
-
   abundance_plt <- spring_sae_processed %>% 
-
       filter(biomass == "Abundance") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time, ymax = upperci,
-
                        ymin = lowerci, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
        theme_bw() +
-
        {if (length(unique(spring_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        theme(legend.position = "bottom") +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Abundance (N)")
-
     }
-
   
-
   if (interactive){
-
     title <- cowplot::ggdraw() +
-
       cowplot::draw_label("Spring biomass",x = 0.25)
-
   
-
     # girafe_options(girafe(code = print(title + biomass_plt +
-
     #                                      abundance_plt + plot_layout(nrow = 3)),
-
     #                       width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
-
-        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)),
-
-                          width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
-
+        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)), width_svg = 8.5),opts_hover(css = "r:2pt;") )
     
-
   } else {
-
     title <- cowplot::ggdraw() +
-
       cowplot::draw_label("Spring biomass",x = 0.2)
-
     cowplot::plot_grid(title, biomass_plt,ncol=1, rel_heights=c(0.1, 1,1))
-
     # cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
-
   }
-
 }
-
 ```
-
-
-
-
-
 
 
 
 
 ```{r fall_sae_plt, fig.height = adjust_for_facet, eval = print_plot[2]}
-
 if (nrow(fall_sae) != 0){
-
   if (do_transform){
-
     
-
   biomass_plt <- fall_sae_processed %>% 
-
       filter(biomass == "Biomass") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total_log10, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time,
-
                          ymax = upperci_log10,
-
                        ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
   
-
        theme_bw() +
-
        theme(legend.position = "bottom") +
-
        {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Biomass (log10 kg)") +
-
        xlab("")
-
   
-
   abundance_plt <- fall_sae_processed %>% 
-
       filter(biomass == "Abundance") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total_log10, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time, ymax = upperci_log10,
-
                        ymin = lowerci_log10, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip_log10, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
        theme_bw() +
-
        {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        theme(legend.position = "bottom") +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Abundance (log10 N)")
-
   
-
     } else {
-
       
-
   biomass_plt <- fall_sae_processed %>% 
-
       filter(biomass == "Biomass") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time, ymax = upperci,
-
                        ymin = lowerci, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
        theme_bw() +
-
        {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        theme(legend.position = "bottom") +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Biomass (kg)") +
-
        xlab("")
-
   
-
   abundance_plt <- fall_sae_processed %>% 
-
       filter(biomass == "Abundance") %>% 
-
       ggplot(aes(x = Time, 
-
               y = total, group = Treatment)) +
-
        geom_line(aes(color = Treatment)) +
-
          geom_ribbon(aes(x = Time, ymax = upperci,
-
                        ymin = lowerci, fill = Treatment), alpha = 0.1) +
-
        {if(interactive) geom_point_interactive(aes(tooltip = tooltip, data_id = Time,
-
                                                    color = Treatment))
-
          else geom_point(aes(color = Treatment)) } +
-
        theme_bw() +
-
        {if (length(unique(fall_sae_processed$stocks)) > 1) facet_wrap(stocks~., nrow = 3, scales = "free_y")} +
-
        theme(legend.position = "bottom") +
-
        scale_x_continuous(expand = c(0.01, 0.01)) +
-
        ylab("Abundance (N)")
-
     }
-
   
-
   if (interactive){
-
     title <- cowplot::ggdraw() +
-
       cowplot::draw_label("Fall biomass",x = 0.25)
-
   
-
     # girafe_options(girafe(code = print(title + biomass_plt +
-
     #                                      abundance_plt + plot_layout(nrow = 3)),
-
     #                       width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
-
-        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)),
-
-                          width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
-
+        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)), width_svg = 8.5),opts_hover(css = "r:2pt;") )
     
-
   } else {
-
     title <- cowplot::ggdraw() +
-
       cowplot::draw_label("Fall biomass",x = 0.2)
-
     cowplot::plot_grid(title, biomass_plt,ncol=1, rel_heights=c(0.1, 1,1))
-
     # cowplot::plot_grid(title, biomass_plt, abundance_plt,ncol=1, rel_heights=c(0.1, 1,1))
-
   }
-
 }
-
 ```
 
-
-
 # Methods {#methods}
-
-
-
-<!-- Generic methods will be attached to the document after editing. To view, please go to `r googledrive::drive_link("EDABranch_Drive/Products/ECSA/generic_methods.Rmd")` -->
-
-
-
-
-
-
 
 ## Surface and Bottom Temperature and Salinity {#methodstempsalin}
 
@@ -3566,9 +1840,9 @@ df<-df[-c(1,2,3) ,c("Variables","Notes","References")]
     df, booktabs = TRUE,
     caption = 'Habitat descriptors used in occupancy model parameterization.') %>% 
     kableExtra::kable_styling(full_width = F) %>% 
-    column_spec(1, width  = "10em") %>% 
-    column_spec(2, width = "20em") %>% 
-    column_spec(3, width = "15em")
+    kableExtra::column_spec(1, width  = "10em") %>% 
+    kableExtra::column_spec(2, width = "20em") %>% 
+    kableExtra::column_spec(3, width = "15em")
 ```
 
 ## Diet composition {#sec:methodsdiet}
