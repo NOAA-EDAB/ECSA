@@ -145,7 +145,7 @@ merge_to_bookdown <- function(stock_name,
   
   methods <- readr::read_lines(here::here("templates/generic_methods.Rmd"), skip = 10)
   readr::write_lines(methods, file_connection, append = TRUE)
-  close(file_connection)
+  # close(file_connection)
   
   message(sprintf("ECSA template written to %s",
                   sprintf("%s/%s", folder_name, file_name)))
