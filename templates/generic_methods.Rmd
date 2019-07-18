@@ -145,9 +145,9 @@ df<-df[-c(1,2,3) ,c("Variables","Notes","References")]
     df, booktabs = TRUE,
     caption = 'Habitat descriptors used in occupancy model parameterization.') %>% 
     kableExtra::kable_styling(full_width = F) %>% 
-    column_spec(1, width  = "10em") %>% 
-    column_spec(2, width = "20em") %>% 
-    column_spec(3, width = "15em")
+    kableExtra::column_spec(1, width  = "10em") %>% 
+    kableExtra::column_spec(2, width = "20em") %>% 
+    kableExtra::column_spec(3, width = "15em")
 ```
 
 ## Diet composition {#sec:methodsdiet}
