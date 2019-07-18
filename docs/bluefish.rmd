@@ -1,7 +1,7 @@
 ---
 title: |
   | Ecosystem Context for Stock Assessments:
-  | Northern component of monkfish stock
+  | Bluefish
 author: ''
 always_allow_html: yes
 bibliography: /Users/seanhardison/Documents/git/ECSA/docs/ECSA_bibliography.bib
@@ -60,10 +60,10 @@ all_stock_season <- readr::read_csv(here::here("data/stock_data/stock_list.csv")
 zoo_lookup <- read.csv(here::here("data-raw/zooplankton_lookup.csv"), stringsAsFactors = F)
 
 ## Put all mustaches here
-stock_code <- "197"
-stock_name <- "monkfish_north"
-cc_name <- "monkfish"
-common_name <- "monkfish"
+stock_code <- "135"
+stock_name <- "bluefish"
+cc_name <- "bluefish"
+common_name <- "bluefish"
 interactive <- as.logical("TRUE")
 
 #Get stock strata and unique identifiers
@@ -137,20 +137,21 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 # Introduction
 
 
-This report provides contextual ecosystem information for north monkfish (*Lophius americanus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the monkfish stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of monkfish, including: surface and bottom temperature and salinity, chlorophyll concentration, indices of habitat, diet composition, and abundance of key zooplankton prey of larval monkfish. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+This report provides contextual ecosystem information for bluefish (*Pomatomus saltatrix*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the bluefish stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of bluefish, including: surface and bottom temperature and salinity, chlorophyll concentration, indices of habitat, diet composition, and abundance of key zooplankton prey of larval bluefish. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 
 ### Summary {-#summary}
 
 
-The thermal environment for the northern and southern stock components of monkfish has changed significantly during the past fifty years and has undergone more punctuated change in the most recent decade. Temperature has increased during both spring and fall seasons, albeit, more so in the fall. There is also ample evidence that salinity has shifted to higher PSU in both stock areas and during both seasonal periods. The shorter time series for chlorophyll concentration suggests phytoplankton biomass was relatively constant over most of the period of 1998 to 2011 and has been at depressed levels in the most recent six years or so. With the early life history stages of monkfish dependent upon a range of zooplankton taxa, recent shifts in the abundance of key copepod species warrants further investigation. Habitat models for monkfish suggests that occupancy habitat for monkfish has expanded during both spring and fall; the composite area of occupancy habitat within the stock definition areas is only slightly smaller than the habitat in the NE Shelf ecosystem as a whole, suggesting the stock area adequately represents the habitat. The habitat informed estimates of stock biomass suggest a recent increase in stock size, noting that most of that increase can be attributed to biomass located in the northern component of the stock.
+Bluefish biomass, while relatively stable between the years 1994 and 2007, experienced a strong decline from 2011 through to the present. This decline in biomass proximally coincides with a decrease in occupancy probability, a decrease in the total ecosystem and stock areas available to the fish, as well as an increase in both salinity and temperature within the stock area, and a reduction in both primary and secondary production within the stock area. There is strong evidence for the influence both physical and biological factors affecting the distribution and biomass of bluefish.
 
 
- 
+The long term trend of dominance by smaller-bodied copepods over larger-bodied copepods may impact bluefish larval recruitment and survival rates of juvenile bluefish. Additionally, there are likely to be ramifications on energy flow through the planktivorous prey of both juvenile and adult bluefish, that can manifest as a delayed response in the biomass of large piscivorous fish like bluefish.
+
 
 ### Stock area {-#stock-area}
 
-```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for the northern component of the monkfish (*Lophius americanus*) stock on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for bluefish (*Pomatomus saltatrix*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_season = stock_season,
@@ -168,13 +169,13 @@ _Last updated on `r format(Sys.Date(), format = "%B %e %Y")`._
 # Temperature
 
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the monkfish stock areas are shown below.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom temperatures for two seasonal time frames (see [methods](#methodstempsalin)). The temperature estimates were standardized to April 3 and October 11 for spring and fall over the period 1968-2018. Surface and bottom temperature within the bluefish stock areas are shown below.
 
 
 ## Bottom Temperature {-#bottom-temperature}
 
 
-Thermal conditions on the Northeast Shelf have changed in recent decades as reflected in changes in bottom water temperatures in the stock areas. In both spring and fall, bottom water temperatures have significantly increased.
+Bottom temperature in fall for the coastal areas demarcated by the bluefish strata shows a strong linear increase over time, with a mean annual increase of 0.054 degrees (confidence intervals of 0.032 and 0.076). However, there is also evidence to support more punctuated temperature increases both early and late in the time series with a protracted period of stable temperature in between. There is evidence of step changes in bottom temperatures, which occurred in 1973 and 2013.
 
 
 ```{r bot_temp_process}
@@ -235,7 +236,8 @@ spring_bottom_temp_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_bottom_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_bottom_temp_plt), width = 0.9,
+         height_svg = 2.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_bottom_temp_plt
 }
@@ -277,7 +279,7 @@ if (interactive){
 ## Surface Temperature {-#surface-temperature}
 
 
-Thermal conditions on the Northeast Shelf have changed in recent decades as reflected in changes in surface water temperatures in the stock areas. In both spring and fall, bottom water temperatures have significantly increased. There is evidence of step changes in surface temperature in 2010.
+Fall surface temperature also shows a linear increase over time, albeit slightly lower than that for the bottom temperature, with a mean annual increase of 0.023 degrees (confidence intervals of 0.009 and 0.036). However, there is a stronger case for a punctuated temperature increase late in the time series with a protracted period of stable temperature prior to a step change occurring in 2014. This step change coincides with an increase in mean temperature of ~ 1.5 degrees over a two year period and a nearly 3-degree change in year-over-year fall temperature between 2013 and 2017.
 
 
 ```{r surf_temp_process}
@@ -368,13 +370,13 @@ if (interactive){
 # Salinity
 
 
-An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see methods). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the monkfish stock areas are shown below.
+An optimal interpolation procedure was used to estimate NE Shelf surface and bottom salinity for two seasonal time frames (see [methods](#methodstempsalin)). Though collected with temperature data, reliable instrumentation limits this time series to 1992-2018. The salinity estimates were standardized to April 3 and October 11 for spring and fall. Surface and bottom salinities within the bluefish stock areas are shown below.
 
 
 ## Bottom Salinity {-#bottom-salinity}
 
 
-Bottom salinity shows a significant increasing trend in both the spring and fall, with an increased salinity regime in 1999 and 2011. 
+There is no significant linear trend in bottom salinity over the time series, however there is support for a step change increase in salinity occurring in 2012. There also appears to be a ~4-5 year periodicity in bottom salinity in this coastal region, with periods of higher salinity occurring prior to 1995, and between 1999-2003, and 2012-2017.
 
 
 
@@ -466,7 +468,9 @@ if (interactive){
 ## Surface Salinity {-#surface-salinity}
 
 
-Surface salinity showed no significant trends in the spring, but in the fall there was a significant trend and evidence of several changing regimes with step increases in 1999 and 2011.
+Similar to bottom salinity, there is no significant linear trend in surface salinity over the time series, however there is support for a step change increase in salinity occurring in 2011. There also appears to be a ~4-5 year periodicity in surface salinity in this coastal region, with periods of higher salinity occurring prior to 1996, and between 1999-2003, and 2012-2017.
+
+
 
 
 
@@ -554,13 +558,13 @@ if (interactive){
 # Chlorophyll
 
 
-Chlorophyll concentration in the spring showed no significant linear trend but there appears to be evidence of a regime change to a lower level of chlorophyll in 2013. In the fall, there is a significant decreasing linear trend with a lower concentration regime beginning in 2013.
+Fall chlorophyll concentrations were relatively stable over the time series with the maximal concentration occurring in the fall of 2011. This was followed by a strong decrease in overall chlorophyll concentrations through the end of the time series. A regime shift analysis on the data suggests a step change occurred in 2015, with a decrease in mean chlorophyll concentration of ~ 0.5 mg m^3^, representing an approximately 20% reduction in mean chlorophyll concentration.
 
 
 ## Chlorophyll concentration in the stock area {-#chlorophyll-concentration-in-the-stock-area}
 
 
-The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#methodschl)). Chlorophyll concentrations in the spring and fall monkfish stock areas are shown below. Spring chlorophyll concentration varies without trend, but may change to a lower level of chlorophyll concentration in 2013. In the fall, there is a significant decreasing linear trend with a lower concentration regime beginning in 2013.
+The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#methodschl)). Chlorophyll concentrations in the spring and fall bluefish stock areas are shown below.
 
 
 ```{r chl_processing}
@@ -650,13 +654,13 @@ if (interactive){
 # Zooplankton
 
 
-Zooplankton are an important component of larval monkfish diet. Pelagic young-of-the-year monkfish consume chaetognaths, hyperiid amphipods, calanoid copepods, and ostracods (@able2007transitions). Since spawning activity progresses northward from spring to fall (@mcbride2017goosefish), fall zooplankton indices (Sep-Nov) are likely more relevant than the spring indices with regard to larval food availability for northern monkfish, particularly since the larval period for monkfish occurs in the summer months (@walsh2015long). Although fall copepod time-series are highly variable, there appears to be a protracted decline in *Pseudocalanus* spp., which coincide with recent increases in *Calanus finmarchicus*, *Centropages typicus*, and *Olthona* spp..  In the fall, many of the non-copepod zooplankton show recent increasing trends and may be more available to pelagic larval monkfish.
 
 
 
 ## Copepod abundance {-#copepod-abundance}
 
 
+Bluefish larvae consume copepods during their offshore life history phase. They undergo an ontogenetic shift in diet when they grow to approximately 30-40mm in length and continue to prey on fish as they transition to estuarine nurseries (@marks1993ontogenetic). *Acartia* spp., a dominant coastal copepod genus, exhibited lower abundance in fall during in the mid 1990's but has since recovered. *Calanus finmarchicus*, which is at the southernmost end of its range in this region and has typically low abundance in inshore waters, exhibits large interannual variability driven primarily by cross-shelf transport in this region. Its abundance in the fall in 2018 is presently at time series minima. *Oithona* spp., a very small but numerically important copepod genus exhibits a general increase in abundance throughout the time series in this nearshore region. *Centropages typicus* abundance was high during the 1990's, followed by a lower abundance in the early 2000's, a resurgence in the 2010's followed by the lowest value in the time series in 2017, and *Centropages hamatus* exhibits a similar pattern in abundance. A trend of dominance by smaller bodied copepods such as *Oithona* and *Acartia* over larger-bodied copepods such as *Centropages* spp. May have ramifications on energy flow through prey items that key in on zooplankton such as silversides and anchovies, and there may be a delayed response in the biomass of large predatory piscivores like bluefish following such changes at the base of the food web. Additionally, larval bluefish rely on larger-bodied copods early in their life-history, and an over abundance of less energy-rich smaller copepods may impact recruitment and survival rates.
 
 
 ```{r zoo_cope_processing}
@@ -825,6 +829,7 @@ fall_cope_plt
 ## Non-copepod zooplankton abundance {-#non-copepod-zooplankton-abundance}
 
 
+The abundance of other zooplankton in the fall generally increased over the time series, with appendicularians, chaetognaths, gastropods, and hyperiid amphipods showing a strong increase in abundance. However, because the stock area for bluefish is relatively small and coastal, there is large variability for many of these taxa. While adult bluefish are not likely to target may of these taxa as food items, they may be important for other organisms such as anchovies and silversides that are targeted as prey by bluefish and thus may be secondarily important in determining habitat availability.
 
 
 
@@ -1000,7 +1005,7 @@ fall_noncope_plt
 ## Occurrence probability {-#occurrence-probability}
 
 
-The probability of occurrence was estimated using random forest classification models (see [methods](#methodsocc)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. Both spring and fall occupancy has increased from 0.4 to greater than 0.5 over the time series and is currently near the time series maximum.
+The probability of occurrence was estimated using random forest classification models (see [methods](#methodsocc)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. Fall occupancy was relatively stable from 1970-1987, and then cycled on an approximately decadal scale with lower occupancy (~ 45%)  in the 1990’s followed by higher occupancy in the 2000’s which peaked in 2011 prior to decreasing again to the present value of ~ 55% in 2018.
 
 
 ```{r occ_prob, fig.height=4}
@@ -1067,12 +1072,15 @@ if (interactive){
 ## Habitat area {-#habitat-area}
 
 
-The area of the Northeast shelf with an estimated occurrence probability of ~0.60 for the northern component of the monkfish stock was determined for the stock area and the ecosystem.
 
 
 
 ### Ecosystem area  {-#ecosystem-area}
 
+{{ecosystemAreaStart}}
+
+
+{{ecosystemAreaEnd}}
 
 ```{r ecosystem_hab_area, fig.height=4, eval = T}
 threshold <- 0.5
@@ -1238,7 +1246,7 @@ if (interactive){
 ### Stock {-#stock}
 
 
-Both the spring and fall component of the northern monkfish stock habitat area have increased from less than 20000 km^2^ and 1000 km^2^ in the 1970s to a high of ~ 50000km^2^ in the recent decade.
+The stock area available to bluefish cycled from a period of higher availability early in the time series from 1975 through 1987, followed by lower availability in the 1990’s when approximately half of the previous stock are was available. The area increased again between 2001-2011, afterwhich the available area declined sharply. Current stock area remains at middling levels compared to the overall time series.
 
 
 ```{r stock_hab_area_fall}
@@ -1446,7 +1454,7 @@ if (interactive){
 ## Minimum Population Size {-#minimum-population-size}
 
 
-Estimates of the biomass for the minimum population size of monkfish was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see [methods](#methodsocc)). The procedure provides eight population size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. Of the eight treatment options, the biomass estimates for spring and fall were based on the NNN and YYN options, respectively. Over most of the time series, the spring minimum population biomass averaged approximately 5 million kg; however, during the most recent decade, the biomass declined to nearly half that level. The stock appears to be on an upward trajectory with increase stock size through 2018. The fall biomass is similarly patterned with a long-term average of approximately 5 million kg and a decline in the most recent decade. However, the fall 2018 biomass estimate appears to be markedly less than that spring estimate. 
+Estimates of the biomass for the minimum population size of bluefish was determined by re-stratifying the habitat each year depending on the distribution of occupancy habitat (see [methods](#methodsocc for details)). The procedure provides eight population size estimates for each stock, by season, based on the use of three estimation options. The estimates are denoted by a three-letter code (Y/N|Y/N|Y/N) where the first position indicates whether data were interpolated over habitat strata. The second position indicates whether the trawl data applied to the estimate was limited to the stations made in the stock area only or if trawls from other areas were used as well. The third position indicates whether the trawl data were subjected to a test for outliers, in which outliers were eliminated. Of the eight treatment options, the biomass estimate was based on the NYN option. 
 
 
 
@@ -1598,8 +1606,7 @@ if (nrow(spring_sae) != 0){
 ```
 
 
-
-
+Bluefish biomass, while relatively stable between the years 1994 and 2007, experienced a strong increase in 2009-2010, which preceded an equally strong but longer-term decline from 2011 through to the present (note that data from 2017 are not included here). This decline in biomass beginning in 2011 aligns with a decrease in occupancy probability, a decrease in the total ecosystem and stock areas available to the fish, as well as an increase in both salinity and temperature, and a reduction in both primary and secondary production within the stock area.
 
 
 ```{r fall_sae_plt, fig.height = adjust_for_facet, eval = print_plot[2]}
