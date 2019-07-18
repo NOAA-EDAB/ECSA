@@ -242,8 +242,7 @@ spring_bottom_temp_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_bottom_temp_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_bottom_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_bottom_temp_plt
 }
@@ -274,8 +273,7 @@ fall_bottom_temp_plt <-
     ggtitle(fall_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_bottom_temp_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_bottom_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_bottom_temp_plt
 }
@@ -336,8 +334,7 @@ spring_surface_temp_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_surface_temp_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_surface_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_surface_temp_plt
 }
@@ -368,8 +365,7 @@ fall_surface_temp_plt <-
     ggtitle(fall_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_surface_temp_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_surface_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_surface_temp_plt
 }
@@ -440,8 +436,7 @@ spring_bottom_sal_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_bottom_sal_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_bottom_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_bottom_sal_plt
 }
@@ -472,8 +467,7 @@ fall_bottom_sal_plt <-
     ggtitle(fall_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_bottom_sal_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_bottom_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_bottom_sal_plt
 }
@@ -533,8 +527,7 @@ spring_surface_sal_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_surface_sal_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_surface_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_surface_sal_plt
 }
@@ -564,8 +557,7 @@ fall_surface_sal_plt <-
     ggtitle(fall_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_surface_sal_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_surface_sal_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_surface_sal_plt
 }
@@ -633,8 +625,7 @@ spring_chl_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_chl_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_chl_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_chl_plt
 }
@@ -664,8 +655,7 @@ fall_chl_plt <-
     ggtitle(fall_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_chl_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_chl_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_chl_plt
 }
@@ -1092,8 +1082,7 @@ occ_prob_plt <-
     ggtitle("Occupancy probability")
 
 if (interactive){
-  girafe_options(girafe(code = print(occ_prob_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(occ_prob_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   occ_prob_plt
 }
@@ -1237,8 +1226,7 @@ spring_ecosystem_area_plt <-
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_ecosystem_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_ecosystem_area_plt
 }
@@ -1269,8 +1257,7 @@ fall_ecosystem_area_plt <- ggplot(data = fall_ecosystem_area_df,
     ggtitle(fall_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_ecosystem_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_ecosystem_area_plt
 }
@@ -1441,8 +1428,7 @@ spring_stock_area_plt <-
    xlab("")
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_stock_area_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_stock_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_stock_area_plt
 }
@@ -1480,8 +1466,7 @@ fall_stock_area_plt <-
    xlab("")
 
 if (interactive){
-  girafe_options(girafe(code = print(fall_stock_area_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(fall_stock_area_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   fall_stock_area_plt
 }
@@ -1632,8 +1617,7 @@ if (nrow(spring_sae) != 0){
     # girafe_options(girafe(code = print(title + biomass_plt +
     #                                      abundance_plt + plot_layout(nrow = 3)),
     #                       width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
-        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)),
-                          width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)), width_svg = 8.5),opts_hover(css = "r:2pt;") )
     
   } else {
     title <- cowplot::ggdraw() +
@@ -1731,8 +1715,7 @@ if (nrow(fall_sae) != 0){
     # girafe_options(girafe(code = print(title + biomass_plt +
     #                                      abundance_plt + plot_layout(nrow = 3)),
     #                       width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
-        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)),
-                          width = 0.9, height_svg = 5),opts_hover(css = "r:2pt;") )
+        girafe_options(girafe(code = print(title + biomass_plt + plot_layout(nrow = 2)), width_svg = 8.5),opts_hover(css = "r:2pt;") )
     
   } else {
     title <- cowplot::ggdraw() +
