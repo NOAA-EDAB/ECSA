@@ -6,6 +6,8 @@ title:
 author: ""
 always_allow_html: yes
 bibliography: "docs/ECSA_bibliography.bib"
+nocite: |
+  @Riley1999, @Lundblad2006, @Hobson197, @Sappington2007, @Winship2018, @Friedman2012, @Kinlan2016
 link-citations: true
 site: bookdown::bookdown_site
 biblio-style: apalike

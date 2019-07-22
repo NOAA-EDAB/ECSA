@@ -250,7 +250,7 @@ if (interactive){
 ```
 
 
-```{r bot_temp_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r bot-temp-fall-plt, fig.height=3, eval = print_plot[2]}
 fall_bottom_temp_plt <- 
   fall_bottom_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -288,7 +288,7 @@ if (interactive){
 
 {{SurfaceTemperatureEnd}}
 
-```{r surf_temp_process}
+```{r surf-temp-process}
 
 spring_surface_temp <- 
   fit_regime_and_trend(r = "surf_temp_spring_spdf.rdata",
@@ -310,7 +310,7 @@ fall_title <- fall_surface_temp$plot_title
 ```
 
 
-```{r surf_temp_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r surf-temp-spring-plt, fig.height=3, eval = print_plot[1]}
 
 spring_surface_temp_plt <- 
   spring_surface_temp$df %>% 
@@ -341,7 +341,7 @@ if (interactive){
 
 ```
 
-```{r surf_temp_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r surf-temp-fall-plt, fig.height=3, eval = print_plot[2]}
 
 fall_surface_temp_plt <- 
   fall_surface_temp$df %>% 
@@ -389,7 +389,7 @@ An optimal interpolation procedure was used to estimate NE Shelf surface and bot
 {{BottomSalinityEnd}}
 
 
-```{r bot_sal_process}
+```{r bot-sal-process}
 
 spring_bottom_sal <- 
   fit_regime_and_trend(r = "bot_sal_spring_spdf.rdata",
@@ -412,7 +412,7 @@ fall_title <- fall_bottom_sal$plot_title
 ```
 
 
-```{r bot_sal_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r bot-sal-spring-plt, fig.height=3, eval = print_plot[1]}
 
 spring_bottom_sal_plt <- 
   spring_bottom_sal$df %>% 
@@ -443,7 +443,7 @@ if (interactive){
 ```
 
 
-```{r bot_sal_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r bot-sal-fall-plt, fig.height=3, eval = print_plot[2]}
 
 fall_bottom_sal_plt <- 
   fall_bottom_sal$df %>% 
@@ -482,7 +482,7 @@ if (interactive){
 {{SurfaceSalinityEnd}}
 
 
-```{r surf_sal_process}
+```{r surf-sal-process}
 spring_surface_sal <- 
   fit_regime_and_trend(r = "surf_sal_spring_spdf.rdata",
                 stock_name = stock_name,
@@ -504,7 +504,7 @@ fall_title <- fall_surface_sal$plot_title
 ```
 
 
-```{r surf_sal_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r surf-sal-spring-plt, fig.height=3, eval = print_plot[1]}
 spring_surface_sal_plt <- 
   spring_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -534,7 +534,7 @@ if (interactive){
 ```
 
 
-```{r surf_sal_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r surf-sal-fall-plt, fig.height=3, eval = print_plot[2]}
 fall_surface_sal_plt <- 
   fall_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -578,7 +578,7 @@ The concentration of chlorophyll was measured with a suite of satellite sensors 
 
 {{ChlorophyllConcEnd}}
 
-```{r chl_processing}
+```{r chl-processing}
 spring_chl <- 
   fit_regime_and_trend(r = "chlorophyll_conc.rdata",
               stock_name = stock_name, 
@@ -602,7 +602,7 @@ fall_title <- fall_chl$plot_title
 ```
 
 
-```{r chl_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r chl-spring-plt, fig.height=3, eval = print_plot[1]}
 spring_chl_plt <- 
   spring_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -632,7 +632,7 @@ if (interactive){
 ```
 
 
-```{r chl_fal_plt, fig.height=3, eval = print_plot[2]}
+```{r chl-fal-plt, fig.height=3, eval = print_plot[2]}
 fall_chl_plt <- 
   fall_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -677,7 +677,7 @@ if (interactive){
 
 {{CopepodEnd}}
 
-```{r zoo_cope_processing}
+```{r zoo-cope-processing}
 spring_cope <- 
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
                         stock_name = stock_name, 
@@ -711,7 +711,7 @@ fall_cope <-
 fall_min <- min(fall_cope$Time)
 ```
 
-```{r, zoo_cope_spring, fig.height=5, eval = print_plot[1]}
+```{r, zoo-cope-spring, fig.height=5, eval = print_plot[1]}
 if (interactive){
   buttons <- create_buttons(spring_cope)
 
@@ -776,7 +776,7 @@ spring_cope_plt
 ```
 
 
-```{r zoo_cope_fall, fig.height=5, fig.height=5, eval = print_plot[2]}
+```{r zoo-cope-fall, fig.height=5, fig.height=5, eval = print_plot[2]}
 
 if (interactive){
   buttons <- create_buttons(fall_cope)
@@ -848,7 +848,7 @@ fall_cope_plt
 {{NonCopepodEnd}}
 
 
-```{r zoo_noncope_processing}
+```{r zoo-noncope-processing}
 spring_noncope <- 
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
                         stock_name = stock_name, 
@@ -883,7 +883,7 @@ fall_min <- min(fall_noncope$Time)
 
 ```
 
-```{r zoo_spring_noncope, fig.height=5, eval = print_plot[1]}
+```{r zoo-spring-noncope, fig.height=5, eval = print_plot[1]}
 if (interactive){
 
 buttons <- create_buttons(spring_noncope)
@@ -947,7 +947,7 @@ spring_noncope_plt
 }
 ```
 
-```{r zoo_fall_noncope, fig.height=5, eval = print_plot[2]}
+```{r zoo-fall-noncope, fig.height=5, eval = print_plot[2]}
 if (interactive){
 
 buttons <- create_buttons(fall_noncope)
@@ -1027,7 +1027,7 @@ The probability of occurrence was estimated using random forest classification m
 
 {{OccurrenceEnd}}
 
-```{r occ_prob, fig.height=4}
+```{r occ-prob, fig.height=4}
 
 spring_occ_prob <- 
   fit_regime_and_trend(r =  paste0("spring_",sixcode,"_occ_prob.rdata"),
@@ -1103,7 +1103,7 @@ if (interactive){
 
 {{ecosystemAreaEnd}}
 
-```{r ecosystem_hab_area, fig.height=4, eval = T}
+```{r ecosystem-hab-area, fig.height=4, eval = T}
 threshold <- 0.5
 
 ecosystem_hab_area_df <- 
@@ -1271,7 +1271,7 @@ if (interactive){
 
 {{StockAreaEnd}}
 
-```{r stock_hab_area_fall}
+```{r stock-hab-area-fall}
 stock_hab_area_df <- 
   stock_habitat_area %>% 
     dplyr::filter(threshold == !!threshold) %>% 
@@ -1337,7 +1337,7 @@ for (i in subareas){
 ```
 
 
-```{r stock_hab_area_spring}
+```{r stock-hab-area-spring}
 
 if (any(stringr::str_detect(unique(stock_hab_area_df$season), "spring"))){
   
@@ -1481,7 +1481,7 @@ Estimates of the biomass for the minimum population size of monkfish was determi
 {{MinPopulationEnd}}
 
 
-```{r sae_processing}
+```{r sae-processing}
 do_transform <- F
 
 if (nrow(fall_sae) != 0){
@@ -1535,7 +1535,7 @@ spring_treatment <- treatment_selection %>%
 
 {{SpringHabitatAreaEnd}}
 
-```{r spring_sae_plt, fig.height = adjust_for_facet, eval = print_plot[1]}
+```{r spring-sae-plt, fig.height = adjust_for_facet, eval = print_plot[1]}
 if (nrow(spring_sae) != 0){
   if (do_transform){
     
@@ -1633,7 +1633,7 @@ if (nrow(spring_sae) != 0){
 
 {{FallHabitatAreaEnd}}
 
-```{r fall_sae_plt, fig.height = adjust_for_facet, eval = print_plot[2]}
+```{r fall-sae-plt, fig.height = adjust_for_facet, eval = print_plot[2]}
 if (nrow(fall_sae) != 0){
   if (do_transform){
     
