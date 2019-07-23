@@ -12,6 +12,8 @@ link-citations: true
 site: bookdown::bookdown_site
 biblio-style: apalike
 github-repo: NOAA-EDAB/ECSA
+header-includes:
+  \\usepackage{array}
 output:
   bookdown::gitbook:
     lib_dir: book_assets

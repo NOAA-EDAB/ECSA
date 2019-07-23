@@ -49,7 +49,7 @@ stock_code <- "{{SPECIES_CODE}}"
 stock_name <- "{{STOCK_NAME}}"
 cc_name <- "{{CC_NAME}}"
 common_name <- "{{COMMON_NAME}}"
-interactive <- as.logical("{{INTERACTIVE}}")
+interactive <-  ifelse(knitr::is_latex_output(), F,T)
 
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   

@@ -54,7 +54,7 @@ merge_to_bookdown <- function(stock_name,
   # docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
   docs_text <- readr::read_file(tmp_txt)
   ## remove readme
-  docs_text <- gsub(".*\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\r\n", "", docs_text)
+  docs_text <- gsub("\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\r\n", "", docs_text)
   ## Fix the methods links
   docs_text <- gsub("#methods(.*?)\\)", "[methods](#methods\\1))", docs_text)
   
@@ -70,8 +70,8 @@ merge_to_bookdown <- function(stock_name,
   ## Download the draft rmd
   rmd_text <- readr::read_file(sprintf("%s_draft.rmd", here::here("docs", stock_name)))
   ## remove readme
-  rmd_text <- gsub("\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\r\n", "", rmd_text)
-  
+  rmd_text <- gsub("\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\n\n", "", rmd_text)
+
   ## Get the stock name, common name, and subarea
   clean_names <- readr::read_csv(here::here("data/stock_data/stock_list.csv"),
                                  col_types = readr::cols(
@@ -114,13 +114,12 @@ merge_to_bookdown <- function(stock_name,
     new_text <- gsub(pattern[i], text_list[[i]], new_text)
   }
   
+  
+ ## Remove extra brackets
+ new_text <- gsub("\n\\{\\{.*\\}\\}\n", "", new_text)
+  
  new_text <- gsub("---(.*?)---",
   sprintf("---\n%s---", yaml::as.yaml(yml)), new_text)
-
-  # new_text <- paste("---\n", yaml::as.yaml(yml), "---",
-  #                   new_text,
-  #                   collapse = " ")
-  
   
   ##Create .Rmd file to be written to book
   file_name <- sprintf("%s.rmd", stock_name)
