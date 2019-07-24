@@ -5,10 +5,13 @@ title: |
 author: ''
 always_allow_html: yes
 bibliography: /Users/seanhardison/Documents/git/ECSA/docs/ECSA_bibliography.bib
+nocite: |
+  @Riley1999, @Lundblad2006, @Hobson197, @Sappington2007, @Winship2018, @Friedman2012, @Kinlan2016
 link-citations: yes
 site: bookdown::bookdown_site
 biblio-style: apalike
 github-repo: NOAA-EDAB/ECSA
+header-includes: \usepackage{array}
 output:
   bookdown::gitbook:
     lib_dir: book_assets
@@ -40,7 +43,7 @@ library(gt)
 library(kableExtra)
 library(ggiraph)
 
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center', eval.after = 'fig.cap')
 
 ## Read in stock area vectors
 
@@ -64,7 +67,7 @@ stock_code <- "135"
 stock_name <- "bluefish"
 cc_name <- "bluefish"
 common_name <- "bluefish"
-interactive <- as.logical("TRUE")
+interactive <-  ifelse(knitr::is_latex_output(), F,T)
 
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   
@@ -131,6 +134,8 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 
 #Set interactive to F when pushing a draft document to google drive. Otherwise, the ggiraph figures will render as interactive. Interactive figures should only be used during the creation of the final bookdown document. 
 
+#Switches the encoding for the degree symbol (i.e. LaTeX or HTML)
+degree <- ifelse(knitr::is_latex_output(),"\\textdegree " ,'&deg;')
 ```
 
 
@@ -151,16 +156,18 @@ The long term trend of dominance by smaller-bodied copepods over larger-bodied c
 
 ### Stock area {-#stock-area}
 
-```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for bluefish (*Pomatomus saltatrix*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap= paste0("Strata map for bluefish (",ifelse(knitr::is_latex_output(), '\\textit{Pomatomus saltatrix}','*Pomatomus saltatrix*'),") on the NE shelf"), message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_season = stock_season,
            strata = strata,
            overwrite = FALSE,
            save_plot = FALSE)
+
+
 ```
 
-#### A note on figures {-#a-note-on-figures}
+**A note on figures**
 
 Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by light blue and green lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
 
@@ -232,12 +239,11 @@ spring_bottom_temp_plt <-
     theme_bw() +
     theme(legend.title = element_blank(),
           legend.position = "bottom") +
-    ylab("Temperature (°C)") +
+    ylab("Temperature (`r degree`C)") +
     ggtitle(spring_title)
 
 if (interactive){
-  girafe_options(girafe(code = print(spring_bottom_temp_plt), width = 0.9,
-         height_svg = 2.5),opts_hover(css = "r:2pt;") )
+  girafe_options(girafe(code = print(spring_bottom_temp_plt), width_svg = 8.5),opts_hover(css = "r:2pt;") )
 } else {
   spring_bottom_temp_plt
 }
@@ -245,7 +251,7 @@ if (interactive){
 ```
 
 
-```{r bot_temp_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r bot-temp-fall-plt, fig.height=3, eval = print_plot[2]}
 fall_bottom_temp_plt <- 
   fall_bottom_temp$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -282,7 +288,7 @@ if (interactive){
 Fall surface temperature also shows a linear increase over time, albeit slightly lower than that for the bottom temperature, with a mean annual increase of 0.023 degrees (confidence intervals of 0.009 and 0.036). However, there is a stronger case for a punctuated temperature increase late in the time series with a protracted period of stable temperature prior to a step change occurring in 2014. This step change coincides with an increase in mean temperature of ~ 1.5 degrees over a two year period and a nearly 3-degree change in year-over-year fall temperature between 2013 and 2017.
 
 
-```{r surf_temp_process}
+```{r surf-temp-process}
 
 spring_surface_temp <- 
   fit_regime_and_trend(r = "surf_temp_spring_spdf.rdata",
@@ -304,7 +310,7 @@ fall_title <- fall_surface_temp$plot_title
 ```
 
 
-```{r surf_temp_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r surf-temp-spring-plt, fig.height=3, eval = print_plot[1]}
 
 spring_surface_temp_plt <- 
   spring_surface_temp$df %>% 
@@ -335,7 +341,7 @@ if (interactive){
 
 ```
 
-```{r surf_temp_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r surf-temp-fall-plt, fig.height=3, eval = print_plot[2]}
 
 fall_surface_temp_plt <- 
   fall_surface_temp$df %>% 
@@ -380,7 +386,7 @@ There is no significant linear trend in bottom salinity over the time series, ho
 
 
 
-```{r bot_sal_process}
+```{r bot-sal-process}
 
 spring_bottom_sal <- 
   fit_regime_and_trend(r = "bot_sal_spring_spdf.rdata",
@@ -403,7 +409,7 @@ fall_title <- fall_bottom_sal$plot_title
 ```
 
 
-```{r bot_sal_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r bot-sal-spring-plt, fig.height=3, eval = print_plot[1]}
 
 spring_bottom_sal_plt <- 
   spring_bottom_sal$df %>% 
@@ -434,7 +440,7 @@ if (interactive){
 ```
 
 
-```{r bot_sal_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r bot-sal-fall-plt, fig.height=3, eval = print_plot[2]}
 
 fall_bottom_sal_plt <- 
   fall_bottom_sal$df %>% 
@@ -474,7 +480,7 @@ Similar to bottom salinity, there is no significant linear trend in surface sali
 
 
 
-```{r surf_sal_process}
+```{r surf-sal-process}
 spring_surface_sal <- 
   fit_regime_and_trend(r = "surf_sal_spring_spdf.rdata",
                 stock_name = stock_name,
@@ -496,7 +502,7 @@ fall_title <- fall_surface_sal$plot_title
 ```
 
 
-```{r surf_sal_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r surf-sal-spring-plt, fig.height=3, eval = print_plot[1]}
 spring_surface_sal_plt <- 
   spring_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -526,7 +532,7 @@ if (interactive){
 ```
 
 
-```{r surf_sal_fall_plt, fig.height=3, eval = print_plot[2]}
+```{r surf-sal-fall-plt, fig.height=3, eval = print_plot[2]}
 fall_surface_sal_plt <- 
   fall_surface_sal$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -567,7 +573,7 @@ Fall chlorophyll concentrations were relatively stable over the time series with
 The concentration of chlorophyll was measured with a suite of satellite sensors and merged into a single dataset (see [methods](#methodschl)). Chlorophyll concentrations in the spring and fall bluefish stock areas are shown below.
 
 
-```{r chl_processing}
+```{r chl-processing}
 spring_chl <- 
   fit_regime_and_trend(r = "chlorophyll_conc.rdata",
               stock_name = stock_name, 
@@ -591,7 +597,7 @@ fall_title <- fall_chl$plot_title
 ```
 
 
-```{r chl_spring_plt, fig.height=3, eval = print_plot[1]}
+```{r chl-spring-plt, fig.height=3, eval = print_plot[1]}
 spring_chl_plt <- 
   spring_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -621,7 +627,7 @@ if (interactive){
 ```
 
 
-```{r chl_fal_plt, fig.height=3, eval = print_plot[2]}
+```{r chl-fal-plt, fig.height=3, eval = print_plot[2]}
 fall_chl_plt <- 
   fall_chl$df %>% 
     tidyr::gather(Var, Value, -Time) %>% 
@@ -663,7 +669,7 @@ if (interactive){
 Bluefish larvae consume copepods during their offshore life history phase. They undergo an ontogenetic shift in diet when they grow to approximately 30-40mm in length and continue to prey on fish as they transition to estuarine nurseries (@marks1993ontogenetic). *Acartia* spp., a dominant coastal copepod genus, exhibited lower abundance in fall during in the mid 1990's but has since recovered. *Calanus finmarchicus*, which is at the southernmost end of its range in this region and has typically low abundance in inshore waters, exhibits large interannual variability driven primarily by cross-shelf transport in this region. Its abundance in the fall in 2018 is presently at time series minima. *Oithona* spp., a very small but numerically important copepod genus exhibits a general increase in abundance throughout the time series in this nearshore region. *Centropages typicus* abundance was high during the 1990's, followed by a lower abundance in the early 2000's, a resurgence in the 2010's followed by the lowest value in the time series in 2017, and *Centropages hamatus* exhibits a similar pattern in abundance. A trend of dominance by smaller bodied copepods such as *Oithona* and *Acartia* over larger-bodied copepods such as *Centropages* spp. May have ramifications on energy flow through prey items that key in on zooplankton such as silversides and anchovies, and there may be a delayed response in the biomass of large predatory piscivores like bluefish following such changes at the base of the food web. Additionally, larval bluefish rely on larger-bodied copods early in their life-history, and an over abundance of less energy-rich smaller copepods may impact recruitment and survival rates.
 
 
-```{r zoo_cope_processing}
+```{r zoo-cope-processing}
 spring_cope <- 
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
                         stock_name = stock_name, 
@@ -697,7 +703,7 @@ fall_cope <-
 fall_min <- min(fall_cope$Time)
 ```
 
-```{r, zoo_cope_spring, fig.height=5, eval = print_plot[1]}
+```{r, zoo-cope-spring, fig.height=5, eval = print_plot[1]}
 if (interactive){
   buttons <- create_buttons(spring_cope)
 
@@ -754,7 +760,8 @@ spring_cope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
     theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Spring copepod abundance")
 }
 
@@ -762,7 +769,7 @@ spring_cope_plt
 ```
 
 
-```{r zoo_cope_fall, fig.height=5, fig.height=5, eval = print_plot[2]}
+```{r zoo-cope-fall, fig.height=5, fig.height=5, eval = print_plot[2]}
 
 if (interactive){
   buttons <- create_buttons(fall_cope)
@@ -820,7 +827,8 @@ fall_cope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
         theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Fall copepod abundance")
 }
 
@@ -833,7 +841,7 @@ The abundance of other zooplankton in the fall generally increased over the time
 
 
 
-```{r zoo_noncope_processing}
+```{r zoo-noncope-processing}
 spring_noncope <- 
   fit_regime_and_trend(r = "zoo_spring_rasters_1yr.rdata",
                         stock_name = stock_name, 
@@ -868,7 +876,7 @@ fall_min <- min(fall_noncope$Time)
 
 ```
 
-```{r zoo_spring_noncope, fig.height=5, eval = print_plot[1]}
+```{r zoo-spring-noncope, fig.height=5, eval = print_plot[1]}
 if (interactive){
 
 buttons <- create_buttons(spring_noncope)
@@ -927,12 +935,13 @@ spring_noncope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
         theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Spring non-copepod zoo. abundance")
 }
 ```
 
-```{r zoo_fall_noncope, fig.height=5, eval = print_plot[2]}
+```{r zoo-fall-noncope, fig.height=5, eval = print_plot[2]}
 if (interactive){
 
 buttons <- create_buttons(fall_noncope)
@@ -991,7 +1000,8 @@ fall_noncope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
         theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Fall non-copepod zoo. abundance")
 }
 ```
@@ -1008,7 +1018,7 @@ fall_noncope_plt
 The probability of occurrence was estimated using random forest classification models (see [methods](#methodsocc)). The mean annual probabilities were extracted for the spring and fall stock definition areas. These data provide an estimate of the potential use of the habitat associated with the stock definition. Fall occupancy was relatively stable from 1970-1987, and then cycled on an approximately decadal scale with lower occupancy (~ 45%)  in the 1990’s followed by higher occupancy in the 2000’s which peaked in 2011 prior to decreasing again to the present value of ~ 55% in 2018.
 
 
-```{r occ_prob, fig.height=4}
+```{r occ-prob, fig.height=4}
 
 spring_occ_prob <- 
   fit_regime_and_trend(r =  paste0("spring_",sixcode,"_occ_prob.rdata"),
@@ -1077,8 +1087,7 @@ if (interactive){
 
 ### Ecosystem area  {-#ecosystem-area}
 
-
-```{r ecosystem_hab_area, fig.height=4, eval = T}
+```{r ecosystem-hab-area, fig.height=4, eval = T}
 threshold <- 0.5
 
 ecosystem_hab_area_df <- 
@@ -1245,7 +1254,7 @@ if (interactive){
 The stock area available to bluefish cycled from a period of higher availability early in the time series from 1975 through 1987, followed by lower availability in the 1990’s when approximately half of the previous stock are was available. The area increased again between 2001-2011, afterwhich the available area declined sharply. Current stock area remains at middling levels compared to the overall time series.
 
 
-```{r stock_hab_area_fall}
+```{r stock-hab-area-fall}
 stock_hab_area_df <- 
   stock_habitat_area %>% 
     dplyr::filter(threshold == !!threshold) %>% 
@@ -1311,7 +1320,7 @@ for (i in subareas){
 ```
 
 
-```{r stock_hab_area_spring}
+```{r stock-hab-area-spring}
 
 if (any(stringr::str_detect(unique(stock_hab_area_df$season), "spring"))){
   
@@ -1456,7 +1465,7 @@ Estimates of the biomass for the minimum population size of bluefish was determi
 
 
 
-```{r sae_processing}
+```{r sae-processing}
 do_transform <- F
 
 if (nrow(fall_sae) != 0){
@@ -1508,7 +1517,7 @@ spring_treatment <- treatment_selection %>%
 
 
 
-```{r spring_sae_plt, fig.height = adjust_for_facet, eval = print_plot[1]}
+```{r spring-sae-plt, fig.height = adjust_for_facet, eval = print_plot[1]}
 if (nrow(spring_sae) != 0){
   if (do_transform){
     
@@ -1605,7 +1614,7 @@ if (nrow(spring_sae) != 0){
 Bluefish biomass, while relatively stable between the years 1994 and 2007, experienced a strong increase in 2009-2010, which preceded an equally strong but longer-term decline from 2011 through to the present (note that data from 2017 are not included here). This decline in biomass beginning in 2011 aligns with a decrease in occupancy probability, a decrease in the total ecosystem and stock areas available to the fish, as well as an increase in both salinity and temperature, and a reduction in both primary and secondary production within the stock area.
 
 
-```{r fall_sae_plt, fig.height = adjust_for_facet, eval = print_plot[2]}
+```{r fall-sae-plt, fig.height = adjust_for_facet, eval = print_plot[2]}
 if (nrow(fall_sae) != 0){
   if (do_transform){
     
@@ -1700,7 +1709,7 @@ if (nrow(fall_sae) != 0){
 
 # Methods {#methods}
 
-## Surface and Bottom Temperature and Salinity {#methodstempsalin}
+## Surface and Bottom Temperature and Salinity {-#methodstempsalin}
 
 ### Study System
 The U.S. Northeast Shelf ecosystem, which roughly aligns with the boundaries of the Northeast U.S. Continental Shelf Large Marine Ecosystem (LME), is the study area for the surface and bottom thermal environments. Surface and bottom temperatures were estimated over a 0.1° latitude/longitude grid, termed the estimation grid, which circumscribes the range of ecosystem assessment areas in the [region](#fig:study-area). The difference between the extents of the estimation grid from the extent of the LME relate to the resource management programs that are the sources of the data, which are focused on fishery management needs in the region. 
@@ -1710,7 +1719,7 @@ Temperature and salinity were collected on the Northeast Shelf as part of ongoin
 
 ### Interpolation Procedure
 Seasonal surface and bottom temperature fields were estimated using an optimal interpolation approach. The optimal interpolation combined a climatological depiction of temperature and an annual estimates based on the data for a particular depth and season. (There were a number of precursor steps that are described below.). 
-The surveys used to collect the data were conducted during the same period each year, however, there was variation in survey timing. To account for this, temperatures were standardized to a collection date of April 3 for spring surveys and October 11 for fall using linear regression for each depth and season over the sample grid (see Appendix, [Figure A1](#fig:doc_correction)). For each depth and season, annual shelf-wide mean temperatures were calculated using the data from sample grid locations with at least 80% of the time series present. The annual observations were then transformed to anomalies by subtracting the appropriate annual mean. All anomalies for a season and depth were combined over years into a single anomaly field or climatology. 
+The surveys used to collect the data were conducted during the same period each year, however, there was variation in survey timing. To account for this, temperatures were standardized to a collection date of April 3 for spring surveys and October 11 for fall using linear regression for each depth and season over the sample grid (see Appendix, [Figure A1](#fig:doc-correction)). For each depth and season, annual shelf-wide mean temperatures were calculated using the data from sample grid locations with at least 80% of the time series present. The annual observations were then transformed to anomalies by subtracting the appropriate annual mean. All anomalies for a season and depth were combined over years into a single anomaly field or climatology. 
 
 The annual estimate of temperature for a depth and season was imputed by used universal kriging to estimate the temperature over the estimation grid with depth as a covariate. The kriging yielded temperature estimates and a variance estimate over the same grid. The optimal interpolation field was assembled by combining the annual estimate and information from the anomaly climatology. The climatology was re-leveled from anomaly values to temperatures by adding back the appropriate annual mean. For each location in the estimation grid, temperature was calculated as a weighted mean between the kriged annual estimate and the releveled climatology. The weightings in the calculations were partitioned based on the variance field of the annual kriging. The field was divided into quartiles from low to high variance with the weighting ratio of annual:climatology temperatures of 4:1, 3:1, 2:1, and 1:1, respectively. Hence, in areas of low variance the weighted mean was based on a weighting of 4:1, which would reflect a higher contribution of information from the annual estimate and thus be closer to an observation. In areas with high variance, the weighting ratio of 1:1 would reflect a greater effect of the climatology in determining the interpolation estimate. 
 
@@ -1718,51 +1727,32 @@ The optimal interpolation temperature fields were evaluated using cross validati
 
 ### {-#fig:study-area}
   
-```{r study area, echo = F, fig.align="center", fig.cap = "Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line."}
+```{r study-area, echo = F, fig.align="center", fig.cap = "Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line.", out.width="50%"}
 knitr::include_graphics(here::here('images/ECSA_study_area.jpg'))
 ```
 
-## Chlorophyll data {#methodschl}
+## Chlorophyll data {-#methodschl}
 Chlorophyll a concentration ([Chl]) data extracted from satellite remote-sensing databases based on measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors. We used the Garver, Siegel, Maritorena Model (GSM) merged data product at 100 km (equivalent to a 1° grid) and 8-day spatial and temporal resolutions, respectively, obtained from the 
 [Hermes GlobColour website](www.hermes.acri.fr/index.php). These four sensors provide an overlapping time series of [Chl] during the period 1997 to 2018 and were combined based on a bio-optical model inversion algorithm (Maritorena et al. 2010). 
 
-## Zooplankton abundance {#methodszoo}
+## Zooplankton abundance {-#methodszoo}
 Zooplankton abundance is measured by the Ecosystem Monitoring Program (EcoMon), which conducts shelf-wide bimonthly surveys of the NES ecosystem [@Kane2007]. Zooplankton and ichthyoplankton are collected throughout the water column to a maximum depth of 200 m using paired 61-cm Bongo samplers equipped with 333-micron mesh nets. Sample location in this survey is based on a randomized strata design, with strata defined by bathymetry and along-shelf location. Plankton taxa are sorted and identified. We used the bio-volume of the 18 most abundant taxonomic categories as potential predictor variables [(Table 2)](#fig:habitatdesc). The zooplankton sample time series has some missing values, which necessitated the removal of spring data for the years 1989, 1990, 1991, and 1994 and fall data for the years 1989, 1990, and 1992. The data for each seasonal time frame was interpolated to a complete field over the estimation grid using ordinary kriging. 
 
 ### {#fig:zooptab}
 
-```{r zooptab, echo=F, message=FALSE, warnings=FALSE, results='asis'}
-tabl <- "
-|Variable name|Full name|
-|:----------|:-----------|
-|acarspp|*Acartia* spp. |
-|calfin|*Calanus finmarchicus* |
-|chaeto|*Chaetognatha*|
-|cham|*Centropages hamatus* |
-|cirr|*Cirripedia*|
-|ctyp|*Centropages typicus* |
-|echino|*Echinodermata*|
-|evadnespp|*Evadne* spp.|
-|gas|*Gastropoda*|
-|hyper|*Hyperiidea*|
-|larvaceans|*Appendicularians*|
-|mlucens|*Metridia lucens* |
-|oithspp|*Oithona* spp. |
-|para|*Paracalanus* parvus |
-|penilia|*Penilia* spp.|
-|pseudo|*Pseudocalanus* spp. |
-|salps|*Salpa*|
-|tlong|*Temora longicornis*| 
-"
-df<-suppressWarnings(readr::read_delim(tabl, delim="|"))
-df<-df[-c(1,2) ,c("Variable name","Full name")]
+```{r zooptab, echo=F, message=FALSE, warnings=FALSE}
+df <- data.frame(code = c("acarspp","calfin","chaeto","cham","cirr","ctyp",
+                               "echino","evadnespp","gas","hyper","larvaceans","mlucens",
+                               "oithspp","para","penilia","pseudo","salps","tlong"),
+           latin = c("*Acartia* spp.","*Calanus finmarchicus*","Chaetognatha","*Centropages hamatus*","Cirripedia","*Centropages typicus*","Echinodermata","*Evadne* spp.","Gastropoda","Hyperiidea","Appendicularians","*Metridia lucens*","*Oithona* spp.","*Paracalanus* parvus","*Penilia* spp.","*Pseudocalanus* spp.","Salpa","*Temora longicornis*"))
+
 knitr::kable(
-  df, booktabs = TRUE,
+  df, booktabs = TRUE, col.names = c("Variable name","Taxa"), format = "markdown",
   caption = 'Variable and species names for the 18 most abundant zooplankton taxa in EcoMon survey data.'
 )
 ```
 
-## Occupancy models {#methodsocc}
+## Occupancy models {-#methodsocc}
 
 Occupancy and productivity habitats for Atlantic menhaden were estimated with random forest classification and regression models using a suite of static and dynamic predictor variables. Variation in species presence or absence and biomass across space, bathymetry factors, productivity factors, and climate factors were tested. Models were constructed separately for spring and fall seasons. The response variables were the occurrence and catch-per-unit-effort of Atlantic menhaden in the Northeast Fisheries Science Center bottom trawl survey, which is a fishery-independent survey on the Northeast US Shelf. The survey is conducted in the spring and fall of the year and is based on a stratified random design, which provides both spatial and temporal depictions of fish and macroinvertebrate abundances [@Grosslein1969]. The independent or predictor variable set included physical environment variables, habitat descriptors, zooplankton variables, and remote sensing variables; the variables will be described in more detail below. Occupancy models were fit as two-factor classification models (absence as 0; presence as 1) using the randomForest R package [@randomForest].
 
@@ -1770,7 +1760,7 @@ Prior to fitting the model, the independent variable set was first tested for mu
 
 Three types of visualizations were created from the output of the tree models. The first visualization was used to see the average probability of occupancy over space and the rate of change (Sen's slope) in occupancy over the years. The second visualization was used to see the mean occupancy gradient magnitude, or frontal strength and the rate of change (Sen's slope) in occupancy gradient magnitude over the years. Gradient magnitude was calculated by calculating the median of the occupancy probabilities with a moving window and then summing those medians with a moving window with a matrix of weights. The third visualization was used to see the average biomass over space and the rate of change (Sen's slope) in biomass over the years. Trends in total occupancy habitat area, with occupancy probabilities of 25, 50, and 75% over time were plotted as well by calculating the sum of the area with occupancy probabilities at each percentage during each year. 
 
-**Following from the 2018 ECSA for summer flounder, the methodology was changed by the conversion of salinity, surface and bottom, from a dynamic variable to a static variable. By so doing, the fitting period is extended from 1992-2017 to 1976-2018. Dynamic salinity data was limited by the time series of modern instrumentation, which began in 1992. In the 2018 model fits, dynamic salinity was not an important variable in any species model; hence, conversion to a static variable was of little consequence.**
+Following from the 2018 ECSA for summer flounder, the methodology was changed by the conversion of salinity, surface and bottom, from a dynamic variable to a static variable. By so doing, the fitting period is extended from 1992-2017 to 1976-2018. Dynamic salinity data was limited by the time series of modern instrumentation, which began in 1992. In the 2018 model fits, dynamic salinity was not an important variable in any species model; hence, conversion to a static variable was of little consequence.
 
 ### Minimum swept area abundance based on habitat informed dynamic re-stratification 
 
@@ -1785,11 +1775,11 @@ These estimates were conditioned on three options intended to ameliorate some of
 Static variables were kept constant over years where dynamic variables varied annually. Hence, the length of the time series of model fits is constrained by the shortest dynamic variable time series to meet the requirement of complete cases in the Random Forest fitting. The fitting time series was constrained to 1992 – 2016, which was determined by the length of the station salinity data. 
 
 ### Physical environment
-Station data included observations made contemporaneously to survey bottom trawl stations. Depth of the station was used as a static variable in the analysis. The observed depth was used in model fitting where model predictions were based on depths from the ETOPO1 dataset, which provided Northeast Shelf bathymetry at a resolution of 0.0167° [(below)](#fig:occ_grid).
+Station data included observations made contemporaneously to survey bottom trawl stations. Depth of the station was used as a static variable in the analysis. The observed depth was used in model fitting where model predictions were based on depths from the ETOPO1 dataset, which provided Northeast Shelf bathymetry at a resolution of 0.0167° [(below)](#fig:occ-grid).
 
-### {#fig:occ_grid}
+### {#fig:occ-grid}
 
-```{r occ_grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width=switch(knitr::opts_knit$get("rmarkdown.pandoc.to"), latex = "0.5\\linewidth", html = '500')}
+```{r occ-grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width="50%"}
 knitr::include_graphics(here::here("images/ECSA_occ_grid.png"))
 ```
 
@@ -1820,29 +1810,32 @@ The habitat models were evaluated for fit based on out-of-bag classification acc
 tab <- '
 |Variables|Notes|References|
 |:-----------------------|:-----------------------|:-----------------------|
-|Complexity - Terrain Ruggedness Index|The difference in elevation values from a center cell and the eight cells immediately surrounding it. Each of the difference values are squared to make them all positive and averaged. The index is the square root of this average.|@Riley1999|
-|Namera bpi|BPI is a second order derivative of the surface depth using the TNC Northwest Atlantic Marine Ecoregional Assessment ("NAMERA") data with an inner radius=5 and outer radius=50.|@Lundblad2006|
-|Namera_vrm|Vector Ruggedness Measure (VRM) measures terrain ruggedness as the variation in three-dimensional orientation of grid cells within a neighborhood based the TNC Northwest Atlantic Marine Ecoregional Assessment ("NAMERA") data.|@Hobson1972; @Sappington2007|
-|Prcurv (2 km, 10 km, and 20 km)|Benthic profile curvature at 2km, 10km and 20 km spatial scales was derived from depth data.|@Winship2018|
-|Rugosity|A measure of small-scale variations of amplitude in the height of a surface, the ratio of the real to the geometric surface area.|@Friedman2012|
-|seabedforms|Seabed topography as measured by a combination of seabed position and slope.|[http://www.northeastoceandata.org/]()|
-|Slp (2 km, 10 km, and 20 km)|Benthic slope at 2km, 10km and 20km spatial scales.|@Winship2018|
-|Slpslp (2 km, 10 km, and 20 km)|Benthic slope of slope at 2km, 10km and 20km spatial scales|@Winship2018|
-|soft_sed|Soft-sediments is based on grain size distribution from the USGS usSeabed: Atlantic coast offshore surficial sediment data.|[http://www.northeastoceandata.org/]()|
-|Vort (fall - fa; spring - sp; summer - su; winter - wi)|Benthic current vorticity at a 1/6 degree (approx. 19 km) spatial scale.|@Kinlan2016|
+|Complexity - Terrain Ruggedness Index|The difference in elevation values from a center cell and the eight cells immediately surrounding it. Each of the difference values are squared to make them all positive and averaged. The index is the square root of this average.|Riley, DeGloria, and Elliot (1999)|
+|Namera bpi|BPI is a second order derivative of the surface depth using the TNC Northwest Atlantic Marine Ecoregional Assessment ("NAMERA") data with an inner radius=5 and outer radius=50.|Lundblad et al. (2006)|
+|Namera_vrm|Vector Ruggedness Measure (VRM) measures terrain ruggedness as the variation in three-dimensional orientation of grid cells within a neighborhood based the TNC Northwest Atlantic Marine Ecoregional Assessment ("NAMERA") data.|Hobson (1972); Sappington, Longshore, and Thompson (2007)|
+|Prcurv (2 km, 10 km, and 20 km)|Benthic profile curvature at 2km, 10km and 20 km spatial scales was derived from depth data.|A. Winship et al. (2018)|
+|Rugosity|A measure of small-scale variations of amplitude in the height of a surface, the ratio of the real to the geometric surface area.|Friedman et al. (2012)|
+|seabedforms|Seabed topography as measured by a combination of seabed position and slope.|www.northeastoceandata.org|
+|Slp (2 km, 10 km, and 20 km)|Benthic slope at 2km, 10km and 20km spatial scales.|A. Winship et al. (2018)|
+|Slpslp (2 km, 10 km, and 20 km)|Benthic slope of slope at 2km, 10km and 20km spatial scales|A. Winship et al. (2018)|
+|soft_sed|Soft-sediments is based on grain size distribution from the USGS usSeabed: Atlantic coast offshore surficial sediment data.|www.northeastoceandata.org|
+|Vort (fall - fa; spring - sp; summer - su; winter - wi)|Benthic current vorticity at a 1/6 degree (approx. 19 km) spatial scale.|Kinlan et al. (2016)|
 '
 df<-readr::read_delim(tab, delim="|")
-df<-df[-c(1,2,3) ,c("Variables","Notes","References")]
+df<-df[-c(1) ,c("Variables","Notes","References")]
+
   knitr::kable(
-    df, booktabs = TRUE,
+    df,
+    format = ifelse(knitr::is_latex_output(),"latex","markdown"),
+    booktabs = T,
     caption = 'Habitat descriptors used in occupancy model parameterization.') %>% 
-    kableExtra::kable_styling(full_width = F) %>% 
-    kableExtra::column_spec(1, width  = "10em") %>% 
-    kableExtra::column_spec(2, width = "20em") %>% 
-    kableExtra::column_spec(3, width = "15em")
+    kableExtra::kable_styling() %>%
+    kableExtra::column_spec(1, width  = "7em") %>%
+    kableExtra::column_spec(2, width = "25em") %>%
+    kableExtra::column_spec(3, width = "13em")
 ```
 
-## Diet composition {#sec:methodsdiet}
+## Diet composition {-#sec:methodsdiet}
 NEFSC bottom-trawl sampling occurs twice annually in the spring (March-May) and fall (September-November). The survey area encompasses about 293,000 square km of continental shelf from Cape Hatteras, NC, to Nova Scotia, Canada in depths from 8-400 m. Food habits sampling has been conducted since 1973. 
 
 Stomachs are collected at sea by NEFSC, and have been primarily analyzed at sea since 1981. Total stomach volume is estimated, each prey item is identified and sorted to the lowest possible taxonomic level, and the proportion of each prey item is estimated. Detailed methods are described in @link_overview_2000.
@@ -1854,14 +1847,14 @@ where $t$ represents an individual bottom trawl tow, $N_{jts}$ is the number of 
                 
 $$ \overline{w_{ijts}} = \frac{\sum_{k=1}^{N_{jts}}w_{ijtsk}}{N_{jts}} $$
             
-## Appendix 
+## Appendix {-#appendix}
 
 ### Date of collection correction
-The dates of survey data collection varied by year. To date correct temperature measurements, regressions were estimated between temperature and day of the year over the sample grid (0.5° grid) by season and depth. Spring data were transformed to a temperature representing April 3 and fall to October 11 based on the slope estimates shown in the maps in [Figure A1](#fig:doc_correction). 
+The dates of survey data collection varied by year. To date correct temperature measurements, regressions were estimated between temperature and day of the year over the sample grid (0.5° grid) by season and depth. Spring data were transformed to a temperature representing April 3 and fall to October 11 based on the slope estimates shown in the maps in [Figure A1](#fig:doc-correction). 
 
-### {#fig:doc_correction}
+### {#fig:doc-correction}
 
-```{r doc_correction, fig.align = "center", echo = F, fig.width=6, fig.cap = "Spring (a) and fall (b) linear slope coefficients used to date correct surface temperature to standard spring and fall dates; same for spring (c) and fall (d) bottom temperature correction."}
+```{r doc-correction, fig.align = "center", echo = F, fig.width=6, fig.cap = "Spring (a) and fall (b) linear slope coefficients used to date correct surface temperature to standard spring and fall dates; same for spring (c) and fall (d) bottom temperature correction."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
 a <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_a.jpg'))
 b <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_b.jpg'))
@@ -1882,18 +1875,18 @@ rasterImage(d, usr[1]+1.1, usr[3]-1.1, usr[2]+1.1, usr[4]-1.1)
 ### Cross validation performance of temperature interpolation
 A series of random draws of training and test sets were taken to evaluate the predictive skill of the estimation procedure. A set of climatology, annual interpolation, or optimal interpolation fields were estimated using the training set and compared to the held-out test set. 
 
-#### {#fig:cross_val}
+#### {#fig:cross-val}
 
-```{r cross_val, fig.align="center", fig.cap = "Mean and 95% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F}
+```{r cross-val, fig.align="center", fig.cap = "Mean and 95\\% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F, out.width = "50%"}
 knitr::include_graphics(here::here("images/ECSA_crossval_temp_oi.png"))
 ```
 
-<br>
 
 The distribution of errors from the optimal interpolation test sets were evaluated spatially to determine where the larger errors occurred and what ecosystem features they are associated with.
 
-### {#fig:oi_mae}
-```{r oi_mae, fig.align = "center", echo = F, fig.width=5.75, fig.cap = "Mean absolute error by 0.1 degree latitude and longitude intervals for spring (a) and fall (b) surface temperature; same data for spring (c) and fall (d) bottom temperature. Red indicates a positive error where blue indicates negative."}
+### {#fig:oi-mae}
+
+```{r oi-mae, fig.align = "center", echo = F, fig.width=5.75, fig.cap = "Mean absolute error by 0.1 degree latitude and longitude intervals for spring (a) and fall (b) surface temperature; same data for spring (c) and fall (d) bottom temperature. Red indicates a positive error where blue indicates negative."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
 a <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_a.jpg'))
 b <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_b.jpg'))
@@ -1915,10 +1908,12 @@ rasterImage(d, usr[1]+1.1, usr[3]-1.1, usr[2]+1.1, usr[4]-1.1)
 
 Sea surface temperature estimated in this study were compared to the [OISST dataset](https://www.ncdc.noaa.gov/oisst) serving as a source of data for external comparison. The OISST data for April 3 (spring) and October 11 (fall) over the period 1982-2017 were extracted on the same 0.5° grid used in the study. Time series of matching spring and fall temperatures were differenced (external minus interpolation data) and presented in the figure below (sample size for surface spring and fall data were 5220 and 5365, respectively). The interquartile range for the surface comparisons were generally symmetric around zero with differences between 0.5-1°C. Bottom temperature estimated in this study were compared to the data from a cooperative data collection program for external comparison. The “Environmental Monitors on Lobster Traps” [(EMOLT)](http://comet.nefsc.noaa.gov/erddap/tabledap/eMOLT.html) is a cooperative research program that collects bottom temperatures. The data for spring and fall were extracted from rasters of the study data to match the extremal data. The external data covered the period 1968-2017, with 360 data points for the spring and 728 for the fall. Spring bottom comparisons yielded the smallest interquartile range of differences less than 0.5°C, where fall comparisons were slightly larger and biased to lower interpolation estimates compared to the external data.
 
-### {#fig:oi_compare}
+### {#fig:oi-compare}
 
-```{r oi_compare, fig.align="center", fig.cap = "Box plots (box: interquartile range, whisker: 5-95% range, square symbol: mean, line: median) of the difference between external and interpolation data.", echo = F}
+```{r oi-compare, fig.align = "center", fig.cap = "Box plots (box: interquartile range, whisker: 5-95\\% range, square symbol: mean, line: median) of the difference between external and interpolation data.", echo = F, out.width="50%"}
+
 knitr::include_graphics(here::here("images/ECSA_oi_compare.png"))
+
 ```
 
 # Document automation
@@ -1954,4 +1949,3 @@ create_template(stock_name = {{STOCK_NAME}}, render_book=TRUE, output_dir = here
 
 
 # References {-}
-
