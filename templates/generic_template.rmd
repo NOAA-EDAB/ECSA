@@ -116,6 +116,8 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 
 #Set interactive to F when pushing a draft document to google drive. Otherwise, the ggiraph figures will render as interactive. Interactive figures should only be used during the creation of the final bookdown document. 
 
+#Switches the encoding for the degree symbol (i.e. LaTeX or HTML)
+degree <- ifelse(knitr::is_latex_output(),"\\textdegree " ,'&deg;')
 ```
 
 {{READMEStart}}

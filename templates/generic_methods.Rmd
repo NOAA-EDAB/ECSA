@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = F, message = F ,warning = F, fig.align = 'center')
 interactive <- F
 ```
 
-## Surface and Bottom Temperature and Salinity {#methodstempsalin}
+## Surface and Bottom Temperature and Salinity {-#methodstempsalin}
 
 ### Study System
 The U.S. Northeast Shelf ecosystem, which roughly aligns with the boundaries of the Northeast U.S. Continental Shelf Large Marine Ecosystem (LME), is the study area for the surface and bottom thermal environments. Surface and bottom temperatures were estimated over a 0.1° latitude/longitude grid, termed the estimation grid, which circumscribes the range of ecosystem assessment areas in the [region](#fig:study-area). The difference between the extents of the estimation grid from the extent of the LME relate to the resource management programs that are the sources of the data, which are focused on fishery management needs in the region. 
@@ -30,11 +30,11 @@ The optimal interpolation temperature fields were evaluated using cross validati
 knitr::include_graphics(here::here('images/ECSA_study_area.jpg'))
 ```
 
-## Chlorophyll data {#methodschl}
+## Chlorophyll data {-#methodschl}
 Chlorophyll a concentration ([Chl]) data extracted from satellite remote-sensing databases based on measurements made with the Sea-viewing Wide Field of View Sensor (SeaWiFS), Moderate Resolution Imaging Spectroradiometer on the Aqua satellite (MODIS), Medium Resolution Imaging Spectrometer (MERIS), and Visible and Infrared Imaging/Radiometer Suite (VIIRS) sensors. We used the Garver, Siegel, Maritorena Model (GSM) merged data product at 100 km (equivalent to a 1° grid) and 8-day spatial and temporal resolutions, respectively, obtained from the 
 [Hermes GlobColour website](www.hermes.acri.fr/index.php). These four sensors provide an overlapping time series of [Chl] during the period 1997 to 2018 and were combined based on a bio-optical model inversion algorithm (Maritorena et al. 2010). 
 
-## Zooplankton abundance {#methodszoo}
+## Zooplankton abundance {-#methodszoo}
 Zooplankton abundance is measured by the Ecosystem Monitoring Program (EcoMon), which conducts shelf-wide bimonthly surveys of the NES ecosystem [@Kane2007]. Zooplankton and ichthyoplankton are collected throughout the water column to a maximum depth of 200 m using paired 61-cm Bongo samplers equipped with 333-micron mesh nets. Sample location in this survey is based on a randomized strata design, with strata defined by bathymetry and along-shelf location. Plankton taxa are sorted and identified. We used the bio-volume of the 18 most abundant taxonomic categories as potential predictor variables [(Table 2)](#fig:habitatdesc). The zooplankton sample time series has some missing values, which necessitated the removal of spring data for the years 1989, 1990, 1991, and 1994 and fall data for the years 1989, 1990, and 1992. The data for each seasonal time frame was interpolated to a complete field over the estimation grid using ordinary kriging. 
 
 ### {#fig:zooptab}
@@ -51,7 +51,7 @@ knitr::kable(
 )
 ```
 
-## Occupancy models {#methodsocc}
+## Occupancy models {-#methodsocc}
 
 Occupancy and productivity habitats for Atlantic menhaden were estimated with random forest classification and regression models using a suite of static and dynamic predictor variables. Variation in species presence or absence and biomass across space, bathymetry factors, productivity factors, and climate factors were tested. Models were constructed separately for spring and fall seasons. The response variables were the occurrence and catch-per-unit-effort of Atlantic menhaden in the Northeast Fisheries Science Center bottom trawl survey, which is a fishery-independent survey on the Northeast US Shelf. The survey is conducted in the spring and fall of the year and is based on a stratified random design, which provides both spatial and temporal depictions of fish and macroinvertebrate abundances [@Grosslein1969]. The independent or predictor variable set included physical environment variables, habitat descriptors, zooplankton variables, and remote sensing variables; the variables will be described in more detail below. Occupancy models were fit as two-factor classification models (absence as 0; presence as 1) using the randomForest R package [@randomForest].
 
@@ -134,7 +134,7 @@ df<-df[-c(1) ,c("Variables","Notes","References")]
     kableExtra::column_spec(3, width = "13em")
 ```
 
-## Diet composition {#sec:methodsdiet}
+## Diet composition {-#sec:methodsdiet}
 NEFSC bottom-trawl sampling occurs twice annually in the spring (March-May) and fall (September-November). The survey area encompasses about 293,000 square km of continental shelf from Cape Hatteras, NC, to Nova Scotia, Canada in depths from 8-400 m. Food habits sampling has been conducted since 1973. 
 
 Stomachs are collected at sea by NEFSC, and have been primarily analyzed at sea since 1981. Total stomach volume is estimated, each prey item is identified and sorted to the lowest possible taxonomic level, and the proportion of each prey item is estimated. Detailed methods are described in @link_overview_2000.
@@ -146,7 +146,7 @@ where $t$ represents an individual bottom trawl tow, $N_{jts}$ is the number of 
                 
 $$ \overline{w_{ijts}} = \frac{\sum_{k=1}^{N_{jts}}w_{ijtsk}}{N_{jts}} $$
             
-## Appendix 
+## Appendix {-#appendix}
 
 ### Date of collection correction
 The dates of survey data collection varied by year. To date correct temperature measurements, regressions were estimated between temperature and day of the year over the sample grid (0.5° grid) by season and depth. Spring data were transformed to a temperature representing April 3 and fall to October 11 based on the slope estimates shown in the maps in [Figure A1](#fig:doc-correction). 

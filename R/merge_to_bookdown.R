@@ -114,10 +114,15 @@ merge_to_bookdown <- function(stock_name,
     new_text <- gsub(pattern[i], text_list[[i]], new_text)
   }
   
+  new_text <- str_replace(new_text, "\\x{030A}|\\x{00B0}",
+                           "`r degree`")
   
+  new_text <- str_replace(new_text, "oC",
+                           "`r paste0(degree,'C')`")
+
  ## Remove extra brackets
  new_text <- gsub("\n\\{\\{.*\\}\\}\n", "", new_text)
-  
+
  new_text <- gsub("---(.*?)---",
   sprintf("---\n%s---", yaml::as.yaml(yml)), new_text)
   
