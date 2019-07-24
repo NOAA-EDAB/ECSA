@@ -25,7 +25,7 @@ library(gt)
 library(kableExtra)
 library(ggiraph)
 
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center')
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = 'center', eval.after = 'fig.cap')
 
 ## Read in stock area vectors
 
@@ -156,16 +156,18 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 
 ### Stock area {-#stock-area}
 
-```{r strata-map, eval = T, echo = FALSE, fig.cap= "Strata map for {{COMMON_NAME}} (*{{SCI_NAME}}*) on the NE shelf", message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap= paste0("Strata map for {{COMMON_NAME}} (",ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),") on the NE shelf"), message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_season = stock_season,
            strata = strata,
            overwrite = FALSE,
            save_plot = FALSE)
+
+
 ```
 
-#### A note on figures {-#a-note-on-figures}
+**A note on figures**
 
 Unless otherwise noted, time series in this document are represented by dark blue lines. Estimates of linear trends and regime shifts are included on plots when found to be significant (p < 0.05), and are shown by light blue and green lines respectively. Trend strengths and confidence intervals are also included in plot titles when trends are present. Trends were modeled using a GLS model selection approach [see @hardison2019 for details].
 
@@ -770,7 +772,8 @@ spring_cope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
     theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Spring copepod abundance")
 }
 
@@ -836,7 +839,8 @@ fall_cope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
         theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Fall copepod abundance")
 }
 
@@ -944,7 +948,8 @@ spring_noncope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
         theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Spring non-copepod zoo. abundance")
 }
 ```
@@ -1008,7 +1013,8 @@ fall_noncope_plt
     theme_bw() +
     ylab(expression(paste("Abundance (log num ", m^{-3}, ")"))) +
         theme(strip.text = element_text(face = "italic"),
-          strip.background = element_blank()) +
+          strip.background = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("Fall non-copepod zoo. abundance")
 }
 ```
