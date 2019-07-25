@@ -242,7 +242,7 @@ spring_bottom_temp_plt <-
     theme_bw() +
     theme(legend.title = element_blank(),
           legend.position = "bottom") +
-    ylab("Temperature (`r degree`C)") +
+    ylab("Temperature (°C)") +
     ggtitle(spring_title)
 
 if (interactive){

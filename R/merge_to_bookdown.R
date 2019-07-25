@@ -114,7 +114,7 @@ merge_to_bookdown <- function(stock_name,
     new_text <- gsub(pattern[i], text_list[[i]], new_text)
   }
   
-  new_text <- str_replace(new_text, "\\x{030A}|\\x{00B0}",
+  new_text <- str_replace(new_text, " \\x{030A}| \\x{00B0}",
                            "`r degree`")
   
   new_text <- str_replace(new_text, "oC",

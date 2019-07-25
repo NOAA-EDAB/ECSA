@@ -1,6 +1,6 @@
 ---
 title: |
-  | Ecosystem Context for Stock Assessments:
+  | Ecosystem Context for Stock Advice:
   | Northern component of monkfish stock
 author: ''
 always_allow_html: yes
@@ -12,16 +12,6 @@ site: bookdown::bookdown_site
 biblio-style: apalike
 github-repo: NOAA-EDAB/ECSA
 header-includes: \usepackage{array}
-output:
-  bookdown::gitbook:
-    lib_dir: book_assets
-    split_by: none
-    config:
-      toc:
-        collapse: yes
-      position: static
-  bookdown::pdf_book:
-    keep_tex: yes
 ---
 
 ```{r, include = FALSE}
@@ -238,7 +228,7 @@ spring_bottom_temp_plt <-
     theme_bw() +
     theme(legend.title = element_blank(),
           legend.position = "bottom") +
-    ylab("Temperature (`r degree`C)") +
+    ylab("Temperature (°C)") +
     ggtitle(spring_title)
 
 if (interactive){

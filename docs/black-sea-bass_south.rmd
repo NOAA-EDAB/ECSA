@@ -1,7 +1,7 @@
 ---
 title: |
-  | Ecosystem Context for Stock Assessments:
-  | Southern component of black sea bass stock
+  | Ecosystem Context for Stock Advice:
+  | Southern component of the black sea bass stock
 author: ''
 always_allow_html: yes
 bibliography: /Users/seanhardison/Documents/git/ECSA/docs/ECSA_bibliography.bib
@@ -12,16 +12,6 @@ site: bookdown::bookdown_site
 biblio-style: apalike
 github-repo: NOAA-EDAB/ECSA
 header-includes: \usepackage{array}
-output:
-  bookdown::gitbook:
-    lib_dir: book_assets
-    split_by: none
-    config:
-      toc:
-        collapse: yes
-      position: static
-  bookdown::pdf_book:
-    keep_tex: yes
 ---
 
 ```{r, include = FALSE}
