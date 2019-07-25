@@ -7,9 +7,7 @@ bookdown::gitbook:
       collapse: section
       before: |
         <li><a href="./">Ecosystem Context for Stock Advice</a></li>
-      after: |
-        <li><a href="https://github.com/NOAA-EDAB/ECSA" target="blank">Published with bookdown</a></li>
-    edit: https://github.com/NOAA-EDAB/ECSA/edit/master/%s
+    edit: https://github.com/NOAA-EDAB/ECSA/edit/master/docs/%s
     download: ["pdf"]
 bookdown::pdf_book:
   keep_tex: yes
