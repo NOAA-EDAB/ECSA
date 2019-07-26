@@ -1,6 +1,6 @@
 Package: ecsa
 Type: Package
-Title: Ecosystem Context for Stock Assessments
+Title: Ecosystem Context for Stock Advice
 Version: 0.0.0.9000
 Authors@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov", role = c("cre","aut")),
             person("Scott", "Large", email = "scott.large@noaa.gov", role = "aut"),
@@ -9,7 +9,7 @@ Authors@R: c(person("Sean", "Hardison", email = "sean.hardison@noaa.gov", role =
 		        person("Sarah", "Gaichas", email = "sarah.gaichas@noaa.gov", role = "aut"))
 Description: This package automates the creation of stock-specific ecosystem 
             context reports for the US Northeast shelf as a part of the stock
-            assessment process.
+            advice process.
 Depends: R (>= 3.5.0)
 Imports: 
     plyr,
