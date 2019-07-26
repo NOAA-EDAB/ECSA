@@ -1,7 +1,7 @@
 ---
 title: "Ecosystem Context for Stock Advice"
 output: html_document
-favicon: "../docs/images/favicon/favicon.ico"
+favicon: favicon.ico
 ---
 
 ```{r setup, include=FALSE}
