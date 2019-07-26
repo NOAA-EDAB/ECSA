@@ -5,7 +5,7 @@ title:
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: ""
 always_allow_html: yes
-bibliography: "docs/ECSA_bibliography.bib"
+bibliography: ECSA_bibliography.bib
 nocite: |
   @Riley1999, @Lundblad2006, @Hobson197, @Sappington2007, @Winship2018, @Friedman2012, @Kinlan2016
 link-citations: true
@@ -14,3 +14,4 @@ biblio-style: apalike
 github-repo: NOAA-EDAB/ECSA
 header-includes:
   \\usepackage{array}
+favicon: favicon.ico
