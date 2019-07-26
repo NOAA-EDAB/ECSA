@@ -24,7 +24,6 @@ The annual estimate of temperature for a depth and season was imputed by used un
 
 The optimal interpolation temperature fields were evaluated using cross validation and a comparison to external data. The performance of optimal interpolation was compared to the predictive skill of using either the climatology or annual interpolation alone by doing ten random cross validations of each treatment. Each random draw of training and test sets sampled 3% of the data for the test set, or about 500 observations per draw. The temperature fields were fit with the training data and compared with the test set data. The lowest error rates were realized with the optimal interpolation contrasted with highest predictive error associated with fields based on the climatology alone (see Appendix, [Figure A2](#fig:cross_val)). The spatial distribution of error had distinct depth and seasonal patterns. The spatial errors associated with the surface estimates were generally low with the exception of a few locations along the shelf break between latitudes 39-41°N; the spatial error in the bottom temperature varied by season, and was concentrated along the shelf break in spring and across the shelf between latitudes 36-40°N in fall (see Appendix, [Figure A3](#fig:oi_mae)). The optimal interpolation data were also compared to external data from other collection programs. The absolute errors between surface temperature data collected by satellites and the interpolation had interquartile ranges of approximately ±0.75°C (see Appendix, [Figure A4](#fig:oi_compare)). The absolute error in a comparison of interpolated bottom temperature to opportunist sampling was approximately ±0.75°C for spring bottom temperature and approximately 0.75-1.0°C in the fall. Salinity was estimated in the same way with the exception of collection correction, which was deemed unnecessary for the salinity data.
 
-### {-#fig:study-area}
   
 ```{r study-area, echo = F, fig.align="center", fig.cap = "Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line.", out.width="50%"}
 knitr::include_graphics('images/ECSA_study_area.jpg')
@@ -176,7 +175,7 @@ A series of random draws of training and test sets were taken to evaluate the pr
 
 
 ```{r cross-val, fig.align="center", fig.cap = "Mean and 95\\% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F, out.width = "50%"}
-knitr::include_graphics("images/ECSA_crossval_temp_oi.png")
+knitr::include_graphics("images/ECSA_crossval_temp_oi.png") 
 ```
 
 
