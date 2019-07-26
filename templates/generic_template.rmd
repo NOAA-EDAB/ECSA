@@ -129,6 +129,7 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 
 #Switches the encoding for the degree symbol (i.e. LaTeX or HTML)
 degree <- ifelse(knitr::is_latex_output(),"\\textdegree " ,'&deg;')
+kable_format <- ifelse(knitr::is_latex_output(), "latex", "html")
 ```
 
 {{READMEStart}}

@@ -70,6 +70,7 @@ merge_to_bookdown <- function(stock_name,
   ## Download the draft rmd
   rmd_text <- readr::read_file(sprintf("%s_draft.rmd", here::here("docs", stock_name)))
   ## remove readme
+  rmd_text <- gsub("\r", "\n", rmd_text)
   rmd_text <- gsub("\\{\\{READMEStart\\}\\}(.*?)\\{\\{READMEEnd\\}\\}\n\n", "", rmd_text)
 
   ## Get the stock name, common name, and subarea
@@ -93,7 +94,8 @@ merge_to_bookdown <- function(stock_name,
   yml <- yaml::read_yaml(here::here("templates/_bookdown_template.yml"))
   yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, yml$title)
   yml$title <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, yml$title)
-  yml$bibliography <- here::here("docs/ECSA_bibliography.bib")
+  # yml$bibliography <- here::here("docs/ECSA_bibliography.bib")
+  # yml$bibliography <- "'../docs/ECSA_bibliography.bib'"
   
   ### Replace the text
   
@@ -114,10 +116,10 @@ merge_to_bookdown <- function(stock_name,
     new_text <- gsub(pattern[i], text_list[[i]], new_text)
   }
   
-  new_text <- str_replace(new_text, " \\x{030A}| \\x{00B0}",
+  new_text <- stringr::str_replace(new_text, " \\x{030A}| \\x{00B0}",
                            "`r degree`")
   
-  new_text <- str_replace(new_text, "oC",
+  new_text <- stringr::str_replace(new_text, "oC",
                            "`r paste0(degree,'C')`")
 
  ## Remove extra brackets

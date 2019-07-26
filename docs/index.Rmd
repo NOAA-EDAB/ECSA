@@ -1,13 +1,14 @@
 ---
-title: "Ecosystem Context for Stock Assessments"
+title: "Ecosystem Context for Stock Advice"
 output: html_document
+favicon: favicon.ico
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduction
+## Introduction {-#introduction}
 These reports provides contextual ecosystem information for the following stocks found on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the relevant stock areas based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of each stock, including: surface and bottom temperature and salinity, chlorophyll concentration, indices of habitat, diet composition, and abundance of key zooplankton prey of larval fish. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, results=TRUE}
