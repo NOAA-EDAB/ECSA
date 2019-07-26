@@ -2,7 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
-*.pdf
+*.tex
+*.log
 *.docx
 !template.html
 other

@@ -1,55 +1,36 @@
 ---
-output: github_document
+output:
+  html_document
+always_allow_html: yes
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
+library(nomnoml)
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(fig.path = "tools/readme/", dev = "png")
+
 ```
-# ecsa
+# Ecosystem Context for Stock Advice (ECSA)
 
-The goal of ecsa is to ...
+The goal of the ECSA project is to create bespoke documents containing contextual ecosystem information for managed stocks on the Northeast Continental Shelf. The document creation process relies on the use of survey strata (as defined by the NEFSC [Bottom Trawl Survey](https://www.nefsc.noaa.gov/femad/ecosurvey/mainpage/)) to identify stock areas from which time series of area-averaged ecosystem information can be drawn. For each area of interest, we have automated the aggregation of season-specific time series of ocean temperature and salinity (surface and bottom), zooplankton composition and abundance, and chlorophyll concentration. Each document contains time series of estimated area occupied by a given stock within the specified strata and within the ecosystem as a whole. We also provide estimates for minimum population size (abundance and biomass) based on yearly restratification of habitat given estimates of habitat occupancy. 
 
-## Installation
+## Developing an ECSA project
 
-You can install the released version of ecsa from [CRAN](https://CRAN.R-project.org) with:
+The document creation process involves three R functions: `create_template.R`, `merge_to_bookdown.R`, and `render_ecsa.R`. The general workflow is as follows:
 
-``` r
-install.packages("ecsa")
-```
 
-And the development version from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("NOAA-EDAB/ECSA")
-```
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-## basic example code
+```{nomnoml nomnoml-decorator}
+#stroke: #a86128
+[<frame>ECSA Workflow|
+  [create_template.R] depends --> [Stock choice]
+  [merge_to_bookdown.R] depends --> [create_template.R]
+  [New] depends --> [Out]
+]
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
-```{r cars}
-summary(cars)
-```
+Note: The ECSA is not yet in R package format. Hence, functions must be sourced from the `R/` directory during the document development process. Template `.Rmd` files source the functions by default. 
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!

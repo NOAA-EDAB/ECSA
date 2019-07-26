@@ -51,6 +51,17 @@ cc_name <- "{{CC_NAME}}"
 common_name <- "{{COMMON_NAME}}"
 interactive <-  ifelse(knitr::is_latex_output(), F,T)
 
+
+#Special case for when north/south is included in the stock name
+
+if (grepl("north", stock_name)){
+  map_lab <- "paste0('Strata map for the northern component of the {{COMMON_NAME}} (', ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),') stock on the NE shelf.')"
+} else if (grepl("south", stock_name)){
+  map_lab <- "paste0('Strata map for the southern component of the {{COMMON_NAME}} (', ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),') stock on the NE shelf.')"
+} else {
+  map_lab <- "Strata map for the {{COMMON_NAME}} ({{SCI_NAME}}) stock on the NE shelf."
+}
+
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   
   dplyr::filter(stock_name == !!stock_name)
@@ -156,13 +167,14 @@ This report provides contextual ecosystem information for {{STOCK_SUBAREA}}{{COM
 
 ### Stock area {-#stock-area}
 
-```{r strata-map, eval = T, echo = FALSE, fig.cap= paste0("Strata map for {{COMMON_NAME}} (",ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),") on the NE shelf"), message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap = map_lab, message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_season = stock_season,
            strata = strata,
            overwrite = FALSE,
            save_plot = FALSE)
+
 
 
 ```
