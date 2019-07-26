@@ -8,27 +8,34 @@ render_ecsa <- function(input_file){
   #Create a temporary directory to build the book
   wd <- tempdir()
   
-  dir.create(paste0(wd,"/images"))
+  file.remove(list.files(wd, full.names = T))
+
+  if (!dir.exists(paste0(wd,"/images"))) dir.create(paste0(wd,"/images"))
+  
   image_dir <- paste0(wd, "/images")
   
-  file.copy(from = here::here("docs",input_file), to = file.path(wd, input_file), overwrite = TRUE)
-  file.copy(from = here::here("docs/_output.yml"), to = file.path(wd,"_output.yml"))
-  file.copy(from = here::here("docs/images/favicon/favicon.ico"), to = file.path(wd,"favicon.ico"))
-  file.copy(from = here::here("docs/ECSA_bibliography.bib"), to = file.path(wd,"ECSA_bibliography.bib"))
+  file.copy(from = here::here("docs",input_file), 
+            to = file.path(wd, input_file), overwrite = TRUE)
+  
+  file.copy(from = here::here("docs/_output.yml"), 
+            to = file.path(wd,"_output.yml"), overwrite = TRUE)
+  
+  file.copy(from = here::here("docs/images/favicon/favicon.ico"),
+            to = file.path(wd,"favicon.ico"), overwrite = TRUE)
+  
+  file.copy(from = here::here("docs/ECSA_bibliography.bib"),
+            to = file.path(wd,"ECSA_bibliography.bib"), overwrite = TRUE)
   
   image_files <- list.files(here::here("docs/images"), full.names = TRUE)
-  file.copy(file.path(image_files), image_dir)
   
-  
-  lapply(image_files[1], function(x) file.copy(from = here::here("docs/images", x), 
-                                            to = image_dir))
+  file.copy(file.path(image_files), image_dir, overwrite = T)
   
   #bookdown::render_book() requires that your input_file is in the wd
   #NOTE: Bookdown will try to knit all Rmds into one (and break) if you try to knit 
   #directly from /docs
   setwd(wd)
   on.exit(setwd(prev_wd))
-  # file.remove(file.path(list.files(wd, full.names = TRUE))) 
+
   
   #Pull out name of file without extension
   stock <- stringr::str_remove(input_file, "\\.rmd|\\.Rmd")
@@ -62,7 +69,8 @@ render_ecsa <- function(input_file){
   html <- readr::write_lines(html, file.path(prev_wd, "docs",paste0(stock,".html")))
   
   #Get back to the original directory
-
+  file.remove(list.files(wd, full.names = T))
+  
   
   message(paste(input_file, "rendered to"), prev_wd)
   

@@ -55,9 +55,9 @@ interactive <-  ifelse(knitr::is_latex_output(), F,T)
 #Special case for when north/south is included in the stock name
 
 if (grepl("north", stock_name)){
-  map_lab <- "paste0('Strata map for the northern component of the {{COMMON_NAME}} (', ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),') stock on the NE shelf.')"
+  map_lab <- paste0('Strata map for the northern component of the {{COMMON_NAME}} (', ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),') stock on the NE shelf.')
 } else if (grepl("south", stock_name)){
-  map_lab <- "paste0('Strata map for the southern component of the {{COMMON_NAME}} (', ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),') stock on the NE shelf.')"
+  map_lab <- paste0('Strata map for the southern component of the {{COMMON_NAME}} (', ifelse(knitr::is_latex_output(), '\\textit{{{SCI_NAME}}}','*{{SCI_NAME}}*'),') stock on the NE shelf.')
 } else {
   map_lab <- "Strata map for the {{COMMON_NAME}} ({{SCI_NAME}}) stock on the NE shelf."
 }

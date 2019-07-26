@@ -1,10 +1,10 @@
 ---
 title: |
-  | Ecosystem Context for Stock Assessments:
-  | Black sea bass
+  | Ecosystem Context for Stock Advice:
+  | black sea bass
 author: ''
 always_allow_html: yes
-bibliography: /Users/seanhardison/Documents/git/ECSA/docs/ECSA_bibliography.bib
+bibliography: ECSA_bibliography.bib
 nocite: |
   @Riley1999, @Lundblad2006, @Hobson197, @Sappington2007, @Winship2018, @Friedman2012, @Kinlan2016
 link-citations: yes
@@ -12,16 +12,7 @@ site: bookdown::bookdown_site
 biblio-style: apalike
 github-repo: NOAA-EDAB/ECSA
 header-includes: \usepackage{array}
-output:
-  bookdown::gitbook:
-    lib_dir: book_assets
-    split_by: none
-    config:
-      toc:
-        collapse: yes
-      position: static
-  bookdown::pdf_book:
-    keep_tex: yes
+favicon: favicon.ico
 ---
 
 ```{r, include = FALSE}
@@ -68,6 +59,17 @@ stock_name <- "black-sea-bass"
 cc_name <- "black-sea-bass"
 common_name <- "black sea bass"
 interactive <-  ifelse(knitr::is_latex_output(), F,T)
+
+
+#Special case for when north/south is included in the stock name
+
+if (grepl("north", stock_name)){
+  map_lab <- paste0('Strata map for the northern component of the black sea bass (', ifelse(knitr::is_latex_output(), '\\textit{Centropristis striata}','*Centropristis striata*'),') stock on the NE shelf.')
+} else if (grepl("south", stock_name)){
+  map_lab <- paste0('Strata map for the southern component of the black sea bass (', ifelse(knitr::is_latex_output(), '\\textit{Centropristis striata}','*Centropristis striata*'),') stock on the NE shelf.')
+} else {
+  map_lab <- "Strata map for the black sea bass (Centropristis striata) stock on the NE shelf."
+}
 
 #Get stock strata and unique identifiers
 strata <- all_stock_season %>%   
@@ -136,6 +138,7 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 
 #Switches the encoding for the degree symbol (i.e. LaTeX or HTML)
 degree <- ifelse(knitr::is_latex_output(),"\\textdegree " ,'&deg;')
+kable_format <- ifelse(knitr::is_latex_output(), "latex", "html")
 ```
 
 
@@ -155,13 +158,14 @@ The thermal environment for black sea bass during spring has not changed signifi
 
 ### Stock area {-#stock-area}
 
-```{r strata-map, eval = T, echo = FALSE, fig.cap= paste0("Strata map for black sea bass (",ifelse(knitr::is_latex_output(), '\\textit{Centropristis striata}','*Centropristis striata*'),") on the NE shelf"), message = FALSE, warning = FALSE, fig.align='center'}
+```{r strata-map, eval = T, echo = FALSE, fig.cap = map_lab, message = FALSE, warning = FALSE, fig.align='center'}
 map_strata(stock_name = stock_name,
            common_name = common_name,
            stock_season = stock_season,
            strata = strata,
            overwrite = FALSE,
            save_plot = FALSE)
+
 
 
 ```
@@ -1733,7 +1737,7 @@ The optimal interpolation temperature fields were evaluated using cross validati
 ### {-#fig:study-area}
   
 ```{r study-area, echo = F, fig.align="center", fig.cap = "Map of the study system with half-degree sample grid (blue lines) and extent of estimation grid shown in beige points (a). Major features of the study system with shelf break marked in purple line (b). 100m depth shown as dashed line.", out.width="50%"}
-knitr::include_graphics(here::here('images/ECSA_study_area.jpg'))
+knitr::include_graphics('images/ECSA_study_area.jpg')
 ```
 
 ## Chlorophyll data {-#methodschl}
@@ -1752,7 +1756,10 @@ df <- data.frame(code = c("acarspp","calfin","chaeto","cham","cirr","ctyp",
            latin = c("*Acartia* spp.","*Calanus finmarchicus*","Chaetognatha","*Centropages hamatus*","Cirripedia","*Centropages typicus*","Echinodermata","*Evadne* spp.","Gastropoda","Hyperiidea","Appendicularians","*Metridia lucens*","*Oithona* spp.","*Paracalanus* parvus","*Penilia* spp.","*Pseudocalanus* spp.","Salpa","*Temora longicornis*"))
 
 knitr::kable(
-  df, booktabs = TRUE, col.names = c("Variable name","Taxa"), format = "markdown",
+  df,
+  format = kable_format,
+  booktabs = TRUE, 
+  col.names = c("Variable name","Taxa"),
   caption = 'Variable and species names for the 18 most abundant zooplankton taxa in EcoMon survey data.'
 )
 ```
@@ -1782,10 +1789,8 @@ Static variables were kept constant over years where dynamic variables varied an
 ### Physical environment
 Station data included observations made contemporaneously to survey bottom trawl stations. Depth of the station was used as a static variable in the analysis. The observed depth was used in model fitting where model predictions were based on depths from the ETOPO1 dataset, which provided Northeast Shelf bathymetry at a resolution of 0.0167° [(below)](#fig:occ-grid).
 
-### {#fig:occ-grid}
-
 ```{r occ-grid, fig.align="center", fig.cap = "Estimation grid for predictor variable and habitat estimates, grid location spaced by 0.1° longitude and latitude.", echo = F, out.width="50%"}
-knitr::include_graphics(here::here("images/ECSA_occ_grid.png"))
+knitr::include_graphics("images/ECSA_occ_grid.png")
 ```
 
 Surface and bottom water temperature and salinity were used as dynamic variables in the analysis. Temperature and salinity on the NE Shelf was collected using Conductivity/Temperature/Depth (CTD) instruments with the most complete sample coverage associated with spring (February –April) and fall (September-November) time frames. Surface and bottom temperatures were used to develop date of collection corrections using linear regression for each time frame. Temperatures were standardized to a collection date of April 3 for spring collections and October 11 for fall. A date of collection correction was not indicated for salinity data. The observed date-corrected temperature (°C) and uncorrected salinity data (PSU) was used in model fitting. 
@@ -1831,7 +1836,7 @@ df<-df[-c(1) ,c("Variables","Notes","References")]
 
   knitr::kable(
     df,
-    format = ifelse(knitr::is_latex_output(),"latex","markdown"),
+    format = kable_format,
     booktabs = T,
     caption = 'Habitat descriptors used in occupancy model parameterization.') %>% 
     kableExtra::kable_styling() %>%
@@ -1857,14 +1862,13 @@ $$ \overline{w_{ijts}} = \frac{\sum_{k=1}^{N_{jts}}w_{ijtsk}}{N_{jts}} $$
 ### Date of collection correction
 The dates of survey data collection varied by year. To date correct temperature measurements, regressions were estimated between temperature and day of the year over the sample grid (0.5° grid) by season and depth. Spring data were transformed to a temperature representing April 3 and fall to October 11 based on the slope estimates shown in the maps in [Figure A1](#fig:doc-correction). 
 
-### {#fig:doc-correction}
 
 ```{r doc-correction, fig.align = "center", echo = F, fig.width=6, fig.cap = "Spring (a) and fall (b) linear slope coefficients used to date correct surface temperature to standard spring and fall dates; same for spring (c) and fall (d) bottom temperature correction."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
-a <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_a.jpg'))
-b <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_b.jpg'))
-c <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_c.jpg'))
-d <-jpeg::readJPEG(here::here('images/ECSA_doc_correction_d.jpg'))
+a <-jpeg::readJPEG('images/ECSA_doc_correction_a.jpg')
+b <-jpeg::readJPEG('images/ECSA_doc_correction_b.jpg')
+c <-jpeg::readJPEG('images/ECSA_doc_correction_c.jpg')
+d <-jpeg::readJPEG('images/ECSA_doc_correction_d.jpg')
 plot.new()
 usr<-par("usr")
  
@@ -1880,23 +1884,21 @@ rasterImage(d, usr[1]+1.1, usr[3]-1.1, usr[2]+1.1, usr[4]-1.1)
 ### Cross validation performance of temperature interpolation
 A series of random draws of training and test sets were taken to evaluate the predictive skill of the estimation procedure. A set of climatology, annual interpolation, or optimal interpolation fields were estimated using the training set and compared to the held-out test set. 
 
-#### {#fig:cross-val}
 
 ```{r cross-val, fig.align="center", fig.cap = "Mean and 95\\% confidence intervals of squared errors for spring (a) and fall (b) surface temperature estimates based on climatology, annual interpolation, and optimal interpolation (OI); same data for spring (c) and fall (d) bottom temperature estimates.", echo = F, out.width = "50%"}
-knitr::include_graphics(here::here("images/ECSA_crossval_temp_oi.png"))
+knitr::include_graphics("images/ECSA_crossval_temp_oi.png")
 ```
 
 
 The distribution of errors from the optimal interpolation test sets were evaluated spatially to determine where the larger errors occurred and what ecosystem features they are associated with.
 
-### {#fig:oi-mae}
 
 ```{r oi-mae, fig.align = "center", echo = F, fig.width=5.75, fig.cap = "Mean absolute error by 0.1 degree latitude and longitude intervals for spring (a) and fall (b) surface temperature; same data for spring (c) and fall (d) bottom temperature. Red indicates a positive error where blue indicates negative."}
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F, mfrow = c(2,2))
-a <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_a.jpg'))
-b <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_b.jpg'))
-c <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_c.jpg'))
-d <-jpeg::readJPEG(here::here('images/ECSA_oi_error_dist_d.jpg'))
+a <-jpeg::readJPEG('images/ECSA_oi_error_dist_a.jpg')
+b <-jpeg::readJPEG('images/ECSA_oi_error_dist_b.jpg')
+c <-jpeg::readJPEG('images/ECSA_oi_error_dist_c.jpg')
+d <-jpeg::readJPEG('images/ECSA_oi_error_dist_d.jpg')
 plot.new()
 usr<-par("usr")
  
@@ -1913,11 +1915,10 @@ rasterImage(d, usr[1]+1.1, usr[3]-1.1, usr[2]+1.1, usr[4]-1.1)
 
 Sea surface temperature estimated in this study were compared to the [OISST dataset](https://www.ncdc.noaa.gov/oisst) serving as a source of data for external comparison. The OISST data for April 3 (spring) and October 11 (fall) over the period 1982-2017 were extracted on the same 0.5° grid used in the study. Time series of matching spring and fall temperatures were differenced (external minus interpolation data) and presented in the figure below (sample size for surface spring and fall data were 5220 and 5365, respectively). The interquartile range for the surface comparisons were generally symmetric around zero with differences between 0.5-1°C. Bottom temperature estimated in this study were compared to the data from a cooperative data collection program for external comparison. The “Environmental Monitors on Lobster Traps” [(EMOLT)](http://comet.nefsc.noaa.gov/erddap/tabledap/eMOLT.html) is a cooperative research program that collects bottom temperatures. The data for spring and fall were extracted from rasters of the study data to match the extremal data. The external data covered the period 1968-2017, with 360 data points for the spring and 728 for the fall. Spring bottom comparisons yielded the smallest interquartile range of differences less than 0.5°C, where fall comparisons were slightly larger and biased to lower interpolation estimates compared to the external data.
 
-### {#fig:oi-compare}
 
 ```{r oi-compare, fig.align = "center", fig.cap = "Box plots (box: interquartile range, whisker: 5-95\\% range, square symbol: mean, line: median) of the difference between external and interpolation data.", echo = F, out.width="50%"}
 
-knitr::include_graphics(here::here("images/ECSA_oi_compare.png"))
+knitr::include_graphics("images/ECSA_oi_compare.png")
 
 ```
 

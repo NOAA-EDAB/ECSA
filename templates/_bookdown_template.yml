@@ -1,7 +1,7 @@
 title:
     | 
     | Ecosystem Context for Stock Advice:
-    | {{STOCK_SUBAREA}}{{COMMON_NAME}}
+    | {{COMMON_NAME}}
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: ""
 always_allow_html: yes

@@ -92,8 +92,22 @@ merge_to_bookdown <- function(stock_name,
   
   ## Get the new YAML
   yml <- yaml::read_yaml(here::here("templates/_bookdown_template.yml"))
-  yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, yml$title)
-  yml$title <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, yml$title)
+  
+  if (grepl("north", stock_name)){
+    
+  yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", 
+                    paste0("Northern component of the ",clean_names$common_name," stock"), yml$title)
+  
+  } else if (grepl("south", stock_name)){
+    
+    yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}", 
+                      paste0("Southern component of the ",clean_names$common_name," stock"), yml$title)
+    
+  } else {
+    yml$title <- gsub("\\{\\{COMMON_NAME\\}\\}",
+                      clean_names$common_name, yml$title)
+  }
+  
   # yml$bibliography <- here::here("docs/ECSA_bibliography.bib")
   # yml$bibliography <- "'../docs/ECSA_bibliography.bib'"
   

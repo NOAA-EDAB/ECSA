@@ -23,11 +23,31 @@ The document creation process involves three R functions: `create_template.R`, `
 
 
 ```{nomnoml nomnoml-decorator}
-#stroke: #a86128
 [<frame>ECSA Workflow|
-  [create_template.R] depends --> [Stock choice]
-  [merge_to_bookdown.R] depends --> [create_template.R]
-  [New] depends --> [Out]
+#fontSize: 7
+#spacing: 50
+#padding: 20
+#stroke: black
+#.box: fill=lightblue visual=ellipse
+[Final Document (.pdf/.html)] <- [<box>render_ecsa.R ]
+
+[render_ecsa.R ] <- [Reviewed Draft (.Rmd)]
+
+[Reviewed Draft (.Rmd)] <- [<box>merge_to_bookdown.R] 
+
+[merge_to_bookdown.R] <- [Figure skeleton (.Rmd)]
+
+[Reviewed Draft (.Rmd)] <- [<box>merge_to_bookdown.R] 
+
+[merge_to_bookdown.R] <- [Text outline (google doc)]
+
+[Figure skeleton (.Rmd)] -> [Text outline (google doc)]
+
+[Text outline (google doc)] <- [<box>create_template.R]
+
+[Figure skeleton (.Rmd)] <- [create_template.R]
+
+[create_template.R] <- [Stock template (.Rmd)]
 ]
 ```
 
