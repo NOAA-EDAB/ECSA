@@ -26,7 +26,7 @@ Once the review process has been completed, the finalized text may be reincorpor
 
 ### 3. Building the book
 
-The output of `merge_to_bookdown()` is an Rmarkdown document saved to the `/docs` directory. The filename will simply be `[stock_name.Rmd]` (i.e. without the "\_draft.Rmd") suffix. When you're ready to generate the final products from the reviewed text, the filename of the Rmarkdown document should be passed to the `render_ecsa()` function. This function will generate html **and** pdf versions of the report and save them to the `/docs` folder.
+The output of `merge_to_bookdown()` is an Rmarkdown document saved to the `/docs` directory. The filename will simply be `[stock_name].Rmd` (i.e. without the "\_draft.Rmd" suffix). When you're ready to generate the final products from the reviewed text, the filename of the Rmarkdown document should be passed to the `render_ecsa()` function. This function will generate html **and** pdf versions of the report and save them to the `/docs` folder.
 
 ### 4. Making the reports accessible
 
