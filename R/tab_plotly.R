@@ -52,7 +52,7 @@ tab_plotly <- function(df, showlegend = T, series.name = NULL, add_smoother = F)
       plot_df <- df %>%
         dplyr::select(Time,
                       data = which(colnames(.) == plotvars[i]),
-                      smooth = which(str_detect(colnames(.), smoothcol)))
+                      smooth = which(stringr::str_detect(colnames(.), smoothcol)))
     }
     
     
