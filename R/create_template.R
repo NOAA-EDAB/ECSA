@@ -71,7 +71,7 @@ create_template <- function(stock_name,
   
   # create the output directory if missing
   if(!dir.exists(folder_name)) {
-    dir.create(folder_name,recursive = T)
+    dir.create(folder_name,recursive = TRUE)
   }
 
   #Check to make sure existing file is not over-written
@@ -90,7 +90,7 @@ create_template <- function(stock_name,
   }
   
   if(send_to_google_doc) {
-    gdoc_exist <- googledrive::drive_get( "EDABranch_Drive/Products/ECSA/file_name")
+    gdoc_exist <- googledrive::drive_get(sprintf("EDABranch_Drive/Products/ECSA/%s", file_name))
 
     #Check to make sure existing file is not over-written
     if(nrow(gdoc_exist) > 0 &
@@ -100,6 +100,7 @@ create_template <- function(stock_name,
       message("Now to render to Google Drive...\n")
       
       markdrive::gdoc_render(filename = sprintf("%s/%s", folder_name, file_name),
+                             gdoc_name = gsub(".rmd$", "", file_name),
                              gdoc_path = "EDABranch_Drive/Products/ECSA/")
       
       gdoc_link <- googledrive::drive_link(sprintf("EDABranch_Drive/Products/ECSA/%s", file_name))
