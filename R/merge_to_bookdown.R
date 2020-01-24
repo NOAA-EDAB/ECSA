@@ -46,11 +46,19 @@ merge_to_bookdown <- function(stock_name,
   ### Load the necessary files
   ## Download the edited google doc 
   tmp_txt <- tempfile(pattern = stock_name, fileext = ".txt")
-  googledrive::drive_download(
-    sprintf("EDABranch_Drive/Products/ECSA/%s", stock_name),
-    path = tmp_txt,
-    overwrite = TRUE
-  )
+  
+  gdoc_exist <- googledrive::drive_get(sprintf("EDABranch_Drive/Products/ECSA/%s_draft", stock_name))
+  
+  if(nrow(gdoc_exist) < 1) {
+    stop(sprintf("Can't find the google doc at:\nEDABranch_Drive/Products/ECSA/%s", stock_name))
+  }
+  if(nrow(gdoc_exist) >= 1) {
+    googledrive::drive_download(
+      sprintf("EDABranch_Drive/Products/ECSA/%s_draft", stock_name),
+      path = tmp_txt,
+      overwrite = TRUE
+    )
+  }
   # docs_text <- paste(readLines(tmp_txt, encoding = "UTF-8", warn = F), collapse = " ")
   docs_text <- readr::read_file(tmp_txt)
   ## remove readme
@@ -169,6 +177,11 @@ merge_to_bookdown <- function(stock_name,
   
   message(sprintf("ECSA template written to %s",
                   sprintf("%s/%s", folder_name, file_name)))
+  
+  if(render_book) {
+    rmarkdown::render(sprintf("%s/%s", folder_name, file_name))
+  }
+  
   
 }
 

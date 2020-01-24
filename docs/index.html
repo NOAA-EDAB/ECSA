@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Ecosystem Context for Stock Advice</title>
   <meta name="description" content="Ecosystem Context for Stock Advice" />
-  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Ecosystem Context for Stock Advice" />
   <meta property="og:type" content="book" />
@@ -38,6 +38,9 @@
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
 
 
 
@@ -95,6 +98,12 @@
 </thead>
 <tbody>
 <tr class="odd">
+<td align="left"><a href="https://noaa-edab.github.io/ECSA/atlantic-herring.html" target="_blank">Atlantic herring (<i>Clupea harengus</i>)</a></td>
+</tr>
+<tr class="even">
+<td align="left"><a href="https://noaa-edab.github.io/ECSA/atlantic-mackerel.html" target="_blank">Atlantic mackerel (<i>Scomber scombrus</i>)</a></td>
+</tr>
+<tr class="odd">
 <td align="left"><a href="https://noaa-edab.github.io/ECSA/atlantic-menhaden.html" target="_blank">Atlantic menhaden (<i>Brevoortia tyrannus</i>)</a></td>
 </tr>
 <tr class="even">
@@ -108,6 +117,12 @@
 </tr>
 <tr class="odd">
 <td align="left"><a href="https://noaa-edab.github.io/ECSA/bluefish.html" target="_blank">bluefish (<i>Pomatomus saltatrix</i>)</a></td>
+</tr>
+<tr class="even">
+<td align="left"><a href="https://noaa-edab.github.io/ECSA/butterfish.html" target="_blank">butterfish (<i>Peprilus triacanthus</i>)</a></td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="https://noaa-edab.github.io/ECSA/longfin-inshore-squid.html" target="_blank">longfin inshore squid (<i>Doryteuthis pealeii</i>)</a></td>
 </tr>
 <tr class="even">
 <td align="left"><a href="https://noaa-edab.github.io/ECSA/monkfish_north.html" target="_blank">northern component of the monkfish (<i>Lophius americanus</i>) stock</a></td>
@@ -135,11 +150,13 @@
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
@@ -147,12 +164,11 @@ gitbook.start({
 "github": false,
 "facebook": true,
 "twitter": true,
-"google": false,
 "linkedin": false,
 "weibo": false,
 "instapaper": false,
 "vk": false,
-"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
 "theme": "white",
@@ -164,6 +180,10 @@ gitbook.start({
 "text": "Edit"
 },
 "history": {
+"link": null,
+"text": null
+},
+"view": {
 "link": null,
 "text": null
 },

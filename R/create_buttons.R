@@ -34,7 +34,7 @@
 create_buttons <- function(df){
   
   plotvars <- names(df)[2:ncol(df)]
-  plotvars_nosmooth <- plotvars[!str_detect(plotvars, "smooth")]
+  plotvars_nosmooth <- plotvars[!stringr::str_detect(plotvars, "smooth")]
 
   menu <- ""
   for (i in 1:length(plotvars_nosmooth)){
