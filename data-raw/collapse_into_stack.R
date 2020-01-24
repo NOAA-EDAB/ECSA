@@ -3,7 +3,7 @@ library(raster)
 library(stars)
 library(stringr)
 library(dplyr)
-
+folder_path = tmp_dir
 #A function to collapse many RasterLayers (saved as .RData files) within a directory to a RasterStack. 
 #The argument fname_regex allows for filtering file names according to some regex. fname_regex passes
 #all files by default (i.e. .*). 
@@ -26,7 +26,7 @@ collapse_into_stack <- function(folder_path, fname_regex = ".*"){
       obj <- loadRData(file.path(folder_path, f))
       
       
-      assign("out",stack(out,obj))
+      assign("out", raster::stack(out,obj))
       names(out)[i] <- fname
       message(fname)
     } else {
@@ -125,3 +125,59 @@ save(fall_scupzz_occ_prob, file = "fall_scupzz_occ_prob.rdata")
 fall_bluefi_occ_prob <- collapse_into_stack(file.path(raw.dir, "fall-occupancy/fall"),
                                               fname_regex = "(?=.*bluefi)(?=.*PA)")
 save(fall_bluefi_occ_prob, file = "fall_bluefi_occ_prob.rdata")
+
+library(dplyr)
+library(googledrive)
+
+# stock_list <- read.csv("data/stock_list.csv", stringsAsFactors = FALSE)
+# stock_list <- unique(stock_list$species_code)
+
+drive_ids <- dplyr::bind_rows(googledrive::drive_ls(googledrive::as_id("https://drive.google.com/drive/folders/1_V3mHOc3M1DjLdjCrc7saW3-LvTiJPDd?usp=sharing"),
+                                    recursive = TRUE, n_max = Inf),
+                              googledrive::drive_ls(googledrive::as_id("https://drive.google.com/drive/folders/1ZYJk7GtkGLTUOukCal8KIwl_rYXkYJWZ?usp=sharing"),
+                                                    recursive = TRUE, n_max = Inf)) %>% 
+  dplyr::select(-drive_resource) %>% 
+  data.frame
+
+# tt <- googledrive::drive_get(googledrive::as_id("https://drive.google.com/drive/folders/1ZYJk7GtkGLTUOukCal8KIwl_rYXkYJWZ?usp=sharing"))
+# tt <- googledrive::drive_ls(path = "~/ecsa/spring")
+# 
+# td <- drive_ls(tt, n_max = Inf)
+# 
+
+drive_list <- drive_ids %>%
+  dplyr::filter(stringr::str_detect(name, pattern = "RAST_(?=.*PA)")) %>%
+  tidyr::separate(col = name, into = c("stock_name", "A", "B", "C", "season", "D", "E", "F"), sep = "\\.", remove = FALSE) %>% 
+  tidyr::separate(col = stock_name, into = c("G", "species_code", "year"), sep = "_") %>% 
+  dplyr::select(-A, -B, -C, -D, -E, -F, -G) %>% 
+  dplyr::arrange(species_code, season, year) %>% 
+  dplyr::distinct(.keep_all = TRUE)
+
+drive_list %>% 
+  dplyr::filter(!species_code %in% c("blabas", "bluefi", "monkfh", "scupzz")) %>%
+  dplyr::mutate(path = paste0(path.expand(tmp_dir), "\\", name)) %>% 
+  purrr::pmap(function(id, path, ...) googledrive::drive_download(
+    file = googledrive::as_id(id),
+    path = path,
+    overwrite = TRUE))
+
+
+drive_list %>% 
+  # dplyr::filter(species_code == "atlmac") %>% 
+  dplyr::filter(!species_code %in% c("blabas", "bluefi", "monkfh", "scupzz")) %>%
+  select(species_code, season) %>% 
+  distinct(.keep_all = TRUE) %>% 
+  purrr::pmap(function(season, species_code, ...){
+    x = collapse_into_stack(tmp_dir, fname_regex = sprintf("(?=.*%s)(?=.*%s)", species_code, season))
+    fname = sprintf("data-raw/%s_%s_occ_prob", season, species_code)
+    assign(fname, x)
+    save(list = fname, file = sprintf("%s.rdata", fname))
+  }
+  )
+
+
+
+fall_atlher_occ_prob <- collapse_into_stack(tmp_dir,
+                                            fname_regex = sprintf("(?=.*atlmac)(?=.*%s)", "fall"))
+
+
