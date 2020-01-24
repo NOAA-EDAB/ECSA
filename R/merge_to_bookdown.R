@@ -179,7 +179,7 @@ merge_to_bookdown <- function(stock_name,
                   sprintf("%s/%s", folder_name, file_name)))
   
   if(render_book) {
-    rmarkdown::render(sprintf("%s/%s", folder_name, file_name))
+    rmarkdown::render(sprintf("%s/%s", folder_name, file_name), encoding = "UTF_8")
   }
   
   
