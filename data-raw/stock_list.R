@@ -39,6 +39,7 @@ sdat_clean <- sdat %>%
 sdat_names <- sdat_clean %>%
   separate(species, sep = "\\s+(?=[[:upper:]])", c("common_name", "sci_name")) %>%
   mutate(common_name = tolower(common_name)) %>%
+  mutate(common_name = recode(common_name, "windowpane flounder" ="windowpane")) %>% 
   tidyr::extract(common_name, into = c('partA', 'partB'), '(.*)\\s+([^ ]+)$', remove = FALSE) %>%
   dplyr::mutate(partA = substr(partA, start = 1, stop = 3),
                 partB = substr(partB, start = 1, stop = 3),
@@ -103,7 +104,9 @@ stock_list <- stock_list %>%
                                                  TRUE ~ ""),
                 common_name = gsub("^atlantic", "Atlantic", common_name),
                 common_name = gsub("^american", "American", common_name),
-                common_name = gsub("^acadian", "Acadian", common_name)) %>% 
+                common_name = gsub("^acadian", "Acadian", common_name),
+                species_code = gsub("amelob", "amlobs", species_code), 
+                species_code = gsub("ocepou", "ocpout", species_code))%>% 
   dplyr::select(common_name,
                 sci_name,
                 cc_name,
@@ -112,7 +115,7 @@ stock_list <- stock_list %>%
                 svspp,
                 stock_season,
                 strata,
-                stock_subarea)# %>% 
+                stock_subarea) # %>% 
 # dplyr::filter(stock_name == !!stock_name) %>%
   # dplyr::select(-stock_season) %>%
   # dplyr::distinct(.keep_all = TRUE)
