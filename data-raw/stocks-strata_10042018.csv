@@ -60,3 +60,5 @@ MP,197,Monkfish                         Lophius americanus,South,"Spring, Fall",
 ,306,Northern shrimp            Pandalus borealis,Unit,Fall,"Offshore 24, 26-28, 37-40"
 MP,502,Northern shortfin squid                                        Ilex illecebrosus,Unit,"Spring, Fall","Offshore 1-40, 61-76"
 MP,503,Longfin inshore squid              Doryteuthis pealeii,Unit,"Spring, Fall","Offshore 1-23, 25-26, 61-76; Inshore 2-46, 58-61, 65-66 "
+,301,American lobster           Homarus americanus,GOM/GB,"Spring, Fall","Offshore 9-25, 26-30, 34, 351, 36-40; Inshore 56, 59-61, 64-66"
+MP,69,Offshore.silver hake           Merluccius albidus.bilinearis,SGB/MA,"Spring, Fall","Offshore1-19, 61-76"

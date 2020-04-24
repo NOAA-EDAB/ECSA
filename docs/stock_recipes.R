@@ -70,7 +70,16 @@ merge_to_bookdown(stock_name = "longfin-squid",
                   methods_gdoc_path = "generic_methods",
                   overwrite = TRUE)
 
+## sept 2020 assessments
+create_template(stock_name = "acadian-redfish", 
+                output_dir = here::here("docs"),
+                send_to_google_doc = FALSE,
+                overwrite = TRUE)
 
 
+create_template(stock_name = "american-lobster_sne",
+                output_dir = here::here("docs"),
+                send_to_google_doc = FALSE,
+                overwrite = TRUE)
 
 
