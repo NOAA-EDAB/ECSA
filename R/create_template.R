@@ -65,7 +65,7 @@ create_template <- function(stock_name,
   dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$svspp, dat)  
 
   # cat(dat,sep = "\n" )
-  file_name <- sprintf("%s_draft.rmd", clean_names$stock_name)
+  file_name <- sprintf("%s.rmd", clean_names$stock_name)
   folder_name <- sprintf("%s",output_dir)
   #output_dir <- sprintf("%s_book", clean_names$stock_name)
   
