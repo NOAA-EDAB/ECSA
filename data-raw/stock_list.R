@@ -21,6 +21,7 @@ sdat_clean <- sdat %>%
   mutate(season = tolower(season),
          strat = case_when(grepl("offshore", tolower(strata_set)) ~ "1",
                            grepl("inshore", tolower(strata_set))~ "3",
+                           grepl("scallop", tolower(strata_set))~ "6",
                            TRUE ~ NA_character_),
          strata_set = gsub("[[:alpha:]]", "", strata_set)) %>%
   separate_rows(strata_set, sep = ",") %>%
