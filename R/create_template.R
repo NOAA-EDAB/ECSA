@@ -56,7 +56,7 @@ create_template <- function(stock_name,
   }
 
   #Create .Rmd file to be written to book
-  dat <- readLines(here::here("templates","generic_template.rmd"))
+  dat <- readLines(here::here("templates","generic_template1.rmd"))
   dat <- gsub("\\{\\{COMMON_NAME\\}\\}", clean_names$common_name, dat)
   dat <- gsub("\\{\\{STOCK_NAME\\}\\}", clean_names$stock_name, dat)
   dat <- gsub("\\{\\{STOCK_SUBAREA\\}\\}", clean_names$stock_subarea, dat)
@@ -65,7 +65,7 @@ create_template <- function(stock_name,
   dat <- gsub("\\{\\{SPECIES_CODE\\}\\}", clean_names$svspp, dat)  
 
   # cat(dat,sep = "\n" )
-  file_name <- sprintf("%s_draft.rmd", clean_names$stock_name)
+  file_name <- sprintf("%s.rmd", clean_names$stock_name)
   folder_name <- sprintf("%s",output_dir)
   #output_dir <- sprintf("%s_book", clean_names$stock_name)
   
