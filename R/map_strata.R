@@ -49,7 +49,7 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
  
   ## 1) Strata  
   # source("R/get_strata.R")
-  get_strata(overwrite = overwrite)
+  #get_strata(overwrite = overwrite)
 
   ## 2) North America layer
   ne_countries <- rnaturalearth::ne_countries(scale = 10,

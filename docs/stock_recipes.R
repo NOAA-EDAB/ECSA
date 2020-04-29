@@ -101,7 +101,7 @@ create_template(stock_name = "ocean-pout",
                 send_to_google_doc = FALSE,
                 overwrite = TRUE)
 
-create_template(stock_name = "offshore.silver-hake_sgb-ma",
+create_template(stock_name = "offshore-hake-and-silver-hake_sgb-ma",
                 output_dir = here::here("docs"),
                 send_to_google_doc = FALSE,
                 overwrite = TRUE)
