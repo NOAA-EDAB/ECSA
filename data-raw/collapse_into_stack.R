@@ -348,8 +348,8 @@ drive_list %>%
 drive_list %>% 
    #dplyr::filter(species_code == "acared") %>% 
   dplyr::filter(!species_code %in% c("blabas", "bluefi", "monkfh", "scupzz")) %>%
-  select(species_code, season) %>% 
-  distinct(.keep_all = TRUE) %>% 
+  dplyr::select(species_code, season) %>% 
+  dplyr::distinct(.keep_all = TRUE) %>% 
   purrr::pmap(function(season, species_code, ...){
     x = collapse_into_stack(folder_path, fname_regex = sprintf("(?=.*%s)(?=.*%s)", species_code, season))
     fname = sprintf("data-raw/%s_%s_occ_prob", season, species_code)
