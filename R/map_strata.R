@@ -76,8 +76,23 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
     strata_both <- base::intersect(strata_spring, strata_fall)
   }
 
+  ### SHellfish Survey species (sea scallop)
+  # strata_int <- sf::st_read(here::here("data/strata_shapefiles/shellfish_strata.shp"),
+  #                           quiet = TRUE) %>% 
+  #   dplyr::mutate(both = dplyr::case_when(STRATUM %in% strata_both ~ "spring and fall", TRUE ~ NA_character_),
+  #                 spring = dplyr::case_when(STRATUM %in% strata_spring ~ "spring", TRUE ~ NA_character_),
+  #                 fall = dplyr::case_when(STRATUM %in% strata_fall ~ "fall" ,TRUE ~ NA_character_),
+  #                 SEASON = dplyr::case_when(STRATUM %in% base::intersect(strata_spring, strata_fall) ~ "spring and fall",
+  #                                           STRATUM %in% strata_both ~ "spring and fall",
+  #                                           STRATUM %in% strata_spring ~ "spring",
+  #                                           STRATUM %in% strata_fall ~ "fall",
+  #                                           TRUE ~ NA_character_)) %>% 
+  #   # dplyr::filter(!is.na(SEASON)) %>% 
+  #   dplyr::select(SEASON, both, fall, spring, geometry)
+  
+  ### BTS species 
   strata_int <- sf::st_read(here::here("data/strata_shapefiles/BTS_Strata.shp"),
-                             quiet = TRUE) %>% 
+                             quiet = TRUE) %>%
     dplyr::mutate(both = dplyr::case_when(STRATA %in% strata_both ~ "spring and fall", TRUE ~ NA_character_),
                   spring = dplyr::case_when(STRATA %in% strata_spring ~ "spring", TRUE ~ NA_character_),
                   fall = dplyr::case_when(STRATA %in% strata_fall ~ "fall" ,TRUE ~ NA_character_),
@@ -85,8 +100,8 @@ map_strata <- function(stock_name, common_name, stock_season, strata,
                                             STRATA %in% strata_both ~ "spring and fall",
                                             STRATA %in% strata_spring ~ "spring",
                                             STRATA %in% strata_fall ~ "fall",
-                                            TRUE ~ NA_character_)) %>% 
-    # dplyr::filter(!is.na(SEASON)) %>% 
+                                            TRUE ~ NA_character_)) %>%
+    # dplyr::filter(!is.na(SEASON)) %>%
     dplyr::select(SEASON, both, fall, spring, geometry)
   
   #For export
