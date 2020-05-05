@@ -145,6 +145,12 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 #Switches the encoding for the degree symbol (i.e. LaTeX or HTML)
 degree <- ifelse(knitr::is_latex_output(),"\\textdegree " ,'&deg;')
 kable_format <- ifelse(knitr::is_latex_output(), "latex", "html")
+
+# add link to stock name files folder for storing time series data
+url1 <- "https://github.com/NOAA-EDAB/ECSA/tree/master/docs/"
+url2 <- "_files"
+url<-noquote(sprintf("%s%s%s",url1, stock_name, url2))
+
 ```
 
 
@@ -156,6 +162,8 @@ kable_format <- ifelse(knitr::is_latex_output(), "latex", "html")
 
 
 This report provides contextual ecosystem information for Gulf of Maine winter flounder (*Pseudopleuronectes americanus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the winter flounder stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of winter flounder, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval winter flounder. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
+
+Link to available [time series data](`r url`) used below.
 
 
 
@@ -695,6 +703,9 @@ fall_cope <-
   tidyr::spread(full_name, Mean)
 
 fall_min <- min(fall_cope$Time)
+
+write.csv(spring_cope, file=here::here("docs", paste0(stock_name,"_files/spring_cope.csv")))
+write.csv(fall_cope, file=here::here("docs", paste0(stock_name,"_files/fall_cope.csv")))
 ```
 
 ```{r, zoo-cope-spring, fig.height=5, eval = print_plot[1]}
@@ -866,6 +877,8 @@ fall_noncope <-
 
 fall_min <- min(fall_noncope$Time)
 
+write.csv(spring_noncope, file=here::here("docs", paste0(stock_name,"_files/spring_noncope.csv")))
+write.csv(fall_noncope, file=here::here("docs", paste0(stock_name,"_files/fall_noncope.csv")))
 ```
 
 ```{r zoo-spring-noncope, fig.height=5, eval = print_plot[1]}
@@ -1031,6 +1044,9 @@ fall_occ_prob <-
                 measure_name = "occurrence")$df %>% 
   dplyr::select(Time, Fall = Series)
 
+write.csv(spring_occ_prob, file=here::here("docs", paste0(stock_name,"_files/spring_occ_prob.csv")))
+write.csv(fall_occ_prob, file=here::here("docs", paste0(stock_name,"_files/fall_occ_prob.csv")))
+
 if (all(print_plot)){
   occ_prob <- spring_occ_prob %>% 
     left_join(.,fall_occ_prob, by  = "Time") %>% 
@@ -1072,6 +1088,24 @@ if (interactive){
 }
 ```
 
+```{r}
+myList <- list(spring_bottom_temp = spring_bottom_temp,
+               fall_bottom_temp = fall_bottom_temp, 
+               spring_surface_temp = spring_surface_temp,
+               fall_surface_temp = fall_surface_temp,
+               spring_bottom_sal = spring_bottom_sal, 
+               fall_bottom_sal = fall_bottom_sal, 
+               spring_surface_sal = spring_surface_sal, 
+               spring_chl = spring_chl,
+               fall_chl = fall_chl)
+
+for(i in names(myList)){
+  k <- myList[[i]]$df %>% tidyr::gather(Var, Value, -Time)
+  #print(k)
+  write.csv(k, file=here::here("docs", paste0(stock_name,"_files/"), paste0(i,".csv")))
+}
+
+```
 
 # Methods {#methods}
 

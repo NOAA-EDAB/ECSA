@@ -2,7 +2,7 @@
 title:
     | 
     | Ecosystem Context for Stock Advice:
-    | winter flounder - southern New England / mid-Atlantic
+    | winter flounder - southern New England / Mid-Atlantic
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 author: ""
 always_allow_html: yes
@@ -146,10 +146,9 @@ ecosystem_habitat_area <- read.csv(here::here("data-raw/sum_ocl_spr and fall.csv
 degree <- ifelse(knitr::is_latex_output(),"\\textdegree " ,'&deg;')
 kable_format <- ifelse(knitr::is_latex_output(), "latex", "html")
 
+# add link to stock name files folder for storing time series data
 url1 <- "https://github.com/NOAA-EDAB/ECSA/tree/master/docs/"
 url2 <- "_files"
-
-
 url<-noquote(sprintf("%s%s%s",url1, stock_name, url2))
 
 ```
@@ -162,8 +161,9 @@ url<-noquote(sprintf("%s%s%s",url1, stock_name, url2))
 
 
 
-This report provides contextual ecosystem information for southern New England/mid-Atlantic winter flounder (*Pseudopleuronectes americanus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the winter flounder stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of winter flounder, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval winter flounder. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group. Time series data used to create this report can be found [at this link](url).
+This report provides contextual ecosystem information for southern New England/mid-Atlantic winter flounder (*Pseudopleuronectes americanus*) on the Northeast U.S. Continental Shelf. Data extractions for spring and fall are confined to the winter flounder stock area based on respective survey strata sets. The information is intended to span a range of potential factors affecting the productivity and distribution of winter flounder, including: surface and bottom temperature and salinity, chlorophyll concentrations, indices of habitat, diet composition, and abundance of key zooplankton prey of larval winter flounder. These factors can be used to qualitatively inform the interpretation of population status and/or quantitatively to improve model responsiveness to ecosystem factors. The range and complexity of ecosystem data makes it unlikely to find the most relevant and comprehensive factor variables with a first evaluation; this process will require an iterative approach of evaluation and feedback. Additional indices can be included to address the needs of the working group.
 
+Link to available [time series data](`r url`) used below.
 
 
 
