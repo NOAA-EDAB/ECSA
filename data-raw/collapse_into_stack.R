@@ -336,7 +336,7 @@ drive_list <- drive_ids %>%
   dplyr::distinct(.keep_all = TRUE)
 
 drive_list %>% 
-  #dplyr::filter(species_code == "winflo") %>% 
+  dplyr::filter(species_code == "haddoc") %>% 
   dplyr::filter(!species_code %in% c("blabas", "bluefi", "monkfh", "scupzz")) %>%
   dplyr::mutate(path = paste0(path.expand(folder_path), "\\", name)) %>% 
   purrr::pmap(function(id, path, ...) googledrive::drive_download(
@@ -346,7 +346,7 @@ drive_list %>%
 
 
 drive_list %>% 
-   #dplyr::filter(species_code == "acared") %>% 
+  dplyr::filter(species_code == "haddoc") %>% 
   dplyr::filter(!species_code %in% c("blabas", "bluefi", "monkfh", "scupzz")) %>%
   dplyr::select(species_code, season) %>% 
   dplyr::distinct(.keep_all = TRUE) %>% 
