@@ -30,7 +30,7 @@ The output of `merge_to_bookdown()` is an Rmarkdown document saved to the `/docs
 
 ### 4. Making the reports accessible
 
-To make the documents available via Github pages, the final reports (i.e. the html and pdf files), along with the directory titled `[stock_name]__files/`, should be pushed up to the ECSA repository. Once the the report files are available, you will need to knit the file `index.rmd`, which is written to detect new `.html` files in the `/docs` folder. Running `index.rmd` and pushing the resulting `index.html` file to Github will make your new report available on the [ECSA index page](noaa-edab.github.io/ECSA).
+To make the documents available via Github pages, the final reports (i.e. the html and pdf files), along with the directory titled `[stock_name]__files/`, should be pushed up to the ECSA repository. Once the the report files are available, you will need to knit the file `index.rmd`, which is written to detect new `.html` files in the `/docs` folder. Running `index.rmd` and pushing the resulting `index.html` file to Github will make your new report available on the [ECSA index page](https://noaaedab.github.io/ECSA/index.html).
 
 Note: The ECSA is not yet in R package format. Hence, functions must be sourced from the `R/` directory during the document development process. Template `.Rmd` files source the functions by default.
 
