@@ -155,3 +155,13 @@ create_template(stock_name = "yellowtail-flounder_sne-ma",
                 output_dir = here::here("docs"),
                 send_to_google_doc = FALSE,
                 overwrite = TRUE)
+
+create_template(stock_name = "haddock_gom",
+                output_dir = here::here("docs"),
+                send_to_google_doc = FALSE,
+                overwrite = TRUE)
+
+create_template(stock_name = "haddock_gb",
+                output_dir = here::here("docs"),
+                send_to_google_doc = FALSE,
+                overwrite = TRUE)
